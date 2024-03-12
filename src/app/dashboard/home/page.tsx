@@ -6,7 +6,6 @@ import {
     RiSearchLine
 } from "react-icons/ri";
 import ReservationComponent from "@/app/components/navbar/reservationList";
-import XyChart from "@/app/components/charts/xyChart";
 
 export default function HomeDashboard() {
     const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-red-800 bg-violet-600";
