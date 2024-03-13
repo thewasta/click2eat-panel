@@ -1,5 +1,13 @@
 version: '3.4'
 services:
+  mock:
+    image: local-mockserver:dev
+    build:
+      dockerfile: mock.dockerfile
+    volumes:
+      - mockserver:/root/.castlemock:cached
+    ports:
+      - "9001:8080"
   app:
     build:
       dockerfile: Dockerfile
@@ -16,3 +24,5 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
+volumes:
+  mockserver:
