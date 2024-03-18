@@ -1,7 +1,10 @@
 import React from "react";
-import {redirect} from "next/navigation";
 
 export default function Second() {
+
+    const handleSubmit = async (_: React.MouseEvent<HTMLButtonElement>) => {
+        console.log("HOLA")
+    }
     return (
         <div className="w-full h-screen flex items-start">
             <div className="sm:w-1/2 hidden relative h-full sm:flex flex-col">
@@ -56,7 +59,8 @@ export default function Second() {
                         </a>
                     </div>
                     <div className="flex items-center">
-                        <button className="border bg-indigo-600 hover:bg-indigo-500 rounded w-1/2" type="button">
+                        <button onClick={handleSubmit}
+                                className="border bg-indigo-600 hover:bg-indigo-500 rounded w-1/2" type="button">
                             Enviar
                         </button>
                     </div>
