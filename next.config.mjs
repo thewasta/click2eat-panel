@@ -4,6 +4,14 @@ const nextConfig = {
         fetches:{
             fullUrl: true
         }
+    },
+    images:{
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'cdn.dummyjson.com'
+            }
+        ]
     }
 };
 
