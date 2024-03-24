@@ -18,7 +18,7 @@ RUN npm run build
 FROM base as prod
 WORKDIR /app
 # Crear directorios necesarios
-RUN mkdir -p /app/.next/standalone /app/.next/static
+RUN mkdir -p /restaurant/.next/standalone /restaurant/.next/static
 
 # Copiar archivos de la etapa de construcción
 COPY --from=builder /app/public ./public

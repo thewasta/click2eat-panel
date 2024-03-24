@@ -1,6 +1,5 @@
 'use client'
 import Image from "next/image";
-import * as Icons from "react-icons/pi";
 import React from "react";
 import {FaShoppingCart} from "react-icons/fa";
 
@@ -66,7 +65,29 @@ const products = [
         name: 'product name'
     },
 ];
-export default function TableDiningPage() {
+
+const PageProducts = async () => {
+    let products = [];
+    try {
+        const response = await fetch(`/api/restaurant?node=1`)
+        products = await response.json();
+        console.log(products)
+        return (
+            <ul>
+                {products.map((product: any, i: number) => (
+                    <li key={i}>
+                        {product.name}
+                    </li>
+                ))}
+            </ul>
+        );
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function TableDiningPage() {
+
     return (
         <>
 
@@ -87,12 +108,15 @@ export default function TableDiningPage() {
                     </div>
                 ))}
             </main>
-            <footer className="fixed flex items-center justify-between bottom-0 left-0 rounded-t-3xl bg-blue-500 w-full h-12 p-2 px-6">
+            <footer
+                className="fixed flex items-center justify-between bottom-0 left-0 rounded-t-3xl bg-blue-500 w-full h-12 p-2 px-6">
                 <p className="text-white font-medium">
                     Mi pedido
                 </p>
-                <FaShoppingCart className="text-white" />
+                <FaShoppingCart className="text-white"/>
             </footer>
         </>
     )
 }
+
+export default PageProducts;
