@@ -1,11 +1,11 @@
-import SidebarComponent from "@/components/navbar/sidebar";
+import SidebarComponent from "@/app/components/navbar/sidebar";
 import {
     RiArrowDownSLine,
     RiCheckboxBlankCircleFill,
     RiNotification2Line,
     RiSearchLine
 } from "react-icons/ri";
-import ReservationComponent from "@/components/navbar/reservationList";
+import ReservationComponent from "@/app/components/navbar/reservationList";
 
 export default function HomeDashboard() {
     const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-red-800 bg-violet-600";

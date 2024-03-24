@@ -3,7 +3,7 @@ import React, {ChangeEvent, useState} from "react";
 import {useRouter} from "next/navigation";
 
 
-export default function LoginPage() {
+function LoginPage() {
     const [password, setPassword] = useState<string>('');
     const [username, setUsername] = useState<string>('');
     const router = useRouter();
