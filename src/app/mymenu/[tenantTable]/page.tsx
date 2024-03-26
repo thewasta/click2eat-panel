@@ -67,11 +67,11 @@ const products = [
 ];
 
 const PageProducts = async () => {
-    let products = [];
+    // let products = [];
     try {
         const response = await fetch(`/api/restaurant?node=1`)
-        products = await response.json();
-        console.log(products)
+        // products = await response.json();
+        // console.log(products)
         return (
             <ul>
                 {products.map((product: any, i: number) => (
@@ -90,7 +90,6 @@ function TableDiningPage() {
 
     return (
         <>
-
             <main className="grid grid-cols-2 gap-4 mt-4 p-3 mb-7">
                 {products.map((product, i) => (
                     <div key={i} className="flex flex-col items-start">
@@ -119,4 +118,4 @@ function TableDiningPage() {
     )
 }
 
-export default PageProducts;
+export default TableDiningPage;
