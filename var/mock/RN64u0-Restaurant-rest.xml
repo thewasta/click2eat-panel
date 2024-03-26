@@ -2,6 +2,12 @@
 <restExportContainer>
     <applications>
         <application>
+            <id>DT67wI</id>
+            <name>Products</name>
+            <projectId>RN64u0</projectId>
+            <resources/>
+        </application>
+        <application>
             <id>Gvvr1a</id>
             <name>Auth</name>
             <projectId>RN64u0</projectId>
@@ -9,6 +15,19 @@
         </application>
     </applications>
     <methods>
+        <method>
+            <automaticForward>false</automaticForward>
+            <currentResponseSequenceIndex>0</currentResponseSequenceIndex>
+            <httpMethod>GET</httpMethod>
+            <id>nawgb3</id>
+            <mockResponses/>
+            <name>success</name>
+            <networkDelay>0</networkDelay>
+            <resourceId>dIn78e</resourceId>
+            <responseStrategy>RANDOM</responseStrategy>
+            <simulateNetworkDelay>false</simulateNetworkDelay>
+            <status>MOCKED</status>
+        </method>
         <method>
             <automaticForward>false</automaticForward>
             <currentResponseSequenceIndex>0</currentResponseSequenceIndex>
@@ -25,6 +44,7 @@
         <method>
             <automaticForward>false</automaticForward>
             <currentResponseSequenceIndex>0</currentResponseSequenceIndex>
+            <defaultMockResponseId>u3vlJe</defaultMockResponseId>
             <httpMethod>POST</httpMethod>
             <id>7Y0oev</id>
             <mockResponses/>
@@ -51,6 +71,75 @@
     </methods>
     <mockResponses>
         <mockResponse>
+            <body>{
+  "data": [
+    {
+      "category": "Frutas y Verduras",
+      "products": [
+        {
+          "id": 101,
+          "name": "Manzanas Gold",
+          "description": "Manzanas frescas de alta calidad",
+          "price": 2.99
+        },
+        {
+          "id": 102,
+          "name": "Espinaca",
+          "description": "Espinaca fresca en paquetes de 500g",
+          "price": 1.50
+        }
+      ]
+    },
+    {
+      "category": "Carnes",
+      "products": [
+        {
+          "id": 201,
+          "name": "Filete de salmón",
+          "description": "Filetes de salmón frescos, 200g cada uno",
+          "price": 15.99
+        },
+        {
+          "id": 202,
+          "name": "Curry de pollo",
+          "description": "Pedido de curry de pollo para dos personas",
+          "price": 8.99
+        }
+      ]
+    },
+    {
+      "category": "Lácteos",
+      "products": [
+        {
+          "id": 301,
+          "name": "Leche Entera",
+          "description": "Botella de 1 litro de leche entera",
+          "price": 0.89
+        },
+        {
+          "id": 302,
+          "name": "Queso Gouda",
+          "description": "Queso gouda, 200g",
+          "price": 3.50
+        }
+      ]
+    }
+  ]
+}</body>
+            <contentEncodings/>
+            <headerQueries/>
+            <httpHeaders/>
+            <httpStatusCode>200</httpStatusCode>
+            <id>irk4L9</id>
+            <jsonPathExpressions/>
+            <methodId>nawgb3</methodId>
+            <name>by categories</name>
+            <parameterQueries/>
+            <status>ENABLED</status>
+            <usingExpressions>false</usingExpressions>
+            <xpathExpressions/>
+        </mockResponse>
+        <mockResponse>
             <body></body>
             <contentEncodings/>
             <headerQueries/>
@@ -67,7 +156,7 @@
         </mockResponse>
         <mockResponse>
             <body>{
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiIiwiaWF0IjoxNzA5OTg1MzM2LCJleHAiOjE3MDk5ODY3NzZ9.Ngc_TBrTVQnS8qJdCDbVZo70oJ86eCCqs_RfmDCtEPo"
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3NlbHVqaTIyIiwiaWF0IjoxNzEwNjM2NDgwLCJleHAiOjE3MTA2Mzc5MjB9.wamsyT9-zC_wIUQLB3hzX-l2OJq2gT78fuy510q0Ib4"
 }</body>
             <contentEncodings/>
             <headerQueries/>
@@ -109,6 +198,13 @@
         <applications/>
     </project>
     <resources>
+        <resource>
+            <applicationId>DT67wI</applicationId>
+            <id>dIn78e</id>
+            <methods/>
+            <name>All products</name>
+            <uri>/api/products</uri>
+        </resource>
         <resource>
             <applicationId>Gvvr1a</applicationId>
             <id>lbTKoC</id>
