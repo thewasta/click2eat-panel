@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment="idea workspace">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment="Add workflow" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +25,9 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -51,9 +52,9 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "credentialsType com.jetbrains.nodejs.remote.NodeJSCreateRemoteSdkForm": "Docker",
-    "git-widget-placeholder": "dev",
-    "javascript.nodejs.core.library.configured.version": "12.22.9",
-    "javascript.nodejs.core.library.typings.version": "12.20.55",
+    "git-widget-placeholder": "develop",
+    "javascript.nodejs.core.library.configured.version": "20.11.1",
+    "javascript.nodejs.core.library.typings.version": "20.11.30",
     "last_opened_file_path": "/home/thewasta/WebstormProjects/restaurantqr-frontend/src/app/auth/login",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
@@ -124,6 +125,7 @@
       <workItem from="1710787450899" duration="13000" />
       <workItem from="1711019225022" duration="11002000" />
       <workItem from="1711286220910" duration="12985000" />
+      <workItem from="1711580703117" duration="357000" />
     </task>
     <task id="LOCAL-00001" summary=":triangular_flag_on_post: WIP">
       <option name="closed" value="true" />
@@ -157,7 +159,15 @@
       <option name="project" value="LOCAL" />
       <updated>1711483315300</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add workflow">
+      <option name="closed" value="true" />
+      <created>1711580951720</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711580951720</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -191,6 +201,7 @@
     <MESSAGE value=":zap: Move components folder" />
     <MESSAGE value="WIP" />
     <MESSAGE value="idea workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="idea workspace" />
+    <MESSAGE value="Add workflow" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add workflow" />
   </component>
 </project>
