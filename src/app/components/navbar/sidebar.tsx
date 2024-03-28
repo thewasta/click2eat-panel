@@ -75,7 +75,7 @@ export default function SidebarComponent() {
                     2024 - RestaurantQR
                 </span>
             </aside>
-            {/*Button menu mobile*/}
+            {/*Button mymenu mobile*/}
             <button
                 onClick={() => {
                     setActiveSidebar(!activeSidebar);
