@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment="idea workspace">
+    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment=":bug: Ignore .idea folder">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/_actions/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/_actions/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/_actions/request.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/_actions/request.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/dashboard/auth/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/dashboard/auth/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +55,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "credentialsType com.jetbrains.nodejs.remote.NodeJSCreateRemoteSdkForm": "Docker",
-    "git-widget-placeholder": "dev",
+    "git-widget-placeholder": "develop",
     "javascript.nodejs.core.library.configured.version": "12.22.9",
     "javascript.nodejs.core.library.typings.version": "12.20.55",
     "last_opened_file_path": "/home/thewasta/WebstormProjects/restaurantqr-frontend/src/app/auth/login",
@@ -191,6 +195,7 @@
     <MESSAGE value=":zap: Move components folder" />
     <MESSAGE value="WIP" />
     <MESSAGE value="idea workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="idea workspace" />
+    <MESSAGE value=":bug: Ignore .idea folder" />
+    <option name="LAST_COMMIT_MESSAGE" value=":bug: Ignore .idea folder" />
   </component>
 </project>
