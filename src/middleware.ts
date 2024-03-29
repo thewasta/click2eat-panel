@@ -3,7 +3,7 @@ import {cookies} from "next/headers";
 
 export async function middleware(req: NextRequest) {
     const cookieStore = cookies();
-    const jwtToken = cookieStore.get('auth_cookie');
+    const jwtToken = cookieStore.get(process.env.NEXT_PUBLIC_COOKIE_NAME as string);
     let isAuthenticated = false;
     if (jwtToken?.value) {
         isAuthenticated = true;

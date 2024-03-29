@@ -13,11 +13,12 @@ export interface RequestResponse {
 export async function request(endpoint: string, method: Request_Type, body: {}): Promise<RequestResponse> {
     try {
         const response = await fetch(`${process.env.API_BASE_URL}${endpoint}` as string, {
+            credentials: 'include',
             method: method,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
         });
 
         if (response.status === 403) {
@@ -33,9 +34,6 @@ export async function request(endpoint: string, method: Request_Type, body: {}):
             message: responseBody
         }
     } catch (error) {
-        console.log(
-            'AQUI ERROR'
-        )
         error = Object.values(ErrorCodes).includes(error as string) ? error : 'Something went wrong';
         return {
             error: true,
