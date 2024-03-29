@@ -1,10 +1,12 @@
 'use server'
 
 import {request, RequestResponse} from "@/_actions/request";
+import {cookies} from "next/headers";
 
 export async function login(email: string, password: string): Promise<RequestResponse> {
     try {
         const ENDPOINT = 'auth/login';
+        const cookieStore = cookies();
         const response = await request(ENDPOINT, 'POST', {
             username: email,
             password
@@ -12,10 +14,12 @@ export async function login(email: string, password: string): Promise<RequestRes
         if (response.error) {
             return response;
         }
+        //@ts-ignore
+        cookieStore.set(process.env.NEXT_PUBLIC_COOKIE_NAME as string, response.message.token)
         return {
             error: false,
             errorDescription: null,
-            message: response
+            message: response.message
         }
     } catch (error) {
         console.log(error)

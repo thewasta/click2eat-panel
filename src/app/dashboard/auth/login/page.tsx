@@ -1,18 +1,18 @@
 'use client'
 import React, {useState} from "react";
 import {login} from '@/_actions/auth'
+import {useRouter} from "next/navigation";
 
 export default function Second() {
 
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [email, setEmail] = useState<string>('joseluji2235');
+    const [password, setPassword] = useState<string>('Masoki13');
     const [loginError, setLoginError] = useState<string | null>(null)
+    const router = useRouter();
     const submit = async () => {
         try {
-            const result = await login(email, password)
-            if (result.error) {
-                setLoginError(result.errorDescription);
-            }
+            await login(email, password)
+            router.push('/dashboard/home');
         } catch (error) {
             setLoginError('Something went wrong!');
         }
