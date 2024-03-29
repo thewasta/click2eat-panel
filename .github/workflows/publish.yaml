@@ -14,6 +14,8 @@ jobs:
         node-version: [20.12.0]
     steps:
       - uses: actions/checkout@v3
+        with:
+         clean: false
       - name: Use nodeJS ${{matrix.node-version}}
         uses: actions/setup-node@v3
         with:
