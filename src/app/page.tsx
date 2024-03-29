@@ -1,7 +1,7 @@
 export default function Page() {
     return (
         <p>
-            HOLA Prueb
+            HOLA Prueb example
         </p>
     );
 }
