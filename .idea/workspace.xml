@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment=":bug: fix: Auth login request" />
+    <list default="true" id="53ab7602-aa60-4287-81d4-2b07d10c0f58" name="Changes" comment="idea workspace">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,8 +19,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -49,7 +55,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "credentialsType com.jetbrains.nodejs.remote.NodeJSCreateRemoteSdkForm": "Docker",
-    "git-widget-placeholder": "fix/auth-login",
+    "git-widget-placeholder": "feature/add-setup-testing",
     "javascript.nodejs.core.library.configured.version": "12.22.9",
     "javascript.nodejs.core.library.typings.version": "12.20.55",
     "last_opened_file_path": "/home/thewasta/WebstormProjects/restaurantqr-frontend/src/app/auth/login",
@@ -76,11 +82,11 @@
       <recent name="$PROJECT_DIR$/src/app/auth/login" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/__tests__/pages" />
       <recent name="$PROJECT_DIR$/src/app" />
       <recent name="$PROJECT_DIR$/src/app/dashboard/auth/login" />
       <recent name="$PROJECT_DIR$/src/app/dashboard" />
       <recent name="$PROJECT_DIR$/src/app/api/restaurant" />
-      <recent name="$PROJECT_DIR$/src/app/menu/[tenant]" />
     </key>
   </component>
   <component name="RunManager">
@@ -197,8 +203,7 @@
     <MESSAGE value=":zap: Move components folder" />
     <MESSAGE value="WIP" />
     <MESSAGE value="idea workspace" />
-    <MESSAGE value=":bug: Ignore .idea folder" />
-    <MESSAGE value=":bug: fix: Auth login request" />
-    <option name="LAST_COMMIT_MESSAGE" value=":bug: fix: Auth login request" />
+    <MESSAGE value=":test_tube: feat: Add testing e2e playwright" />
+    <option name="LAST_COMMIT_MESSAGE" value=":test_tube: feat: Add testing e2e playwright" />
   </component>
 </project>
