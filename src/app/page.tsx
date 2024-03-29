@@ -1,7 +1,7 @@
 export default function Page() {
     return (
         <p>
-            Hello world!
+            Hola a todos!
         </p>
     );
 }
