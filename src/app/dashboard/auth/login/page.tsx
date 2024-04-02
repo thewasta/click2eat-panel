@@ -1,7 +1,8 @@
 'use client'
 import React, {useState} from "react";
-import {login} from '@/_actions/auth'
+import {login} from '@/_request/auth/auth'
 import {useRouter} from "next/navigation";
+import {nonSession} from "@/_lib/api/ApiManager";
 
 export default function Second() {
 
@@ -11,7 +12,10 @@ export default function Second() {
     const router = useRouter();
     const submit = async () => {
         try {
-            await login(email, password)
+            const r = await nonSession.post('auth/login', {
+                username: email,
+                password
+            });
             router.push('/dashboard/home');
         } catch (error) {
             setLoginError('Something went wrong!');

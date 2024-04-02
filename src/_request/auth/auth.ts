@@ -1,6 +1,6 @@
 'use server'
 
-import {request, RequestResponse} from "@/_actions/request";
+import {request, RequestResponse} from "@/_request/request";
 import {cookies} from "next/headers";
 
 export async function login(email: string, password: string): Promise<RequestResponse> {
