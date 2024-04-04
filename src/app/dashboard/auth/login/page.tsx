@@ -3,8 +3,11 @@ import React, {useState} from "react";
 import {login} from '@/_request/auth/auth'
 import {useRouter} from "next/navigation";
 import {nonSession} from "@/_lib/api/ApiManager";
+import Link from "next/link";
+import Image from "next/image";
+import MiddleLeftSideImage from "@/app/components/auth/middleLeftSideImage";
 
-export default function Second() {
+export default function AuthLogin() {
 
     const [email, setEmail] = useState<string>('joseluji2235');
     const [password, setPassword] = useState<string>('Masoki13');
@@ -12,37 +15,17 @@ export default function Second() {
     const router = useRouter();
     const submit = async () => {
         try {
-            const r = await nonSession.post('auth/login', {
-                username: email,
-                password
-            });
+            await login(email, password);
             router.push('/dashboard/home');
         } catch (error) {
             setLoginError('Something went wrong!');
         }
     }
     return (
-        <div className="w-full h-screen flex items-start">
-            <div className="sm:w-1/2 hidden relative h-full sm:flex flex-col">
-                <div className="absolute hidden md:flex top-[20%] left-[10%] flex-col">
-                    <h1 className="text-4xl text-white font-extrabold my-4">
-                        Restaurante QR
-                    </h1>
-                    <p className="text-xl text-white font-normal">
-                        Sistema gestión para tu negocio
-                    </p>
-
-                </div>
-                <img
-                    src="https://placehold.co/750x800"
-                    alt=""
-                    width={750}
-                    height={800}
-                    className="w-full h-full object-cover"
-                />
-            </div>
+        <>
+            <MiddleLeftSideImage/>
             {/*bg-[#E0E0E0]*/}
-            <div className="sm:w-3/4 md:w-1/2 w-full h-full bg-[#F5F5F5] flex flex-col p-20 justify-between">
+            <div className="sm:w-3/4 md:w-1/2 w-full h-full bg-[#E0E0E0] flex flex-col p-20 justify-between">
 
                 <h1 className="text-xl font-semibold text-[#060606]">
                     [Nombre Empresa]
@@ -89,12 +72,13 @@ export default function Second() {
                 </div>
                 <div className="w-full flex items-center justify-center">
                     <p className="text-sm font-normal text-[#060606]">¿No tienes cuenta?
-                        <a href="#" className="ml-1 font-semibold underline underline-offset-2 cursor-pointer">
-                            Contáctanos
-                        </a>
+                        <Link href="/dashboard/auth/register"
+                              className="ml-1 font-semibold underline underline-offset-2 cursor-pointer">
+                            Registrate
+                        </Link>
                     </p>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

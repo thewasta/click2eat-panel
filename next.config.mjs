@@ -7,10 +7,15 @@ const nextConfig = {
         }
     },
     images:{
+        dangerouslyAllowSVG: true,
         remotePatterns: [
             {
                 protocol: 'https',
                 hostname: 'cdn.dummyjson.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'placehold.co'
             }
         ]
     }
