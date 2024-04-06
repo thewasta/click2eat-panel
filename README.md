@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Esto es un proyecto para gestionar tu comercio de manera sencilla y eficiente.
 
-## Getting Started
+# Instalación
 
-First, run the development server:
+Podemos utilizar en **local** o instalar **docker** y hacer uso de los contenedores.
 
+### Local
+
+Una vez descargado el proyecto, nos cambiamos a la rama `main` y debemos instalar las dependencias con el siguiente comando:
+```bash
+npm install
+```
+También debemos de actualizar nuestras variables de entorno del archivo `.env.local` con las variables de entorno que se encuentran en el archivo `.env.local`.
+Asegurarse de que las variables de entorno sean correctas.
+
+Y a continuación, ejecutamos el siguiente comando para iniciar el proyecto:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+En la terminal veremos un mensaje similar a este:
+```text
+> restauranteqr-frontend@0.1.1 dev
+> next dev
+
+   ▲ Next.js 14.1.1
+   - Local:        http://localhost:3000
+   - Environments: .env.local, .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Podremos acceder a la aplicación en `http://localhost:3000`.
 
-You can start editing the page by modifying `app/Examplepage.tsx`. The page auto-updates as you edit the file.
+### Docker
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Para instalar el proyecto con docker, debemos tener instalado docker en nuestro sistema. Una vez instalado, ejecutamos el siguiente comando:
+```bash
+docker compose up
+```
 
-## Learn More
+Esto iniciará los contenedores y podremos acceder a la aplicación en `http://localhost:3000`.
+Tener en cuenta que esto usa el archivo `docker-compose.yaml` no confundir con el archivo `docker-compose.pro.yaml`
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Despliegue
+Antes de subir cambios, asegurarse de que el proyecto funciona correctamente. Para ello, ejecutar el siguiente comando:
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Esto compilará el proyecto y generará una carpeta llamada `.next` en la raíz del proyecto. Luego debemos de iniciar la aplicación
+con el siguiente comando:
+```bash
+npm run start
+```
+Nos iniciará la aplicación el puerto `3000` y podremos acceder a ella en `http://localhost:3000`.
+Y debemos de hacer las pruebas de funcionalidad y de diseño para asegurarnos de que todo funciona correctamente.
+Ya que cuando se está en desarrollo, _next_ no compila los archivos de la misma manera que cuando se hace un `build` o el uso de la cache
+lo hace distinto y puede ocasionar errores no esperados.
