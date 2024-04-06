@@ -1,9 +1,11 @@
 'use client'
 import {useRouter} from "next/navigation";
-import MiddleLeftSideImage from "@/app/components/auth/middleLeftSideImage";
+import MiddleLeftSide from "@/app/components/auth/middleLeftSide";
 import Link from "next/link";
 import React, {useState} from "react";
 import FormInputText from "@/app/components/form/FormInputText";
+import Image from "next/image";
+import MiddleRightSide from "@/app/components/auth/middleRigthSide";
 
 export default function AuthRegister() {
     const router = useRouter();
@@ -14,8 +16,24 @@ export default function AuthRegister() {
     }
     return (
         <>
-            <MiddleLeftSideImage/>
-            <div className="sm:w-3/4 md:w-1/2 w-full h-full bg-[#F5F5F5] flex flex-col p-20 justify-between">
+            <MiddleLeftSide>
+                <div className="absolute hidden md:flex top-[20%] left-[10%] flex-col">
+                    <h1 className="text-4xl text-white font-extrabold my-4">
+                        Click2Eat
+                    </h1>
+                    <p className="text-xl text-white font-normal">
+                        Sistema gestión para tu negocio
+                    </p>
+                </div>
+                <Image
+                    src="https://placehold.co/750x800"
+                    alt=""
+                    width={750}
+                    height={800}
+                    className="w-full h-full object-cover"
+                />
+            </MiddleLeftSide>
+            <MiddleRightSide>
                 <div className="w-full flex flex-col">
                     <div className="flex flex-col w-full mb-2">
                         <h3 className="text-3xl font-semibold mb-3">
@@ -39,6 +57,11 @@ export default function AuthRegister() {
                             placeholder="************"
                             onChange={handleBusinessNameChange}
                         />
+                        <FormInputText
+                            inputType="password"
+                            placeholder="************"
+                            onChange={handleBusinessNameChange}
+                        />
                     </div>
                     <div className="flex items-center justify-center">
                         <button
@@ -56,7 +79,7 @@ export default function AuthRegister() {
                         </Link>
                     </p>
                 </div>
-            </div>
+            </MiddleRightSide>
         </>
     );
 }
