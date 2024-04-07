@@ -6,6 +6,7 @@ import React, {useState} from "react";
 import FormInputText from "@/app/components/form/FormInputText";
 import Image from "next/image";
 import MiddleRightSide from "@/app/components/auth/middleRigthSide";
+import {MdEmail, MdLock} from "react-icons/md";
 
 export default function AuthRegister() {
     const router = useRouter();
@@ -41,18 +42,20 @@ export default function AuthRegister() {
                         </h3>
                         {/*<p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>*/}
                     </div>
-                    <div className="w-full flex flex-col">
-                        <input
-                            type="text"
-                            placeholder="Nombre de empresa"
-                            onChange={event => console.log(event.target.value)}
-                            className="w-full py-3 my-2 px-6 ring-1 ring-gray-300 rounded-xl placeholder-gray-600 bg-transparent transition disabled:ring-gray-200 disabled:bg-gray-100 disabled:placeholder-gray-400 invalid:ring-red-400 focus:invalid:outline-none"/>
+                    <div className="w-full flex gap-3 flex-col">
                         <FormInputText
+                            inputType="text"
+                            placeholder="Nombre de empresa"
+                            onChange={handleBusinessNameChange}
+                        />
+                        <FormInputText
+                            icon={<MdEmail/>}
                             onChange={handleBusinessNameChange}
                             placeholder={"Correo electrónico"}
                             inputType={"text"}
                         />
                         <FormInputText
+                            icon={<MdLock/>}
                             inputType="password"
                             placeholder="************"
                             onChange={handleBusinessNameChange}

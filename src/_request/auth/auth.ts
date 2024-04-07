@@ -12,7 +12,7 @@ export async function login(email: string, password: string): Promise<RequestRes
             password
         });
         if (response.error) {
-            return response;
+            return Promise.reject(response)
         }
         //@ts-ignore
         cookieStore.set(process.env.NEXT_PUBLIC_COOKIE_NAME as string, response.message.token)
@@ -22,12 +22,11 @@ export async function login(email: string, password: string): Promise<RequestRes
             message: response.message
         }
     } catch (error) {
-        console.log(error)
-        return {
+        return Promise.reject({
             error: true,
             //@ts-ignore
             errorDescription: error.message,
             message: null
-        }
+        })
     }
 }
