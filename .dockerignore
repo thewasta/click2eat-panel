@@ -2,3 +2,7 @@ Dockerfile
 node_modules
 .next
 README.md
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
