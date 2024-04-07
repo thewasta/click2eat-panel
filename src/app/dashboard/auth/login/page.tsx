@@ -72,12 +72,14 @@ export default function AuthLogin() {
                         {loginError === null ? null : <p className="text-xs text-red-500 ml-2">{loginError}</p>}
 
                         <FormInputText
+                            name={"username"}
                             icon={<MdEmail/>}
                             inputType={"text"}
                             placeholder={"Nombre de usuario"}
                             onChange={handle}
                         />
                         <FormInputText
+                            name={"password"}
                             icon={<MdLock/>}
                             placeholder={"Contraseña"}
                             inputType={"password"}
