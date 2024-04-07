@@ -35,13 +35,15 @@ export default function AuthRegister() {
                 />
             </MiddleLeftSide>
             <MiddleRightSide>
-                <div className="w-full flex flex-col">
-                    <div className="flex flex-col w-full mb-2">
-                        <h3 className="text-3xl font-semibold mb-3">
-                            Crear cuenta
-                        </h3>
-                        {/*<p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>*/}
-                    </div>
+                <div className="flex flex-col w-full mb-2">
+                    <h3 className="text-3xl font-semibold mb-3 text-[#060606]">
+                        Crear cuenta
+                    </h3>
+                    <p className="text-base text-gray-600 mb-4">
+                        Crea una cuenta para empezar a gestionar tu negocio
+                    </p>
+                </div>
+                <div className="w-full flex flex-col gap-3">
                     <div className="w-full flex gap-3 flex-col">
                         <FormInputText
                             inputType="text"
@@ -57,14 +59,15 @@ export default function AuthRegister() {
                         <FormInputText
                             icon={<MdLock/>}
                             inputType="password"
-                            placeholder="************"
+                            placeholder="Contraseña"
                             onChange={handleBusinessNameChange}
                         />
-                        <FormInputText
-                            inputType="password"
-                            placeholder="************"
-                            onChange={handleBusinessNameChange}
-                        />
+                    </div>
+                    <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" defaultChecked className="checkbox"/>
+                            <span className="label-text">He leído y acepto los términos y condiciones</span>
+                        </label>
                     </div>
                     <div className="flex items-center justify-center">
                         <button

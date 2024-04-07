@@ -84,11 +84,14 @@ export default function AuthLogin() {
                             onChange={handle}
                         />
                     </div>
-                    <div className="form-control">
-                        <label className="label cursor-pointer">
+                    <div className="form-control flex-row items-center justify-between">
+                        <label className="label cursor-pointer justify-start gap-3">
                             <span className="label-text">Recuérdame</span>
                             <input type="checkbox" defaultChecked className="checkbox"/>
                         </label>
+                        <span>
+                            ¿Problemas para iniciar sesión?
+                        </span>
                     </div>
                     <div className="flex items-center justify-center">
                         <button
