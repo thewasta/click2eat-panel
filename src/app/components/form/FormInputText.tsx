@@ -6,11 +6,12 @@ interface FormInputProps {
     placeholder: string;
     inputType: InputType;
     className?: string;
+    name: string;
     icon?: React.ReactNode;
     onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function FormInputText({placeholder, inputType, className, onChange, icon}: FormInputProps) {
+export default function FormInputText({placeholder, inputType, className, name, onChange, icon}: FormInputProps) {
     return (
         <label className="input bg-white input-bordered flex items-center gap-2">
             {icon}
