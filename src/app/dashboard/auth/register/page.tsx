@@ -7,13 +7,37 @@ import FormInputText from "@/app/components/form/FormInputText";
 import Image from "next/image";
 import MiddleRightSide from "@/app/components/auth/middleRigthSide";
 import {MdEmail, MdLock} from "react-icons/md";
+import {register} from "@/_request/auth/auth";
+
+interface FormInputProps {
+    name: string;
+    password: string;
+    email: string;
+}
 
 export default function AuthRegister() {
     const router = useRouter();
-    const [businessName, setBusinessName] = useState<string>('');
-    const handleBusinessNameChange = (childData: any) => {
-        console.log(childData)
-        // setBusinessName(childData);
+    const [formError, setFormError] = useState<string | null>(null);
+    const [formData, setFormData] = useState<FormInputProps>({
+        name: '',
+        password: '',
+        email: ''
+    });
+
+    function handle(e: React.ChangeEvent<HTMLInputElement>) {
+        const newFormData = {...formData};
+        newFormData[e.target.name as keyof FormInputProps] = e.target.value;
+        setFormData(newFormData);
+    }
+
+    const submit = async () => {
+        try {
+            await register('', '', '', '', '');
+            router.push('/dashboard/home');
+        } catch (error) {
+            //@ts-ignore
+            setFormError(error.description);
+        }
     }
     return (
         <>
@@ -45,23 +69,56 @@ export default function AuthRegister() {
                 </div>
                 <div className="w-full flex flex-col gap-3">
                     <div className="w-full flex gap-3 flex-col">
-                        <FormInputText
-                            inputType="text"
-                            placeholder="Nombre de empresa"
-                            onChange={handleBusinessNameChange}
-                        />
-                        <FormInputText
-                            icon={<MdEmail/>}
-                            onChange={handleBusinessNameChange}
-                            placeholder={"Correo electrónico"}
-                            inputType={"text"}
-                        />
-                        <FormInputText
-                            icon={<MdLock/>}
-                            inputType="password"
-                            placeholder="Contraseña"
-                            onChange={handleBusinessNameChange}
-                        />
+                        <div className="flex gap-3">
+                            <FormInputText
+                                name={"name"}
+                                inputType="text"
+                                placeholder="Nombre"
+                                labelClassName="w-1/2"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"lastName"}
+                                inputType="text"
+                                placeholder="Apellido"
+                                labelClassName="w-1/2"
+                                onChange={handle}
+                            />
+                        </div>
+                        <div className="flex justify-evenly">
+                            <FormInputText
+                                name={"businessName"}
+                                inputType="text"
+                                labelClassName="w-1/2"
+                                placeholder="Nombre de empresa"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"email"}
+                                icon={<MdEmail/>}
+                                onChange={handle}
+                                labelClassName="w-1/2"
+                                placeholder={"Correo electrónico"}
+                                inputType={"text"}
+                            />
+                        </div>
+                        <div className="flex justify-evenly">
+                            <FormInputText
+                                name={"password"}
+                                icon={<MdLock/>}
+                                inputType="password"
+                                labelClassName="w-1/2"
+                                placeholder="Contraseña"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"confirmPassword"}
+                                icon={<MdLock/>}
+                                inputType="password"
+                                labelClassName="w-1/2"
+                                placeholder="Confirmar contraseña"
+                                onChange={handle}/>
+                        </div>
                     </div>
                     <div className="form-control">
                         <label className="label cursor-pointer justify-start gap-3">
@@ -72,8 +129,9 @@ export default function AuthRegister() {
                     <div className="flex items-center justify-center">
                         <button
                             className="bg-indigo-600 hover:bg-indigo-500 rounded w-1/2 p-3 text-white font-bold mt-4"
+                            onClick={submit}
                             type="button">
-                            Acceder
+                            Registrarse
                         </button>
                     </div>
                 </div>
