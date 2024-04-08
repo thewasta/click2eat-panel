@@ -6,13 +6,38 @@ import React, {useState} from "react";
 import FormInputText from "@/app/components/form/FormInputText";
 import Image from "next/image";
 import MiddleRightSide from "@/app/components/auth/middleRigthSide";
+import {MdEmail, MdLock} from "react-icons/md";
+import {register} from "@/_request/auth/auth";
+
+interface FormInputProps {
+    name: string;
+    password: string;
+    email: string;
+}
 
 export default function AuthRegister() {
     const router = useRouter();
-    const [businessName, setBusinessName] = useState<string>('');
-    const handleBusinessNameChange = (childData: any) => {
-        console.log(childData)
-        // setBusinessName(childData);
+    const [formError, setFormError] = useState<string | null>(null);
+    const [formData, setFormData] = useState<FormInputProps>({
+        name: '',
+        password: '',
+        email: ''
+    });
+
+    function handle(e: React.ChangeEvent<HTMLInputElement>) {
+        const newFormData = {...formData};
+        newFormData[e.target.name as keyof FormInputProps] = e.target.value;
+        setFormData(newFormData);
+    }
+
+    const submit = async () => {
+        try {
+            await register('', '', '', '', '');
+            router.push('/dashboard/home');
+        } catch (error) {
+            //@ts-ignore
+            setFormError(error.description);
+        }
     }
     return (
         <>
@@ -34,40 +59,79 @@ export default function AuthRegister() {
                 />
             </MiddleLeftSide>
             <MiddleRightSide>
-                <div className="w-full flex flex-col">
-                    <div className="flex flex-col w-full mb-2">
-                        <h3 className="text-3xl font-semibold mb-3">
-                            Crear cuenta
-                        </h3>
-                        {/*<p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>*/}
+                <div className="flex flex-col w-full mb-2">
+                    <h3 className="text-3xl font-semibold mb-3 text-[#060606]">
+                        Crear cuenta
+                    </h3>
+                    <p className="text-base text-gray-600 mb-4">
+                        Crea una cuenta para empezar a gestionar tu negocio
+                    </p>
+                </div>
+                <div className="w-full flex flex-col gap-3">
+                    <div className="w-full flex gap-3 flex-col">
+                        <div className="flex gap-3">
+                            <FormInputText
+                                name={"name"}
+                                inputType="text"
+                                placeholder="Nombre"
+                                labelClassName="w-1/2"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"lastName"}
+                                inputType="text"
+                                placeholder="Apellido"
+                                labelClassName="w-1/2"
+                                onChange={handle}
+                            />
+                        </div>
+                        <div className="flex justify-evenly">
+                            <FormInputText
+                                name={"businessName"}
+                                inputType="text"
+                                labelClassName="w-1/2"
+                                placeholder="Nombre de empresa"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"email"}
+                                icon={<MdEmail/>}
+                                onChange={handle}
+                                labelClassName="w-1/2"
+                                placeholder={"Correo electrónico"}
+                                inputType={"text"}
+                            />
+                        </div>
+                        <div className="flex justify-evenly">
+                            <FormInputText
+                                name={"password"}
+                                icon={<MdLock/>}
+                                inputType="password"
+                                labelClassName="w-1/2"
+                                placeholder="Contraseña"
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"confirmPassword"}
+                                icon={<MdLock/>}
+                                inputType="password"
+                                labelClassName="w-1/2"
+                                placeholder="Confirmar contraseña"
+                                onChange={handle}/>
+                        </div>
                     </div>
-                    <div className="w-full flex flex-col">
-                        <input
-                            type="text"
-                            placeholder="Nombre de empresa"
-                            onChange={event => console.log(event.target.value)}
-                            className="w-full py-3 my-2 px-6 ring-1 ring-gray-300 rounded-xl placeholder-gray-600 bg-transparent transition disabled:ring-gray-200 disabled:bg-gray-100 disabled:placeholder-gray-400 invalid:ring-red-400 focus:invalid:outline-none"/>
-                        <FormInputText
-                            onChange={handleBusinessNameChange}
-                            placeholder={"Correo electrónico"}
-                            inputType={"text"}
-                        />
-                        <FormInputText
-                            inputType="password"
-                            placeholder="************"
-                            onChange={handleBusinessNameChange}
-                        />
-                        <FormInputText
-                            inputType="password"
-                            placeholder="************"
-                            onChange={handleBusinessNameChange}
-                        />
+                    <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" defaultChecked className="checkbox"/>
+                            <span className="label-text">He leído y acepto los términos y condiciones</span>
+                        </label>
                     </div>
                     <div className="flex items-center justify-center">
                         <button
                             className="bg-indigo-600 hover:bg-indigo-500 rounded w-1/2 p-3 text-white font-bold mt-4"
+                            onClick={submit}
                             type="button">
-                            Acceder
+                            Registrarse
                         </button>
                     </div>
                 </div>
