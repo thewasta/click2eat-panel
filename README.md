@@ -39,6 +39,13 @@ docker compose up
 Esto iniciará los contenedores y podremos acceder a la aplicación en `http://localhost:3000`.
 Tener en cuenta que esto usa el archivo `docker-compose.yaml` no confundir con el archivo `docker-compose.pro.yaml`
 
+## Variables de entorno
+Para generar las variables de entorno se requiere lanzar el comando:
+```bash
+npx dotenv-vault@latest pull
+```
+Presionamos la tecla `y` y `Enter` para que se abra una ventana en el navegador y nos autentiquemos con nuestra cuenta.
+Una vez autenticados, se generará un archivo `.env` `env.me` con las variables de entorno necesarias para el proyecto.
 
 # Despliegue
 Antes de subir cambios, asegurarse de que el proyecto funciona correctamente. Para ello, ejecutar el siguiente comando:
