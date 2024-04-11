@@ -6,7 +6,6 @@ describe('Example test', () => {
     it('Should ensure page title', () => {
         const {container} = render(<Page/>)
         const element = container.querySelector('p');
-        expect(element).toBeInTheDocument()
-        expect(2+3).toBe(3);
+        expect(element).toBeInTheDocument();
     })
 })
