@@ -28,9 +28,9 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Setup .env file
+        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
-        env:
-          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
         run: node -r dotenv/config ./node_modules/.bin/next build
       - name: Reload pm2
         run: pm2 reload 0
