@@ -1,4 +1,4 @@
-name: NextJS and NodeJS CI
+name: NextJS CI
 on:
   pull_request:
     branches:
@@ -10,21 +10,37 @@ on:
       - dev
   workflow_dispatch:
 jobs:
-  build:
-    runs-on: [self-hosted, prod]
+  test:
+    runs-on: ubuntu-latest
     environment: pro
     strategy:
       matrix:
-        node-version: [20.12.2]
+        node-version: [ 20.12.2 ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-         clean: false
+          clean: false
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
+  deploy:
+    needs:
+      - test
+    runs-on: [ self-hosted, prod ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.2
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -32,5 +48,4 @@ jobs:
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
         run: node -r dotenv/config ./node_modules/.bin/next build
-      - name: Reload pm2
-        run: pm2 reload 0
+
