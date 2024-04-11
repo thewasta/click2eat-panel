@@ -31,4 +31,6 @@ jobs:
       - name: Build
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
-        run: npm run build --if-present
+        run: node -r dotenv/config ./node_modules/.bin/next build
+      - name: Reload pm2
+        run: pm2 reload 0
