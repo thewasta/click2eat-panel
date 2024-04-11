@@ -10,8 +10,7 @@ on:
       - dev
   workflow_dispatch:
 jobs:
-  notification:
-    name: Send notification
+  notification_start:
     runs-on: ubuntu-latest
     steps:
       - name: Test Success
@@ -22,6 +21,8 @@ jobs:
           details: New PUSH to the repository
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   test:
+    needs:
+      - notification_start
     name: Run tests
     runs-on: ubuntu-latest
     environment: pro
@@ -40,6 +41,32 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test
+  notification_test_result:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Test Success
+        uses: rjstone/discord-webhook-notify@v1
+        if: success()
+        with:
+          severity: info
+          details: Test Succeeded!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: Test Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Test Cancelled
+        uses: rjstone/discord-webhook-notify@v1
+        if: cancelled()
+        with:
+          severity: warn
+          details: Test Cancelled!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_pro:
     name: Deploy to production
     if: github.ref == 'refs/heads/main'
