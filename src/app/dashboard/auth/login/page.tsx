@@ -10,7 +10,7 @@ import FormInputText from "@/app/components/form/FormInputText";
 import {MdEmail, MdLock} from "react-icons/md";
 
 interface FormInputProps {
-    name: string;
+    username: string;
     password: string;
 }
 
@@ -18,7 +18,7 @@ export default function AuthLogin() {
     const [loginError, setLoginError] = useState<string | null>(null)
     const router = useRouter();
     const [formData, setFormData] = useState<FormInputProps>({
-        name: '',
+        username: '',
         password: ''
     });
 
@@ -30,7 +30,7 @@ export default function AuthLogin() {
 
     const submit = async () => {
         try {
-            await login(formData.name, formData.password);
+            await login(formData.username, formData.password);
             router.push('/dashboard/home');
         } catch (error) {
             setLoginError('Something went wrong!');

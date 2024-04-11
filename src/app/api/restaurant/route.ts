@@ -1,11 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 
-interface ExampleParams {
-    params: Record<'node', string>
-}
-
-const GET = async (req: NextRequest, res: NextResponse) => {
-    console.log('NUEVA REQUEST');
+const GET = async (req: NextRequest, _: NextResponse) => {
     const url = new URL(req.url);
     const searchParams = new URLSearchParams(url.searchParams);
     const restaurantNode = searchParams.get('node');
