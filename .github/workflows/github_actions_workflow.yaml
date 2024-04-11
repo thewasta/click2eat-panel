@@ -41,26 +41,12 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test
-      - name: Test Success
-        uses: rjstone/discord-webhook-notify@v1
-        if: success()
-        with:
-          severity: info
-          details: Test Succeeded!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Test Failure
         uses: rjstone/discord-webhook-notify@v1
         if: failure()
         with:
           severity: error
-          details: Test Failed!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Test Cancelled
-        uses: rjstone/discord-webhook-notify@v1
-        if: cancelled()
-        with:
-          severity: warn
-          details: Test Cancelled!
+          details: ¡Han fallando los tests! Se cancela el despliegue
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_pro:
     name: Deploy to production
@@ -85,6 +71,13 @@ jobs:
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
         run: node -r dotenv/config ./node_modules/.bin/next build
+      - name: Deploy Success
+        uses: rjstone/discord-webhook-notify@v1
+        if: success()
+        with:
+          severity: info
+          details: Desplegado producción con éxito!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_dev:
     name: Deploy to development
     if: github.ref == 'refs/heads/dev'
@@ -107,56 +100,10 @@ jobs:
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
         run: node -r dotenv/config ./node_modules/.bin/next build
-  notification_deploy_main:
-    runs-on: ubuntu-latest
-    needs:
-      - deploy_pro
-    steps:
       - name: Deploy Success
         uses: rjstone/discord-webhook-notify@v1
         if: success()
         with:
           severity: info
-          details: Deploy Succeeded!
+          details: Desplegado desarrollo con éxito!
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Deploy Failure
-        uses: rjstone/discord-webhook-notify@v1
-        if: failure()
-        with:
-          severity: error
-          details: Deploy Failed!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Deploy Cancelled
-        uses: rjstone/discord-webhook-notify@v1
-        if: cancelled()
-        with:
-          severity: warn
-          details: Deploy Cancelled!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-  notification_deploy_dev:
-      runs-on: ubuntu-latest
-      needs:
-        - deploy_dev
-      steps:
-        - name: Deploy Success
-          uses: rjstone/discord-webhook-notify@v1
-          if: success()
-          with:
-            severity: info
-            details: Deploy Succeeded!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-        - name: Deploy Failure
-          uses: rjstone/discord-webhook-notify@v1
-          if: failure()
-          with:
-            severity: error
-            details: Deploy Failed!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-        - name: Deploy Cancelled
-          uses: rjstone/discord-webhook-notify@v1
-          if: cancelled()
-          with:
-            severity: warn
-            details: Deploy Cancelled!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-
