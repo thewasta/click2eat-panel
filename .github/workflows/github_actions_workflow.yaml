@@ -11,6 +11,7 @@ on:
   workflow_dispatch:
 jobs:
   test:
+    name: Run tests
     runs-on: ubuntu-latest
     environment: pro
     strategy:
@@ -28,12 +29,35 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test
-  deploy:
+  deploy_pro:
+    name: Deploy to production
     if: github.ref == 'refs/heads/main'
     needs:
       - test
     runs-on: [self-hosted, prod]
     environment: pro
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.12.2
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Setup .env file
+        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+      - name: Build
+        run: node -r dotenv/config ./node_modules/.bin/next build
+  deploy_dev:
+    name: Deploy to development
+    if: github.ref == 'refs/heads/dev'
+    needs:
+      - test
+    runs-on: [self-hosted, dev]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
