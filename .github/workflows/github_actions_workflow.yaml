@@ -31,7 +31,8 @@ jobs:
   deploy:
     needs:
       - test
-    runs-on: [ self-hosted, prod ]
+    runs-on: ${{ github.ref == 'ref/heads/main' && '[self-hosted, prod]' || '[self-hosted, dev]' }}
+    environment: ${{ github.ref == 'ref/heads/main' && 'prod' || 'dev' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
