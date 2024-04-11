@@ -8,10 +8,9 @@ on:
     branches:
       - main
       - develop
-  workflow_dispatch:
 jobs:
   run_test:
-    runs-on: [ self-hosted, dev ]
+    runs-on: [ self-hosted, prod ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -23,12 +22,14 @@ jobs:
       - name: Stop and remove containers
         run: docker compose down -v
   deploy:
-    runs-on: [ self-hosted, dev ]
+    runs-on: [ self-hosted, prod ]
     needs: run_test
     steps:
       - uses: actions/checkout@v3
         with:
           clean: false
       - name: Deploy
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
         run: |
           docker compose -f docker-compose.pro.yaml up -d --build --force-recreate
