@@ -29,10 +29,11 @@ jobs:
       - run: npm ci
       - run: npm run test
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs:
       - test
-    runs-on: ${{ github.ref == 'refs/heads/main' && '[self-hosted, prod]' || '[self-hosted, dev]' }}
-    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+    runs-on: [self-hosted, prod]
+    environment: pro
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
