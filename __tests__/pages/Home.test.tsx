@@ -7,5 +7,6 @@ describe('Example test', () => {
         const {container} = render(<Page/>)
         const element = container.querySelector('p');
         expect(element).toBeInTheDocument()
+        expect(2+3).toBe(3);
     })
 })
