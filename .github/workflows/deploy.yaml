@@ -1,35 +1,38 @@
-name: CI CD
+name: Deploy
 on:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_run:
+    workflows:
+      - Test
+    types:
+      - completed
   pull_request:
     branches:
       - main
-      - develop
+  push:
+    branches:
+      - main
 jobs:
-  run_test:
-    runs-on: [ self-hosted, prod ]
+  build:
+    runs-on: [self-hosted, prod]
+    environment: pro
+    strategy:
+      matrix:
+        node-version: [20.12.2]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
-          clean: false
-      - name: Build and test
-        run: |
-          docker compose up -d --build --force-recreate
-          docker compose run app npm test
-      - name: Stop and remove containers
-        run: docker compose down -v
-  deploy:
-    runs-on: [ self-hosted, prod ]
-    needs: run_test
-    steps:
-      - uses: actions/checkout@v3
+         clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          clean: false
-      - name: Deploy
-        env:
-          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
-        run: |
-          docker compose -f docker-compose.pro.yaml up -d --build --force-recreate
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Setup .env file
+        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+      - name: Build
+        run: node ./node_modules/.bin/next build
+      - name: Reload pm2
+        run: pm2 reload 0
