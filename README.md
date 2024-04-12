@@ -2,16 +2,34 @@ Esto es un proyecto para gestionar tu comercio de manera sencilla y eficiente.
 
 # Instalación
 
-Podemos utilizar en **local** o instalar **docker** y hacer uso de los contenedores.
-
-### Local
+## Local
 
 Una vez descargado el proyecto, nos cambiamos a la rama `main` y debemos instalar las dependencias con el siguiente comando:
 ```bash
 npm install
 ```
-También debemos de actualizar nuestras variables de entorno del archivo `.env.local` con las variables de entorno que se encuentran en el archivo `.env.local`.
-Asegurarse de que las variables de entorno sean correctas.
+
+### Variables de entorno
+Para generar las variables de entorno se requiere lanzar el comando:
+```bash
+npx dotenv-vault@latest login
+```
+En la consola nos aparecerá un **LINK** al que debemos acceder e iniciar sesión, seguiremos los pasos que nos
+mostrará en la web.
+
+> _En el caso de no tener acceso al proyecto, se debe de solicitar al administrador del proyecto._
+
+Seguimos los pasos, en nuestro local deberíamos ver nuevos archivos `.env` y `.env.me` en la raíz del proyecto. En el caso
+de no verlos, intentar lanzar el comando 
+```shell
+npx dotenv-vaul@latest pull development
+```
+Si lanzando ese comando vemos cambios en el archivo `.env.vault`, no preocuparse, ya que podría ser que se hicieron
+cambios en las variables de entorno desde la web y esos cambios no se reflejaron en el repositorio. 
+
+**Debemos hacer un commit específico solo para esto.**
+
+### Iniciar el proyecto
 
 Y a continuación, ejecutamos el siguiente comando para iniciar el proyecto:
 ```bash
@@ -29,30 +47,12 @@ En la terminal veremos un mensaje similar a este:
 
 Podremos acceder a la aplicación en `http://localhost:3000`.
 
-### Docker
+# Subir cambio al repositorio
 
-Para instalar el proyecto con docker, debemos tener instalado docker en nuestro sistema. Una vez instalado, ejecutamos el siguiente comando:
-```bash
-docker compose up
-```
-
-Esto iniciará los contenedores y podremos acceder a la aplicación en `http://localhost:3000`.
-Tener en cuenta que esto usa el archivo `docker-compose.yaml` no confundir con el archivo `docker-compose.pro.yaml`
-
-## Variables de entorno
-Para generar las variables de entorno se requiere lanzar el comando:
-```bash
-npx dotenv-vault@latest pull
-```
-Presionamos la tecla `y` y `Enter` para que se abra una ventana en el navegador y nos autentiquemos con nuestra cuenta.
-Una vez autenticados, se generará un archivo `.env` `env.me` con las variables de entorno necesarias para el proyecto.
-
-# Despliegue
 Antes de subir cambios, asegurarse de que el proyecto funciona correctamente. Para ello, ejecutar el siguiente comando:
 ```bash
 npm run build
 ```
-
 Esto compilará el proyecto y generará una carpeta llamada `.next` en la raíz del proyecto. Luego debemos de iniciar la aplicación
 con el siguiente comando:
 ```bash
