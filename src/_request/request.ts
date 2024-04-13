@@ -10,7 +10,7 @@ export interface RequestResponse {
     message: [] | {} | null
 }
 
-export async function request(endpoint: string, method: Request_Type, body: {}): Promise<RequestResponse> {
+export async function request(endpoint: string, method: Request_Type, body?: {}): Promise<RequestResponse> {
     try {
         const response = await fetch(`${process.env.API_BASE_URL}${endpoint}` as string, {
             credentials: 'include',
@@ -18,7 +18,7 @@ export async function request(endpoint: string, method: Request_Type, body: {}):
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body),
+            ...(method !== 'GET' && {body: JSON.stringify(body)})
         });
 
         if (response.status === 403) {
