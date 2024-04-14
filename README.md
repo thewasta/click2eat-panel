@@ -29,36 +29,45 @@ cambios en las variables de entorno desde la web y esos cambios no se reflejaron
 
 **Debemos hacer un commit específico solo para esto.**
 
-### Iniciar el proyecto
+### Configuración SSL en localhost
+> _Requerido para el uso de las notificaciones push._
 
-Y a continuación, ejecutamos el siguiente comando para iniciar el proyecto:
+Debemos de tener instalado mkcert en nuestro pc, para ello, podemos seguir la [documentación oficial](https://github.com/FiloSottile/mkcert)
+lo más recomendado es utilizar `choco` para instalarlo en Windows y `brew` en MacOS.
+
+Una vez instalado, verificamos que se haya instalado correctamente con el siguiente comando:
 ```bash
-npm run dev
+mkcert
 ```
-En la terminal veremos un mensaje similar a este:
+Nos debería de mostrar un mensaje similar a este:
 ```text
-> restauranteqr-frontend@0.1.1 dev
-> next dev
+Usage of mkcert:
 
-   ▲ Next.js 14.1.1
-   - Local:        http://localhost:3000
-   - Environments: .env.local, .env
+	$ mkcert -install
+	Install the local CA in the system trust store.
+	
+	...
 ```
 
-Podremos acceder a la aplicación en `http://localhost:3000`.
-
-# Subir cambio al repositorio
-
-Antes de subir cambios, asegurarse de que el proyecto funciona correctamente. Para ello, ejecutar el siguiente comando:
+Luego debemos de instalar el certificado en nuestro pc, para ello, debemos de ejecutar
+**con permisos de administrador** el siguiente comando:
 ```bash
-npm run build
+mkcert -install
 ```
-Esto compilará el proyecto y generará una carpeta llamada `.next` en la raíz del proyecto. Luego debemos de iniciar la aplicación
-con el siguiente comando:
+Reiniciamos el navegador (cerramos y volvemos a abrir) y podremos generar el certificado para nuestro proyecto
 ```bash
-npm run start
+mkcert click2eat.localhost
 ```
-Nos iniciará la aplicación el puerto `3000` y podremos acceder a ella en `http://localhost:3000`.
-Y debemos de hacer las pruebas de funcionalidad y de diseño para asegurarnos de que todo funciona correctamente.
-Ya que cuando se está en desarrollo, _next_ no compila los archivos de la misma manera que cuando se hace un `build` o el uso de la cache
-lo hace distinto y puede ocasionar errores no esperados.
+Esto generará dos archivos con la extensión `.pem`, estos archivos debemos de moverlos a la carpeta `docker/nginx/certs`.
+Debemos de asegurarnos que los archivos se llaman `click2eat.localhost.pem` y `click2eat.localhost-key.pem`.
+
+### Iniciar el proyecto
+Para el inicio, debemos de ejecutar el comando
+```shell
+docker compose up -d --force-recreate
+```
+Verificamos que los contenedores se hayan iniciado correctamente con el comando
+```shell
+docker ps
+```
+Cuando estén ambos contenedores corriendo, podemos acceder a la aplicación en https://click2eat.localhost
