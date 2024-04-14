@@ -78,6 +78,13 @@ jobs:
           severity: info
           details: Desplegado producción con éxito!
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Deploy failed
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: Ha fallado el despliegue a producción
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_dev:
     name: Deploy to development
     if: github.ref == 'refs/heads/dev'
@@ -107,4 +114,11 @@ jobs:
         with:
           severity: info
           details: Desplegado desarrollo con éxito!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Deploy failed
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: Ha fallado el despliegue a desarrollo
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
