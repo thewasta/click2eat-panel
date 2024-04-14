@@ -10,7 +10,7 @@ FROM node:20-alpine AS builder
 ENV NEXT_PRIVATE_STANDALONE true
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY ../.. .
 RUN npm run build
 
 # Production image, copy all the files and run next
