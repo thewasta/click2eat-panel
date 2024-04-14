@@ -84,6 +84,7 @@ jobs:
     needs:
       - test
     runs-on: [self-hosted, dev]
+    environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
