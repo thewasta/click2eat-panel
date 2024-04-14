@@ -1,4 +1,4 @@
-Dockerfile
+docker
 node_modules
 .next
 README.md

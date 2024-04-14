@@ -2,7 +2,7 @@ version: '3.4'
 services:
   app:
     build:
-      dockerfile: Dockerfile
+      dockerfile: docker/app/app.dockerfile
       context: .
       target: runner
     container_name: prod-nextjs-restaurant

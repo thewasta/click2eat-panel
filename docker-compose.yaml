@@ -1,26 +1,39 @@
-version: '3.4'
+version: '3.8'
 services:
-  mock:
-    image: local-mockserver:dev
-    build:
-      dockerfile: mock.dockerfile
-    volumes:
-      - mockserver:/root/.castlemock:cached
+#  mock:
+#    image: local-mockserver:dev
+#    build:
+#      dockerfile: mock.dockerfile
+#    volumes:
+#      - mockserver:/root/.castlemock:cached
+#    ports:
+#      - "9001:8080"
+  nginx:
+    image: nginx
     ports:
-      - "9001:8080"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/certs/:/etc/nginx/certs
+      - ./docker/nginx/conf/:/etc/nginx/conf.d/:ro
+    depends_on:
+      - app
   app:
+    container_name: dev-nextjs-restaurant
+    image: local-nextjs-restaurant:dev
     build:
-      dockerfile: Dockerfile
+      dockerfile: docker/app/app.dockerfile
       context: .
       target: builder
-    container_name: dev-nextjs-restaurant
     ports:
-      - '3000:3000'
+      - '3000'
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
     command: npm run dev
     volumes:
-      - .:/restaurant
+      - .:/app
+      - /app/node_modules
+      - /app/.next
 volumes:
   mockserver:
