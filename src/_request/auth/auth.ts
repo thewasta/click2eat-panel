@@ -2,12 +2,16 @@
 
 import {request, RequestResponse} from "@/_request/request";
 import {cookies} from "next/headers";
-// import {uuid4} from "@sentry/utils";
+import * as jose from 'jose';
+
+const base64Secret = process.env.JWT_SECRET as string;
+const secret = Buffer.from(base64Secret, 'base64');
 
 export async function login(email: string, password: string): Promise<RequestResponse> {
     try {
         const ENDPOINT = 'auth/login';
         const cookieStore = cookies();
+        const tokenExpiration = new Date(0);
         const response = await request(ENDPOINT, 'POST', {
             username: email,
             password
@@ -16,7 +20,19 @@ export async function login(email: string, password: string): Promise<RequestRes
             return Promise.reject(response)
         }
         //@ts-ignore
-        cookieStore.set(process.env.NEXT_PUBLIC_COOKIE_NAME as string, response.message.token)
+        const decode = await jose.jwtVerify(response.message?.token, secret);
+        if (decode && decode.payload && decode.payload.exp) {
+            tokenExpiration.setUTCSeconds(decode.payload.exp);
+            //@ts-ignore
+            cookieStore.set(process.env.NEXT_PUBLIC_COOKIE_NAME, response.message.token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                expires: tokenExpiration,
+                path: '/'
+            });
+        }
+
         return {
             error: false,
             errorDescription: null,
