@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   content: [
@@ -8,7 +7,17 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    //https://colors.muz.li/palette/41584f/2d3e37/414e58/455841/313e2d
     extend: {
+      colors: {
+        background: '#fff',
+        primary: '#5d7e62',
+        secondary: '#415849',
+        foreground: '#495841',
+        neutral: '#697e5d',
+        colorText: '#5d757e',
+        secondaryColorText: '#4B5563',
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -16,8 +25,8 @@ const config: Config = {
       },
     },
   },
-    plugins: [
-        require('daisyui')
-    ],
+  plugins: [
+    require('daisyui')
+  ],
 };
 export default config;
