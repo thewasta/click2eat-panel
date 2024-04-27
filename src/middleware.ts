@@ -21,6 +21,15 @@ export async function middleware(req: NextRequest) {
 
     const url = req.nextUrl.clone();
 
+    if (req.nextUrl.pathname === '/') {
+        if (isAuthenticated) {
+            url.pathname = '/dashboard/home';
+            return NextResponse.redirect(url);
+        } else {
+            url.pathname = '/dashboard/auth/login';
+            return NextResponse.redirect(url);
+        }
+    }
     // Protegemos rutas que comienzan con '/dashboard/'
     if (req.nextUrl.pathname.startsWith('/dashboard') && !req.nextUrl.pathname.startsWith('/dashboard/auth')) {
         if (!isAuthenticated) {
@@ -39,6 +48,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
+        '/',
         '/dashboard/:path*',
         '/api/:path*',
         '/auth/:path*'

@@ -3,6 +3,8 @@
 import {request, RequestResponse} from "@/_request/request";
 import {cookies} from "next/headers";
 import * as jose from 'jose';
+import {RegisterBusinessData} from "@/app/components/auth/RegisterBusiness";
+import {RegisterOwnerData} from "@/app/components/auth/RegisterOwner";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
@@ -48,18 +50,25 @@ export async function login(email: string, password: string): Promise<RequestRes
     }
 }
 
-export async function register(email: string, ownerLastname: string, ownerName: string, ownerUsername: string, ownerPassword: string): Promise<RequestResponse> {
+export async function register(
+    business: RegisterBusinessData,
+    owner: RegisterOwnerData,
+    fcmToken: string): Promise<RequestResponse> {
     try {
         const ENDPOINT = 'auth/register';
-        // const uuid = uuid4();
+        const {businessUuid} = await registerBusiness(business);
         const response = await request(ENDPOINT, 'POST', {
-            "email": email,
-            "lastname": ownerLastname,
-            "name": ownerName,
-            "username": ownerUsername,
-            "password": ownerPassword,
-            "businessUuid": "uuid"
-        })
+            "email": owner.email,
+            "lastname": owner.lastName,
+            "name": owner.name,
+            "username": owner.username,
+            "password": owner.password,
+            "fcmToken": fcmToken,
+            "businessUuid": businessUuid
+        });
+        if (response.error) {
+            return Promise.reject(response)
+        }
         return {
             error: false,
             errorDescription: null,
@@ -72,5 +81,19 @@ export async function register(email: string, ownerLastname: string, ownerName: 
             errorDescription: error.description,
             message: null
         })
+    }
+}
+
+const registerBusiness = async (business: RegisterBusinessData): Promise<any> => {
+    const ENDPOINT = 'auth/business';
+    try {
+        const response = await request(ENDPOINT, 'POST', business);
+        return response.message;
+    } catch (e) {
+        return Promise.reject({
+            error: true,
+            //@ts-ignore
+            errorDescription: e.message,
+        });
     }
 }

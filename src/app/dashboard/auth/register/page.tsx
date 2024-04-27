@@ -1,44 +1,95 @@
 'use client'
-import {useRouter} from "next/navigation";
-import MiddleLeftSide from "@/app/components/auth/middleLeftSide";
-import Link from "next/link";
-import React, {useState} from "react";
-import FormInputText from "@/app/components/form/FormInputText";
 import Image from "next/image";
+import MiddleLeftSide from "@/app/components/auth/middleLeftSide";
+import React, {useCallback, useState} from "react";
 import MiddleRightSide from "@/app/components/auth/middleRigthSide";
-import {MdEmail, MdLock} from "react-icons/md";
+import RegisterBusiness, {RegisterBusinessData} from "@/app/components/auth/RegisterBusiness";
+import RegisterOwner, {RegisterOwnerData} from "@/app/components/auth/RegisterOwner";
+import Link from "next/link";
 import {register} from "@/_request/auth/auth";
+import * as localforage from "localforage";
 
-interface FormInputProps {
-    name: string;
-    password: string;
-    email: string;
-}
-
-export default function AuthRegister() {
-    const router = useRouter();
-    const [formError, setFormError] = useState<string | null>(null);
-    const [formData, setFormData] = useState<FormInputProps>({
+export default function RegisterPage() {
+    const [data, setData] = useState<RegisterOwnerData | RegisterBusinessData>({
         name: '',
+        lastName: '',
+        username: '',
+        email: '',
         password: '',
-        email: ''
+        confirmPassword: '',
     });
 
-    function handle(e: React.ChangeEvent<HTMLInputElement>) {
-        const newFormData = {...formData};
-        newFormData[e.target.name as keyof FormInputProps] = e.target.value;
-        setFormData(newFormData);
-    }
+    const [formHasError, setFormHasError] = useState<boolean>(false);
 
-    const submit = async () => {
-        try {
-            await register('', '', '', '', '');
-            router.push('/dashboard/home');
-        } catch (error) {
-            //@ts-ignore
-            setFormError(error.description);
+    const [formMessageError, setFormMessageError] =
+        useState<string>('* Por favor, rellena todos los campos del formulario')
+    const useCall = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = event.target;
+        setData({
+            ...data,
+            [name]: value
+        });
+    }, [data]);
+
+    const validateForm = () => {
+        const ownerData = data as RegisterOwnerData;
+        const businessData = data as RegisterBusinessData;
+
+        if (ownerData.password !== ownerData.confirmPassword) {
+            setFormMessageError('* Las contraseñas no coinciden');
+            return true;
         }
-    }
+        if (ownerData.password.length < 8) {
+            setFormMessageError('* La contraseña debe tener al menos 8 caracteres');
+            return true;
+        }
+
+        return !businessData.businessName || !businessData.document || !businessData.address ||
+            !businessData.postalCode || !businessData.province || !businessData.town || !businessData.country ||
+            !ownerData.name || !ownerData.lastName || !ownerData.username || !ownerData.email || !ownerData.password ||
+            !ownerData.confirmPassword;
+
+    };
+    const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (validateForm()) {
+            setFormHasError(true);
+            return;
+        }
+        setFormHasError(false);
+        const fcmToken = await localforage.getItem('fcmToken');
+        const ownerData = data as RegisterOwnerData;
+        const businessData = data as RegisterBusinessData;
+        const owner: RegisterOwnerData = {
+            name: ownerData.name,
+            lastName: ownerData.lastName,
+            username: ownerData.username,
+            email: ownerData.email,
+            password: ownerData.password,
+            confirmPassword: ownerData.confirmPassword
+        }
+        const business: RegisterBusinessData = {
+            businessName: businessData.businessName,
+            document: businessData.document,
+            address: businessData.address,
+            postalCode: businessData.postalCode,
+            province: businessData.province,
+            town: businessData.town,
+            country: businessData.country
+        }
+        try {
+            await register(business, owner, fcmToken as string);
+        } catch (e) {
+            console.log(e);
+            setFormHasError(true);
+        }
+    };
+
+    const [activeTab, setActiveTab] = useState<number>(0);
+    const formElements = [
+        <RegisterBusiness key={1} data={data as RegisterBusinessData} handleChange={useCall}/>,
+        <RegisterOwner key={2} data={data as RegisterOwnerData} handleChange={useCall}/>
+    ];
     return (
         <>
             <MiddleLeftSide>
@@ -58,7 +109,7 @@ export default function AuthRegister() {
                     className="w-full h-full object-cover"
                 />
             </MiddleLeftSide>
-            <MiddleRightSide>
+            <MiddleRightSide customClass="justify-center">
                 <div className="flex flex-col w-full mb-2">
                     <h3 className="text-3xl font-semibold mb-3 text-[#060606]">
                         Crear cuenta
@@ -67,79 +118,47 @@ export default function AuthRegister() {
                         Crea una cuenta para empezar a gestionar tu negocio
                     </p>
                 </div>
-                <div className="w-full flex flex-col gap-3">
-                    <div className="w-full flex gap-3 flex-col">
-                        <div className="flex gap-3">
-                            <FormInputText
-                                name={"name"}
-                                inputType="text"
-                                placeholder="Nombre"
-                                labelClassName="w-1/2"
-                                onChange={handle}
-                            />
-                            <FormInputText
-                                name={"lastName"}
-                                inputType="text"
-                                placeholder="Apellido"
-                                labelClassName="w-1/2"
-                                onChange={handle}
-                            />
-                        </div>
-                        <div className="flex justify-evenly">
-                            <FormInputText
-                                name={"businessName"}
-                                inputType="text"
-                                labelClassName="w-1/2"
-                                placeholder="Nombre de empresa"
-                                onChange={handle}
-                            />
-                            <FormInputText
-                                name={"email"}
-                                icon={<MdEmail/>}
-                                onChange={handle}
-                                labelClassName="w-1/2"
-                                placeholder={"Correo electrónico"}
-                                inputType={"text"}
-                            />
-                        </div>
-                        <div className="flex justify-evenly">
-                            <FormInputText
-                                name={"password"}
-                                icon={<MdLock/>}
-                                inputType="password"
-                                labelClassName="w-1/2"
-                                placeholder="Contraseña"
-                                onChange={handle}
-                            />
-                            <FormInputText
-                                name={"confirmPassword"}
-                                icon={<MdLock/>}
-                                inputType="password"
-                                labelClassName="w-1/2"
-                                placeholder="Confirmar contraseña"
-                                onChange={handle}/>
+                <form className="w-full flex flex-col gap-3 items-start" onSubmit={handleSubmitForm}>
+                    <div className="form-control w-full">
+                        {
+                            formElements[activeTab]
+                        }
+                    </div>
+                    <div className='w-full flex justify-center'>
+                        <div className="join">
+                            <button
+                                disabled={activeTab === 0}
+                                onClick={() => setActiveTab(prevState => prevState - 1)}
+                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
+                                Atrás
+                            </button>
+                            <button
+                                disabled={activeTab === formElements.length - 1}
+                                onClick={() => setActiveTab(prevState => prevState + 1)}
+                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
+                                Siguiente
+                            </button>
+                            {
+                                activeTab === formElements.length - 1 ?
+                                    <button
+                                        className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'
+                                        type={"submit"}>Registrarse</button> :
+                                    null
+                            }
                         </div>
                     </div>
-                    <div className="form-control">
-                        <label className="label cursor-pointer justify-start gap-3">
-                            <input type="checkbox" defaultChecked className="checkbox"/>
-                            <span className="label-text">He leído y acepto los términos y condiciones</span>
-                        </label>
+                </form>
+                {
+                    formHasError &&
+                    <div className="mt-4">
+                        <p className="text-red-400 text-xs">{formMessageError}</p>
                     </div>
-                    <div className="flex items-center justify-center">
-                        <button
-                            className="bg-indigo-600 hover:bg-indigo-500 rounded w-1/2 p-3 text-white font-bold mt-4"
-                            onClick={submit}
-                            type="button">
-                            Registrarse
-                        </button>
-                    </div>
-                </div>
-                <div className="w-full flex items-center justify-center">
+                }
+                <div className="w-full flex items-center justify-center mt-4">
                     <p className="text-sm font-normal text-[#060606]">¿Ya tienes cuenta?
                         <Link href="/dashboard/auth/login"
                               className="ml-1 font-semibold underline underline-offset-2 cursor-pointer">
-                            Inicia sesión
+                            Incia sesión
                         </Link>
                     </p>
                 </div>

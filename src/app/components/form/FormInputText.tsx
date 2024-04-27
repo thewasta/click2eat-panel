@@ -3,21 +3,25 @@ import React from "react";
 type InputType = "text" | "password" | "email";
 
 interface FormInputProps {
+    required?: boolean;
     placeholder: string;
     inputType: InputType;
     inputClassName?: string;
     labelClassName?: string;
     name: string;
+    value?: string;
     icon?: React.ReactNode;
     onChange: (value: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function FormInputText({
+                                          required,
                                           placeholder,
                                           inputType,
                                           inputClassName,
                                           labelClassName,
                                           name,
+                                          value,
                                           onChange,
                                           icon,
                                       }: FormInputProps) {
@@ -28,7 +32,7 @@ export default function FormInputText({
         return (
             <label className={customLabelClassName}>
                 {icon}
-                <input type={inputType} className='grow' name={name} placeholder={placeholder} onChange={onChange}/>
+                <input required={required} type={inputType} className='grow' name={name} value={value} placeholder={placeholder} onChange={onChange}/>
             </label>
         )
     }
@@ -36,8 +40,7 @@ export default function FormInputText({
     customInputClassName = `grow ${inputClassName}`;
     return (
         <label className={customLabelClassName}>
-            {name}
-            <input type="text" className={customInputClassName} placeholder={placeholder}/>
+            <input required={required} type="text" name={name} className={customInputClassName} value={value} placeholder={placeholder} onChange={onChange}/>
         </label>
     )
 }
