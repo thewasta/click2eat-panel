@@ -15,8 +15,8 @@ const config: Config = {
         secondary: '#415849',
         foreground: '#495841',
         neutral: '#697e5d',
-        colorText: '#5d757e',
-        secondaryColorText: '#4B5563',
+        secondaryColorText: '#5d757e',
+        colorText: '#4B5563',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

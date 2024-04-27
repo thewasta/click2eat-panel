@@ -56,13 +56,13 @@ export default function AuthLogin() {
                 />
             </MiddleLeftSide>
             {/*bg-[#E0E0E0]*/}
-            <MiddleRightSide>
-                <h1 className="text-xl font-semibold text-[#060606]">
-                    [Nombre Empresa]
+            <MiddleRightSide customClass="justify-center flex gap-5">
+                <h1 className="text-xl font-semibold text-colorText">
+                    Click2Eat
                 </h1>
-                <div className="w-full flex flex-col">
+                <div className="w-full flex flex-col gap-4">
                     <div className="flex flex-col w-full mb-2">
-                        <h3 className="text-3xl font-semibold mb-3 text-black">
+                        <h3 className="text-3xl font-semibold mb-3 text-colorText">
                             Iniciar Sesión
                         </h3>
                         <p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>
@@ -86,11 +86,7 @@ export default function AuthLogin() {
                             onChange={handle}
                         />
                     </div>
-                    <div className="form-control flex-row items-center justify-between">
-                        <label className="label cursor-pointer justify-start gap-3">
-                            <span className="label-text">Recuérdame</span>
-                            <input type="checkbox" defaultChecked className="checkbox"/>
-                        </label>
+                    <div className="form-control flex-row items-center justify-between text-secondaryColorText">
                         <span>
                             ¿Problemas para iniciar sesión?
                         </span>
@@ -98,7 +94,7 @@ export default function AuthLogin() {
                     <div className="flex items-center justify-center">
                         <button
                             onClick={submit}
-                            className="bg-indigo-600 hover:bg-indigo-500 rounded w-1/2 p-3 text-white font-bold mt-4"
+                            className="btn text-white border-0 join-item bg-primary hover:bg-secondary"
                             type="button">
                             Acceder
                         </button>
