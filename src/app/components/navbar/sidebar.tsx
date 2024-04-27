@@ -9,17 +9,54 @@ import {HiDocumentReport} from "react-icons/hi";
 import {LuCopyright} from "react-icons/lu";
 import {useState} from "react";
 import {RiCloseLine, RiMenu3Fill} from "react-icons/ri";
+import {usePathname} from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
+const menuItems = [
+    {
+        name: 'Panel',
+        icon: <MdDashboard className="h-6"/>,
+        path: '/dashboard/home',
+    },
+    {
+        name: 'Menú',
+        icon: <BiSolidFoodMenu className="h-6"/>,
+        path: '/dashboard/home/menu',
+    },
+    {
+        name: 'Pedidos',
+        icon: <FaBowlFood className="h-6"/>,
+        path: '/dashboard/home/orders',
+    },
+    {
+        name: 'Reservas',
+        icon: <FaCalendarDay className="h-6"/>,
+        path: '/dashboard/home/reservations',
+    },
+    {
+        name: 'Personal',
+        icon: <IoPersonSharp className="h-6"/>,
+        path: '/dashboard/home/personal',
+    },
+    {
+        name: 'Informes',
+        icon: <HiDocumentReport className="h-6"/>,
+        path: '/dashboard/home/reports',
+    },
+];
+const activeClassname = 'text-red-400';
 export default function SidebarComponent() {
     const [activeSidebar, setActiveSidebar] = useState<boolean>(false)
 
+    const pathname = usePathname();
     return (
         <>
             <aside
                 className={`${activeSidebar ? '-left-0' : '-left-full'} transition-all ease-in col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between bg-white border-r border-gray-300 p-4`}>
                 <div>
                     <div className="pl-5 mb-3 flex items-center 2xl:justify-start justify-center gap-3">
-                        <img src="https://placehold.co/50x50" alt=""/>
+                        <Image src="https://placehold.co/50x50" width={50} height={50} alt={'Business Name'}/>
                         <h1 className="uppercase font-bold hidden xl:block tracking-[4px]">
                             TU LOGO
                         </h1>
@@ -30,42 +67,18 @@ export default function SidebarComponent() {
                                 Menú principal
                             </h3>
                             <ul>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <MdDashboard className="h-6"/>
-                                        Panel
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <BiSolidFoodMenu className="h-6"/>
-                                        Menú
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <FaBowlFood className="h-6"/>
-                                        Pedidos
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <FaCalendarDay className="h-6"/>
-                                        Reservas
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <IoPersonSharp className="h-6"/>
-                                        Personal
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-500 p-4 flex items-center justify-center gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold">
-                                        <HiDocumentReport className="h-6"/>
-                                        Informes
-                                    </a>
-                                </li>
+                                {
+                                    menuItems.map((item, index) => (
+                                        <li key={index}>
+                                            <Link
+                                                href={item.path}
+                                                className={`text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}>
+                                                {item.icon}
+                                                {item.name}
+                                            </Link>
+                                        </li>
+                                    ))
+                                }
                             </ul>
                         </nav>
                     </div>
