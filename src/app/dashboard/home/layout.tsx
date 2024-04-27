@@ -42,7 +42,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     </nav>
                 </header>
                 {/*Dashboard content*/}
-                <div className="grid grid-cols-3 p-12 pr-0 gap-2 bg-gray-100">
+                <div className="grid grid-cols-3 p-12 gap-2 bg-gray-100">
                     {children}
                 </div>
             </div>
