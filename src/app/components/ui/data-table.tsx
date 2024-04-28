@@ -94,19 +94,21 @@ export function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, 
                 }
                 </tbody>
             </table>
-            <div className={"join"}>
-                <button
-                    className={"btn join-item"}
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >Atrás
-                </button>
-                <button
-                    className={"btn join-item"}
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >Siguiente
-                </button>
+            <div className={"w-full flex justify-end mt-4"}>
+                <div className={"join"}>
+                    <button
+                        className={"btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary"}
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >Atrás
+                    </button>
+                    <button
+                        className={"btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary"}
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >Siguiente
+                    </button>
+                </div>
             </div>
         </div>
     )

@@ -15,7 +15,17 @@ export type Product = {
 export const columns: ColumnDef<Product>[] = [
     {
         accessorKey: 'id',
-        header: 'ID',
+        header: ({ column }) => {
+            return (
+                <button
+                    className={"flex items-center gap-1"}
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    <span>ID</span>
+                    <FaSort />
+                </button>
+            )
+        },
     },
     {
         id: 'name',
@@ -27,10 +37,10 @@ export const columns: ColumnDef<Product>[] = [
         header: ({ column }) => {
             return (
                 <button
-                    className={"flex"}
+                    className={"flex items-center gap-1"}
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Email
+                    <span>Precio</span>
                     <FaSort />
                 </button>
             )
