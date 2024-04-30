@@ -43,7 +43,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         value={data.name || ''}
                         inputType="text"
                         placeholder="Nombre"
-                        labelClassName="w-1/2"
+                        labelClassName="w-full xl:w-1/2"
                         onChange={handleChange}
                     />
                     <FormInputText
@@ -53,7 +53,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         value={data.lastName || ''}
                         inputType="text"
                         placeholder="Apellido"
-                        labelClassName="w-1/2"
+                        labelClassName="w-full xl:w-1/2"
                         onChange={handleChange}
                     />
                 </div>
@@ -65,7 +65,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         inputType={"text"}
                         name={"username"}
                         value={data.username || ''}
-                        labelClassName={"w-1/2"}
+                        labelClassName={"w-full xl:w-1/2"}
                         onChange={handleChange}
                     />
                     <FormInputText
@@ -74,7 +74,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         value={data.email || ''}
                         icon={<MdEmail/>}
                         onChange={handleChange}
-                        labelClassName="w-1/2"
+                        labelClassName="w-full xl:w-1/2"
                         placeholder={"Correo electrónico"}
                         inputType={"text"}
                     />
@@ -86,7 +86,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         value={data.password || ''}
                         icon={<MdLock/>}
                         inputType="password"
-                        labelClassName={`w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
+                        labelClassName={`w-full xl:w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
                         placeholder="Contraseña"
                         onChange={handleChange}
                     />
@@ -96,7 +96,7 @@ const RegisterOwnerForm = (props: RegisterOwnerProps) => {
                         value={data.confirmPassword || ''}
                         icon={<MdLock/>}
                         inputType="password"
-                        labelClassName={`w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
+                        labelClassName={`w-full xl:w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
                         placeholder="Confirmar contraseña"
                         onChange={handleChange}/>
                 </div>
