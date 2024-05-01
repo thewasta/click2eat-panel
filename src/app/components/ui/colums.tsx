@@ -3,6 +3,7 @@
 import {ColumnDef} from "@tanstack/react-table";
 import {FaSort} from "react-icons/fa";
 import {revalidateContent} from "@/_request/revalidateContent";
+import Image from "next/image";
 
 export type Product = {
     id: string,
@@ -26,6 +27,26 @@ export const columns: ColumnDef<Product>[] = [
                 </button>
             )
         },
+    },
+    {
+        accessorKey: 'image',
+        cell: (cell) => {
+            const imageFilePath = cell.getValue();
+            return (
+                <div className="flex items-center gap-3">
+                    <div className="avatar">
+                        <div className="mask mask-squircle w-12 h-12">
+                            <Image src={`https://api-dev.click2eat.es/${imageFilePath}`} alt={"image product"}
+                                   width={25} height={25}/>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="font-bold">Hart Hagerty</div>
+                        <div className="text-sm opacity-50">United States</div>
+                    </div>
+                </div>
+            );
+        }
     },
     {
         id: 'name',
@@ -64,7 +85,8 @@ export const columns: ColumnDef<Product>[] = [
                 <div className="dropdown dropdown-left dropdown-end md:dropdown-bottom">
                     <div tabIndex={0} role="button" className={"p-3"}>...</div>
                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-background rounded-box w-52">
-                        <li className={"text-black"} onClick={() => revalidateContent('/dashboard/home/menu')}><a>Editar</a></li>
+                        <li className={"text-black"} onClick={() => revalidateContent('/dashboard/home/menu')}>
+                            <a>Editar</a></li>
                         <li className={"text-black"}><a>Eliminar</a></li>
                     </ul>
                 </div>

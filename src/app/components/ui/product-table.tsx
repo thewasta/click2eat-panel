@@ -13,7 +13,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
 }
 
-export function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
+export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
@@ -32,12 +32,13 @@ export function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, 
     });
 
     return (
-        <div>
-            <div className="flex items-center py-4">
+        <>
+            <div className="flex items-center py-4 join">
                 <FormInputText
                     name={"filter"}
                     inputType={"text"}
                     placeholder="Nombre producto..."
+                    labelClassName={'join item'}
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("name")?.setFilterValue(event.target.value)
@@ -110,6 +111,6 @@ export function DataTable<TData, TValue>({columns, data}: DataTableProps<TData, 
                     </button>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
