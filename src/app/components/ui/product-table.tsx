@@ -7,6 +7,7 @@ import {
 import {flexRender, useReactTable} from "@tanstack/react-table";
 import {useState} from "react";
 import FormInputText from "@/app/components/form/FormInputText";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -44,6 +45,13 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
+                <Link
+                    href={"/dashboard/home/menu/create"}
+                    className={"btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary"}
+
+                >
+                    Crear producto
+                </Link>
             </div>
             <table className={"table shadow-md bg-background"}>
                 <thead className={"text-[#10162499]"}>
