@@ -30,6 +30,7 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: 'image',
+        header: 'Imagen',
         cell: (cell) => {
             const imageFilePath = cell.getValue();
             return (
@@ -37,12 +38,8 @@ export const columns: ColumnDef<Product>[] = [
                     <div className="avatar">
                         <div className="mask mask-squircle w-12 h-12">
                             <Image src={`https://api-dev.click2eat.es/${imageFilePath}`} alt={"image product"}
-                                   width={25} height={25}/>
+                                   width={25} height={25} unoptimized/>
                         </div>
-                    </div>
-                    <div>
-                        <div className="font-bold">Hart Hagerty</div>
-                        <div className="text-sm opacity-50">United States</div>
                     </div>
                 </div>
             );
