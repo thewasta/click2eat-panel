@@ -11,6 +11,10 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
+                hostname: 'api-dev.click2eat.es'
+            },
+            {
+                protocol: 'https',
                 hostname: 'cdn.dummyjson.com'
             },
             {
