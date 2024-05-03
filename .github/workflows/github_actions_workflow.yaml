@@ -83,6 +83,8 @@ jobs:
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
         run: node -r dotenv/config ./node_modules/.bin/next build
+      - name: Reload application
+        run: pm2 reload 0
       - name: Deploy Success
         uses: rjstone/discord-webhook-notify@v1
         if: success()
@@ -120,6 +122,8 @@ jobs:
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
         run: node -r dotenv/config ./node_modules/.bin/next build
+      - name: Reload application
+        run: pm2 reload 0
       - name: Deploy Success
         uses: rjstone/discord-webhook-notify@v1
         if: success()
