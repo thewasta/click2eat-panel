@@ -13,5 +13,7 @@ namespace NodeJS {
         NEXT_PUBLIC_FCM_MESSAGING_SENDER_ID: string;
         NEXT_PUBLIC_FCM_APP_ID: string;
         NEXT_PUBLIC_FCM_MEASUREMENT_ID: string;
+        SENTRY_DSN: string;
+        NEXT_PUBLIC_SENTRY_DSN: string;
     }
 }
