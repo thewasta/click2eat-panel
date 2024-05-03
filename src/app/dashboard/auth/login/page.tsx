@@ -28,10 +28,15 @@ export default function AuthLogin() {
         setFormData(newFormData);
     }
 
-    const submit = async () => {
+    const submit = async (event:React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         try {
-            await login(formData.username, formData.password);
-            router.push('/dashboard/home');
+            const response = await login(formData.username, formData.password);
+            if (response.error) {
+                setLoginError(response.errorDescription);
+            }else {
+                router.push('/dashboard/home');
+            }
         } catch (error) {
             setLoginError('Something went wrong!');
         }
@@ -67,42 +72,43 @@ export default function AuthLogin() {
                         </h3>
                         <p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>
                     </div>
-                    <div className="w-full flex gap-3 flex-col">
+                    <form onSubmit={submit}>
+                        <div className="w-full flex gap-3 flex-col">
 
-                        {loginError === null ? null : <p className="text-xs text-red-500 ml-2">{loginError}</p>}
+                            {loginError === null ? null : <p className="text-xs text-red-500 ml-2">{loginError}</p>}
 
-                        <FormInputText
-                            name={"username"}
-                            icon={<MdEmail/>}
-                            inputType={"text"}
-                            placeholder={"Nombre de usuario"}
-                            onChange={handle}
-                        />
-                        <FormInputText
-                            name={"password"}
-                            icon={<MdLock/>}
-                            placeholder={"Contraseña"}
-                            inputType={"password"}
-                            onChange={handle}
-                        />
-                    </div>
-                    <div className="form-control flex-row items-center justify-between text-secondaryColorText">
+                            <FormInputText
+                                name={"username"}
+                                icon={<MdEmail/>}
+                                inputType={"text"}
+                                placeholder={"Nombre de usuario"}
+                                onChange={handle}
+                            />
+                            <FormInputText
+                                name={"password"}
+                                icon={<MdLock/>}
+                                placeholder={"Contraseña"}
+                                inputType={"password"}
+                                onChange={handle}
+                            />
+                        </div>
+                        <div className="form-control flex-row items-center justify-between text-secondaryColorText">
                         <span>
                             ¿Problemas para iniciar sesión?
                         </span>
-                    </div>
-                    <div className="flex items-center justify-center">
-                        <button
-                            onClick={submit}
-                            className="btn text-white border-0 join-item bg-primary hover:bg-secondary"
-                            type="button">
-                            Acceder
-                        </button>
-                    </div>
+                        </div>
+                        <div className="flex items-center justify-center">
+                            <button
+                                className="btn text-white border-0 join-item bg-primary hover:bg-secondary"
+                                type="submit">
+                                Acceder
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 <div className="w-full flex items-center justify-center">
                     <p className="text-sm font-normal text-[#060606]">¿No tienes cuenta?
-                        <Link href="/dashboard/auth/register"
+                        <Link href={"/dashboard/auth/register"}
                               className="ml-1 font-semibold underline underline-offset-2 cursor-pointer">
                             Registrate
                         </Link>

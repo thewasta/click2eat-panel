@@ -19,7 +19,11 @@ export async function login(email: string, password: string): Promise<RequestRes
             password
         });
         if (response.error) {
-            return Promise.reject(response)
+            return {
+                error: true,
+                errorDescription: response.errorDescription,
+                message: null
+            }
         }
         //@ts-ignore
         const decode = await jose.jwtVerify(response.message?.token, secret);
@@ -41,10 +45,11 @@ export async function login(email: string, password: string): Promise<RequestRes
             message: response.message
         }
     } catch (error) {
+        console.log("aqui");
         return Promise.reject({
             error: true,
             //@ts-ignore
-            errorDescription: error.message,
+            errorDescription: error.description,
             message: null
         })
     }
