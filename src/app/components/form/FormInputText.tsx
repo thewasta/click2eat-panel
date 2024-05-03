@@ -1,6 +1,6 @@
 import React from "react";
 
-type InputType = "text" | "password" | "email";
+type InputType = "text" | "password" | "email" | "number";
 
 interface FormInputProps {
     required?: boolean;
@@ -40,7 +40,7 @@ export default function FormInputText({
     customInputClassName = `grow ${inputClassName}`;
     return (
         <label className={customLabelClassName}>
-            <input required={required} type="text" name={name} className={customInputClassName} value={value} placeholder={placeholder} onChange={onChange}/>
+            <input required={required} type={inputType} name={name} className={customInputClassName} value={value} placeholder={placeholder} onChange={onChange}/>
         </label>
     )
 }
