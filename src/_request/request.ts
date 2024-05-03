@@ -115,11 +115,10 @@ export async function request(endpoint: string, method: Request_Type, body?: {},
             }
 
         } else {
-            error = Object.values(ErrorCodes).includes(error as string) ? error : 'Something went wrong';
             return {
                 error: true,
                 //@ts-ignore
-                errorDescription: error,
+                errorDescription: error.description,
                 message: null
             }
         }
