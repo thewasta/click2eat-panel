@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
-import FcmTokenComp from "@/app/components/firebase/firebaseForeground";
+import FcmTokenComp from "@/components/firebase/firebaseForeground";
 
 const inter = Roboto({weight: ['100', '300', '400','500','700','900'],subsets:['latin']});
 
