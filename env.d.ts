@@ -4,6 +4,8 @@ namespace NodeJS {
         MOCK_BASE_API_URL: string;
         MOCK_BASE_PRODUCTS: string;
         ENV: string;
+        TEST_USERNAME: string;
+        TEST_PASSWORD: string;
         NEXT_PUBLIC_COOKIE_NAME: string;
         NEXT_PUBLIC_FCM_VAPID_KEY: string;
         NEXT_PUBLIC_FCM_API_KEY: string;

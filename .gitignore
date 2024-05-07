@@ -39,5 +39,14 @@ next-env.d.ts
 .flaskenv*
 !.env.project
 !.env.vault
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Sentry Config File
 .sentryclirc
