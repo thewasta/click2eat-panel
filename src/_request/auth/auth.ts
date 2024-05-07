@@ -3,8 +3,8 @@
 import {request, RequestResponse} from "@/_request/request";
 import {cookies} from "next/headers";
 import * as jose from 'jose';
-import {RegisterBusinessData} from "@/app/components/auth/RegisterBusiness";
-import {RegisterOwnerData} from "@/app/components/auth/RegisterOwner";
+import {RegisterBusinessData} from "@/components/auth/RegisterBusiness";
+import {RegisterOwnerData} from "@/components/auth/RegisterOwner";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
