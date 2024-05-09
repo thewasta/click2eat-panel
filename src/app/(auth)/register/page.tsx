@@ -8,6 +8,7 @@ import RegisterOwner, {RegisterOwnerData} from "@/components/auth/RegisterOwner"
 import Link from "next/link";
 import {register} from "@/_request/auth/auth";
 import * as localforage from "localforage";
+import {Button} from "@/components/ui/button";
 
 export default function RegisterPage() {
     const [data, setData] = useState<RegisterOwnerData | RegisterBusinessData>({
@@ -114,7 +115,7 @@ export default function RegisterPage() {
                     <h3 className="text-3xl font-semibold mb-3 text-[#060606]">
                         Crear cuenta
                     </h3>
-                    <p className="text-base text-gray-600 mb-4">
+                    <p className="text-xs text-muted-foreground mb-4">
                         Crea una cuenta para empezar a gestionar tu negocio
                     </p>
                 </div>
@@ -124,28 +125,24 @@ export default function RegisterPage() {
                             formElements[activeTab]
                         }
                     </div>
-                    <div className='w-full flex justify-center'>
-                        <div className="join">
-                            <button
-                                disabled={activeTab === 0}
-                                onClick={() => setActiveTab(prevState => prevState - 1)}
-                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
-                                Atrás
-                            </button>
-                            <button
-                                disabled={activeTab === formElements.length - 1}
-                                onClick={() => setActiveTab(prevState => prevState + 1)}
-                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
-                                Siguiente
-                            </button>
-                            {
-                                activeTab === formElements.length - 1 ?
-                                    <button
-                                        className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'
-                                        type={"submit"}>Registrarse</button> :
-                                    null
-                            }
-                        </div>
+                    <div className='w-full flex justify-center gap-8'>
+                        <Button
+                            disabled={activeTab === 0}
+                            onClick={() => setActiveTab(prevState => prevState - 1)}
+                        >
+                            Atrás
+                        </Button>
+                        {
+                            activeTab === formElements.length - 1 ?
+                                <Button
+                                    type={"submit"}>Registrarse</Button> :
+                                <Button
+                                    disabled={activeTab === formElements.length - 1}
+                                    onClick={() => setActiveTab(prevState => prevState + 1)}
+                                >
+                                    Siguiente
+                                </Button>
+                        }
                     </div>
                 </form>
                 {
