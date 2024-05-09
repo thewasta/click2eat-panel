@@ -21,10 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className + 'text-colorText'}>
-        <FcmTokenComp/>
-        {children}
-      </body>
+        <body className={`${inter.className} overflow-hidden`}>
+            <FcmTokenComp/>
+            {children}
+        </body>
     </html>
   );
 }
