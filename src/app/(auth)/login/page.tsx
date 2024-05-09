@@ -8,6 +8,7 @@ import MiddleLeftSide from "@/components/auth/middleLeftSide";
 import MiddleRightSide from "@/components/auth/middleRigthSide";
 import FormInputText from "@/components/form/FormInputText";
 import {MdEmail, MdLock} from "react-icons/md";
+import {Button} from "@/components/ui/button";
 
 interface FormInputProps {
     username: string;
@@ -28,7 +29,7 @@ export default function AuthLogin() {
         setFormData(newFormData);
     }
 
-    const submit = async (event:React.FormEvent<HTMLFormElement>) => {
+    const submit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
             await login(formData.username, formData.password);
@@ -58,18 +59,14 @@ export default function AuthLogin() {
             </MiddleLeftSide>
             {/*bg-[#E0E0E0]*/}
             <MiddleRightSide customClass="justify-center flex gap-5">
-                <h1 className="text-xl font-semibold text-colorText">
-                    Click2Eat
-                </h1>
-                <div className="w-full flex flex-col gap-4">
+                <div className="w-full flex flex-col justify-center gap-4">
                     <div className="flex flex-col w-full mb-2">
-                        <h3 className="text-3xl font-semibold mb-3 text-colorText">
+                        <h3 className="text-3xl font-semibold mb-3 text-center">
                             Iniciar Sesión
                         </h3>
-                        <p className="text-base text-gray-600 mb-4">¡Bienvenido otra vez!</p>
                     </div>
-                    <form onSubmit={submit}>
-                        <div className="w-full flex gap-3 flex-col">
+                    <form onSubmit={submit} className={"flex flex-col gap-5"}>
+                        <div className="w-full flex items-center justify-center gap-3 flex-col">
 
                             {loginError === null ? null : <p className="text-xs text-red-500 ml-2">{loginError}</p>}
 
@@ -88,17 +85,11 @@ export default function AuthLogin() {
                                 onChange={handle}
                             />
                         </div>
-                        <div className="form-control flex-row items-center justify-between text-secondaryColorText">
-                        <span>
-                            ¿Problemas para iniciar sesión?
-                        </span>
-                        </div>
                         <div className="flex items-center justify-center">
-                            <button
-                                className="btn text-white border-0 join-item bg-primary hover:bg-secondary"
+                            <Button
                                 type="submit">
                                 Acceder
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
