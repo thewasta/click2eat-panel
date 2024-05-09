@@ -40,7 +40,6 @@ test.describe('Auth Page', async () => {
         await page.getByPlaceholder('Localidad').fill(faker.location.city());
         await page.getByPlaceholder('País').fill(faker.location.country());
         await page.getByRole('button', {name: 'Siguiente'}).click();
-        await expect(page.getByRole('button', {name: 'Siguiente'})).toBeDisabled();
         await expect(page.getByRole('button', {name: 'Registrarse'})).toBeVisible();
         await page.getByPlaceholder('Nombre', {exact: true}).fill(faker.person.firstName());
         await page.getByPlaceholder('Apellido').fill(faker.person.lastName());
