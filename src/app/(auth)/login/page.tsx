@@ -33,6 +33,9 @@ export default function AuthLogin() {
         resolver: zodResolver(loginSchema),
     });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+        console.log(
+            'AQUI SUBMIT'
+        )
         const loginDto: LoginAccountDto = {
             username: values.username,
             password: values.password
@@ -94,7 +97,7 @@ export default function AuthLogin() {
                                         Contraseña
                                     </FormLabel>
                                     <FormControl>
-                                        <Input className={"w-1/2"} defaultValue={''}
+                                        <Input type={"password"} className={"w-1/2 !focus-visible::ring-orange-400"} defaultValue={''}
                                                placeholder={"contraseña"} {...field}/>
                                     </FormControl>
                                     <FormMessage className={"text-xs text-red-500 font-light"}/>
