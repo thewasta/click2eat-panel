@@ -1,41 +1,47 @@
-'use client'
-import React, {useState} from "react";
+"use client"
+import React from "react";
 import {login} from '@/_request/auth/auth'
-import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import MiddleLeftSide from "@/components/auth/middleLeftSide";
 import MiddleRightSide from "@/components/auth/middleRigthSide";
-import FormInputText from "@/components/form/FormInputText";
-import {MdEmail, MdLock} from "react-icons/md";
 import {Button} from "@/components/ui/button";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Input} from "@/components/ui/input";
+import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 
-interface FormInputProps {
-    username: string;
-    password: string;
-}
-
+const loginSchema = z.object({
+    username: z.string({
+        required_error: 'A username is required'
+    })
+        .min(1, {
+            message: 'Please, check your username'
+        }),
+    password: z.string({
+        required_error: 'Password id required'
+    })
+        .min(1, {
+            message: 'Password is required'
+        })
+});
 export default function AuthLogin() {
-    const [loginError, setLoginError] = useState<string | null>(null)
-    const router = useRouter();
-    const [formData, setFormData] = useState<FormInputProps>({
-        username: '',
-        password: ''
+
+    const form = useForm<z.infer<typeof loginSchema>>({
+        resolver: zodResolver(loginSchema),
     });
-
-    function handle(e: React.ChangeEvent<HTMLInputElement>) {
-        const newFormData = {...formData};
-        newFormData[e.target.name as keyof FormInputProps] = e.target.value;
-        setFormData(newFormData);
-    }
-
-    const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        try {
-            await login(formData.username, formData.password);
-            router.push('/dashboard');
-        } catch (error) {
-            setLoginError('Something went wrong!');
+    const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+        const loginDto: LoginAccountDto = {
+            username: values.username,
+            password: values.password
+        };
+        const response = await login(loginDto);
+        if (response.error) {
+            form.setError('root.server', {
+                message: response.errorDescription as string
+            });
         }
     }
     return (
@@ -65,33 +71,47 @@ export default function AuthLogin() {
                             Iniciar Sesión
                         </h3>
                     </div>
-                    <form onSubmit={submit} className={"flex flex-col gap-5"}>
-                        <div className="w-full flex items-center justify-center gap-3 flex-col">
-
-                            {loginError === null ? null : <p className="text-xs text-red-500 ml-2">{loginError}</p>}
-
-                            <FormInputText
+                    <Form {...form}>
+                        <form className={"flex flex-col gap-5"}>
+                            <FormField
                                 name={"username"}
-                                icon={<MdEmail/>}
-                                inputType={"text"}
-                                placeholder={"Nombre de usuario"}
-                                onChange={handle}
-                            />
-                            <FormInputText
-                                name={"password"}
-                                icon={<MdLock/>}
-                                placeholder={"Contraseña"}
-                                inputType={"password"}
-                                onChange={handle}
-                            />
-                        </div>
-                        <div className="flex items-center justify-center">
-                            <Button
-                                type="submit">
-                                Acceder
-                            </Button>
-                        </div>
-                    </form>
+                                control={form.control}
+                                render={({field}) => (
+                                    <FormItem className={"flex flex-col justify-center items-center"}>
+                                        <FormLabel>
+                                            Nombre de usuario
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input className={"w-1/2"} defaultValue={''}
+                                                   placeholder={"nombre de usuario"} {...field}/>
+                                        </FormControl>
+                                        <FormMessage className={"text-xs text-red-500 font-light"}/>
+                                    </FormItem>
+                                )}/>
+                            <FormField name={"password"} control={form.control} render={({field}) => (
+                                <FormItem className={"flex flex-col justify-center items-center"}>
+                                    <FormLabel>
+                                        Contraseña
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input className={"w-1/2"} defaultValue={''}
+                                               placeholder={"contraseña"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage className={"text-xs text-red-500 font-light"}/>
+                                </FormItem>
+                            )}/>
+                        </form>
+                        <p className={"text-center text-xs text-red-500 font-light"}>
+                            {form.formState.errors && form.formState.errors.root?.server.message}
+                        </p>
+                    </Form>
+                    <div className="flex items-center justify-center">
+                        <Button
+                            type="button"
+                            onClick={form.handleSubmit(onSubmit)}>
+                            Acceder
+                        </Button>
+                    </div>
                 </div>
                 <div className="w-full flex items-center justify-center">
                     <p className="text-sm font-normal text-[#060606]">¿No tienes cuenta?
