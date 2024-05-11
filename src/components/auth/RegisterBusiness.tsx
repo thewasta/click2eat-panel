@@ -7,17 +7,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 
-//@todo BORRAR interface
-export interface RegisterBusinessData {
-    businessName: string;
-    document: string;
-    address: string;
-    postalCode: string;
-    province: string;
-    town: string;
-    country: string;
-}
-
 const RegisterBusinessForm = () => {
     const formContext = useRegisterAccountContext();
     const registerBusiness = z.object({
