@@ -33,9 +33,6 @@ export default function AuthLogin() {
         resolver: zodResolver(loginSchema),
     });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
-        console.log(
-            'AQUI SUBMIT'
-        )
         const loginDto: LoginAccountDto = {
             username: values.username,
             password: values.password

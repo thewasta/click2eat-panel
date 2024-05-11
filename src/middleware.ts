@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
 
     if (isAuthenticated) {
         if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/register') {
-            url.pathname = '/dashboard/home';
+            url.pathname = '/dashboard';
             return NextResponse.redirect(url);
         }
         return NextResponse.next();
