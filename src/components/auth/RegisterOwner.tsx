@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React from "react";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
 import {z} from "zod";
 import {SubmitHandler, useForm} from "react-hook-form";
@@ -9,7 +9,7 @@ import {Button} from "@/components/ui/button";
 import {register} from "@/_request/auth/auth";
 import * as localforage from "localforage";
 import {useRouter} from "next/navigation";
-import {UserAppContext} from "@/lib/context/auth/user-context";
+import {useUserAppContext} from "@/lib/context/auth/user-context";
 
 const RegisterOwnerForm = () => {
     const formContext = useRegisterAccountContext();
@@ -49,7 +49,7 @@ const RegisterOwnerForm = () => {
         }
     });
     const router = useRouter();
-    const userAppContext= useContext(UserAppContext);
+    const userAppContext= useUserAppContext();
     const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
         formContext.updatePropertyForm(values);
         const fcmToken = await localforage.getItem('fcmToken');

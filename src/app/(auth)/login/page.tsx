@@ -1,5 +1,5 @@
 "use client"
-import React, {useContext} from "react";
+import React from "react";
 import {login} from '@/_request/auth/auth'
 import Link from "next/link";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
-import {UserAppContext} from "@/lib/context/auth/user-context";
+import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 
 const loginSchema = z.object({
@@ -32,7 +32,7 @@ const loginSchema = z.object({
 export default function AuthLogin() {
 
     const router = useRouter();
-    const userAppContext= useContext(UserAppContext);
+    const userAppContext= useUserAppContext();
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
     });
