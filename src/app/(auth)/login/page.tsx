@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, {useContext} from "react";
 import {login} from '@/_request/auth/auth'
 import Link from "next/link";
 import Image from "next/image";
@@ -12,6 +12,8 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
+import {UserAppContext} from "@/lib/context/auth/user-context";
+import {useRouter} from "next/navigation";
 
 const loginSchema = z.object({
     username: z.string({
@@ -29,6 +31,8 @@ const loginSchema = z.object({
 });
 export default function AuthLogin() {
 
+    const router = useRouter();
+    const userAppContext= useContext(UserAppContext);
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
     });
@@ -43,6 +47,17 @@ export default function AuthLogin() {
                 message: response.errorDescription as string
             });
         }
+        userAppContext.setUser({
+            id: response.message.user.id,
+            email: response.message.user.email,
+            lastname: response.message.user.lastname,
+            name: response.message.user.name,
+            username: response.message.user.username,
+            status: response.message.user.status,
+            rol: response.message.user.rol,
+            business: response.message.business,
+        });
+        router.push('/dashboard');
     }
     return (
         <>
