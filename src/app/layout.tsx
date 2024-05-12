@@ -3,6 +3,8 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import FcmTokenComp from "@/components/firebase/firebaseForeground";
 import {Providers} from "@/app/providers";
+import {UserAppContextProvider} from "@/lib/context/auth/user-context";
+import {ReactNode} from "react";
 
 const inter = Roboto({weight: ['100', '300', '400','500','700','900'],subsets:['latin']});
 
@@ -18,14 +20,16 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
         <body className={`${inter.className} overflow-hidden`}>
             <Providers>
-                <FcmTokenComp/>
+            <FcmTokenComp/>
+            <UserAppContextProvider>
                 {children}
+            </UserAppContextProvider>
             </Providers>
         </body>
     </html>

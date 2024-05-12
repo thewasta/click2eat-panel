@@ -8,15 +8,8 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {register} from "@/_request/auth/auth";
 import * as localforage from "localforage";
-
-export interface RegisterOwnerData {
-    name: string;
-    lastName: string;
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
+import {useRouter} from "next/navigation";
+import {useUserAppContext} from "@/lib/context/auth/user-context";
 
 const RegisterOwnerForm = () => {
     const formContext = useRegisterAccountContext();
@@ -55,6 +48,8 @@ const RegisterOwnerForm = () => {
             confirmPassword: formContext.propertyForm?.confirmPassword,
         }
     });
+    const router = useRouter();
+    const userAppContext= useUserAppContext();
     const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
         formContext.updatePropertyForm(values);
         const fcmToken = await localforage.getItem('fcmToken');
@@ -66,6 +61,17 @@ const RegisterOwnerForm = () => {
                    message: response.errorDescription as string
                 });
             }
+            userAppContext.setUser({
+                id: response.message.user.id,
+                email: response.message.user.email,
+                lastname: response.message.user.lastname,
+                name: response.message.user.name,
+                username: response.message.user.username,
+                status: response.message.user.status,
+                rol: response.message.user.rol,
+                business: response.message.business,
+            });
+            router.push('/dashboard');
         } catch (e) {
             ownerForm.setError('root.server',{
                 message: 'Unhandled error. Feel free to report to avisos@click2eat.es'

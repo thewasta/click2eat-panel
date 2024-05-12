@@ -6,18 +6,19 @@ import * as jose from 'jose';
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {redirect} from "next/navigation";
 import {RedirectType} from "next/dist/client/components/redirect";
-import {RegisterAccount} from "@/lib/context/auth/register-account-context";
+import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
 
-export async function login(login: LoginAccountDto): Promise<RequestResponse> {
+export async function login(login: LoginAccountDto): Promise<any> {
     const ENDPOINT = 'auth/login';
     const cookieStore = cookies();
+    let response = null;
     try {
         const tokenExpiration = new Date(0);
-        const response = await request(ENDPOINT, 'POST', {
+        response = await request(ENDPOINT, 'POST', {
             username: login.username,
             password: login.password
         });
@@ -39,6 +40,11 @@ export async function login(login: LoginAccountDto): Promise<RequestResponse> {
                 path: '/'
             });
         }
+        return {
+            error: false,
+            errorDescription: null,
+            message: response.message?.response
+        };
     } catch (error) {
         cookieStore.delete(process.env.NEXT_PUBLIC_COOKIE_NAME as string);
         return Promise.reject({
@@ -48,13 +54,11 @@ export async function login(login: LoginAccountDto): Promise<RequestResponse> {
             message: null
         })
     }
-    redirect('/', RedirectType.push);
-
 }
 
 export async function register(
     register: RegisterAccount,
-    fcmToken: string): Promise<RequestResponse> {
+    fcmToken: string): Promise<any> {
     const cookieStore = cookies();
 
     try {
@@ -97,6 +101,11 @@ export async function register(
                 path: '/'
             });
         }
+        return {
+            error: false,
+            errorDescription: null,
+            message: response.message
+        }
     } catch (error) {
         return Promise.reject({
             error: true,
@@ -105,7 +114,6 @@ export async function register(
             message: null
         })
     }
-    redirect('/', RedirectType.push);
 }
 
 const registerBusiness = async (
