@@ -6,7 +6,6 @@ const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
 
 export async function middleware(req: NextRequest) {
-    console.log('MIDDLEWARE');
     const cookieStore = cookies();
     const jwtToken = cookieStore.get(process.env.NEXT_PUBLIC_COOKIE_NAME as string);
     let isAuthenticated = false;
@@ -30,7 +29,7 @@ export async function middleware(req: NextRequest) {
 
     if (isAuthenticated) {
         if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/register') {
-            url.pathname = '/dashboard/home';
+            url.pathname = '/dashboard';
             return NextResponse.redirect(url);
         }
         return NextResponse.next();
