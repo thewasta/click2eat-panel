@@ -12,7 +12,7 @@ export default async function ProductsPage() {
     const products = await getProducts();
     return (
         <div className={"col-span-3"}>
-            <ProductTable columns={columns} data={products}/>
+            { products && <ProductTable columns={columns} data={products}/>}
         </div>
     );
 }
