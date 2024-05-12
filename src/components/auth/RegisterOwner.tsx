@@ -146,7 +146,7 @@ const RegisterOwnerForm = () => {
                                         Contraseña
                                     </FormLabel>
                                     <FormControl>
-                                        <Input type={"password"} placeholder={"**********"} {...field}/>
+                                        <Input type={"password"} placeholder={"Contraseña"} {...field}/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
@@ -160,7 +160,7 @@ const RegisterOwnerForm = () => {
                                         Confirmar contraseña
                                     </FormLabel>
                                     <FormControl>
-                                        <Input type={"password"} placeholder={"**********"} {...field}/>
+                                        <Input type={"password"} placeholder={"Confirmar contraseña"} {...field}/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>

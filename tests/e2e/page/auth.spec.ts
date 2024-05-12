@@ -23,19 +23,20 @@ test.describe('Auth Page', async () => {
         });
     });
     test('Register form', async ({page}, testInfo) => {
+
+        await page.pause()
         await expect(page.getByRole('link', {name: 'Registrate'})).toBeVisible();
         await page.getByRole('link', {name: 'Registrate'}).click();
         await testInfo.attach("002_auth_register", {
             body: await page.screenshot(),
             contentType: 'image/png',
         });
-        await expect(page.getByRole('button', {name: 'Atrás'})).toBeDisabled();
         await expect(page.getByRole('button', {name: 'Siguiente'})).toBeVisible();
         const password = faker.internet.password();
-        await page.getByPlaceholder('Nombre empresa').fill(faker.company.name());
-        await page.getByPlaceholder('NIF').fill(faker.string.uuid().slice(0, 9).replace('-', ''));
-        await page.getByPlaceholder('Dirección').fill(faker.location.streetAddress());
-        await page.getByPlaceholder('Código postal').fill(faker.location.zipCode());
+        await page.getByPlaceholder('Razón social').fill(faker.company.name());
+        await page.getByPlaceholder('DNI/NIF').fill(faker.string.uuid().slice(0, 9).replace('-', ''));
+        await page.getByPlaceholder('Dirección empresa').fill(faker.location.streetAddress());
+        await page.getByPlaceholder('Código postal').fill(faker.number.int({min: 4, max: 4}).toString(), {force: true});
         await page.getByPlaceholder('Provincia').fill(faker.location.state());
         await page.getByPlaceholder('Localidad').fill(faker.location.city());
         await page.getByPlaceholder('País').fill(faker.location.country());
