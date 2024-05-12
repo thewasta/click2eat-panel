@@ -57,7 +57,7 @@ export default function SidebarComponent() {
     const pathname = usePathname();
     return isDesktop ?
         (<aside
-                className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between bg-white border-r border-gray-300">
+                className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between border-r">
                 <div className="h-16 pl-5 flex items-center 2xl:justify-start justify-center">
                     <h1 className="uppercase font-bold tracking-[4px] cursor-default">
                         TU LOGO
@@ -71,7 +71,7 @@ export default function SidebarComponent() {
                                 <NavigationMenuItem key={index}>
                                     <NavigationMenuLink
                                         href={item.path}
-                                        className={`text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
+                                        className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
                                     >
                                         {item.icon}
                                         {item.name}

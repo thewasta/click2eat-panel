@@ -4,6 +4,7 @@ import SidebarComponent from "@/components/navbar/sidebar";
 import {RiArrowDownSLine, RiCheckboxBlankCircleFill, RiNotification2Line, RiSearchLine} from "react-icons/ri";
 import {Input} from "@/components/ui/input";
 import Loading from "@/app/dashboard/loading";
+import {ThemeSwitch} from "@/components/navbar/ThemeSwitch";
 
 export const metadata: Metadata = {
     title: "Restaurant QR | Panel",
@@ -16,18 +17,21 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             <div className={"min-h-screen grid grid-cols-1 md:grid-cols-5 lg:grid-cols-7"}>
                 <SidebarComponent/>
                 <div
-                    className={"lg:col-span-6 md:col-span-4 col-span-1 md:grid-cols-3 bg-gray-100"}>
+                    className={"lg:col-span-6 md:col-span-4 col-span-1 md:grid-cols-3"}>
                     {/* Header   */}
-                    <header className="bg-white flex items-center justify-between p-4 h-16 shadow-md w-full">
+                    <header className="flex items-center justify-between p-4 h-16 shadow-md w-full border-b">
                         <form className="sm:w-[30%] w-1/2">
                             <div className="relative">
                                 <RiSearchLine className="absolute left-2 top-3"/>
-                                <Input className="pl-8 pr-4 py-2 outline-none rounded-lg w-full bg-gray-100"
+                                <Input className="pl-8 pr-4 py-2 outline-none rounded-lg w-full"
                                        placeholder="Buscar..."/>
                             </div>
                         </form>
                         <nav className="sm:w-[70%] w-1/2 flex justify-end">
                             <ul className="flex items-center gap-4">
+                                <li>
+                                    <ThemeSwitch/>
+                                </li>
                                 <li>
                                     <a href="#" className="relative">
                                         <RiNotification2Line/>

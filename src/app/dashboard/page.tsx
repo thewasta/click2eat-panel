@@ -1,5 +1,3 @@
-import ReservationComponent from "@/components/navbar/reservationList";
-
 export default function HomeDashboard() {
     // const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-red-800 bg-violet-600";
     return (
@@ -14,7 +12,6 @@ export default function HomeDashboard() {
                 <div className="grid grid-cols-3">
                 </div>
             </div>
-            <ReservationComponent/>
         </>
     )
 }

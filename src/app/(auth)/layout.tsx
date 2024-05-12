@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <main className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <main className="min-h-screen flex items-center justify-center">
             <div className="w-full h-screen flex items-start">
                 <RegisterAccountContextProvider>
                     {children}
