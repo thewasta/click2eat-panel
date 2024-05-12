@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import FcmTokenComp from "@/components/firebase/firebaseForeground";
+import {Providers} from "@/app/providers";
 import {UserAppContextProvider} from "@/lib/context/auth/user-context";
 import {ReactNode} from "react";
 
@@ -22,12 +23,14 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
         <body className={`${inter.className} overflow-hidden`}>
+            <Providers>
             <FcmTokenComp/>
             <UserAppContextProvider>
                 {children}
             </UserAppContextProvider>
+            </Providers>
         </body>
     </html>
   );
