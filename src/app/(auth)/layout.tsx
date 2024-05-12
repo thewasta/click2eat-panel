@@ -1,5 +1,6 @@
 import React from "react";
 import type {Metadata} from "next";
+import {RegisterAccountContextProvider} from "@/lib/context/auth/register-account-context";
 
 export const metadata: Metadata = {
     title: "Click2Eat | Iniciar Sesión",
@@ -9,7 +10,9 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     return (
         <main className="bg-gray-50 min-h-screen flex items-center justify-center">
             <div className="w-full h-screen flex items-start">
-                {children}
+                <RegisterAccountContextProvider>
+                    {children}
+                </RegisterAccountContextProvider>
             </div>
         </main>
     );

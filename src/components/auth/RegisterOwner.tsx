@@ -1,7 +1,13 @@
-import React, {useEffect, useState} from "react";
-import FormInputText from "@/components/form/FormInputText";
-import {FaUser, FaUserCircle} from "react-icons/fa";
-import {MdEmail, MdLock} from "react-icons/md";
+import React from "react";
+import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
+import {z} from "zod";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {register} from "@/_request/auth/auth";
+import * as localforage from "localforage";
 
 export interface RegisterOwnerData {
     name: string;
@@ -12,96 +18,168 @@ export interface RegisterOwnerData {
     confirmPassword: string;
 }
 
-interface RegisterOwnerProps {
-    data: RegisterOwnerData,
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-}
+const RegisterOwnerForm = () => {
+    const formContext = useRegisterAccountContext();
+    const registerOwner = z.object({
+        name: z.string({
+            required_error: 'name is required'
+        }).min(1),
+        lastName: z.string({
+            required_error: 'lastName is required'
+        }).min(1),
+        username: z.string({
+            required_error: 'username is required'
+        }).min(1),
+        email: z.string({
+            required_error: 'email is required'
+        }).email(),
+        password: z.string({
+            required_error: 'password is required'
+        }).min(8),
+        confirmPassword: z.string({
+            required_error: 'confirmPassword is required'
+        }).min(8),
+    }).refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirm"],
+    });
 
-const RegisterOwnerForm = (props: RegisterOwnerProps) => {
-    const {data, handleChange} = props;
-    const [passwordIsEqual, setPasswordIsEqual] = useState<boolean>(true);
-    useEffect(() => {
-        if ((!data.password || !data.confirmPassword) && data.password.length === 0){
-            console.log('here');
-            setPasswordIsEqual(true);
-            return;
+    const ownerForm = useForm<z.infer<typeof registerOwner>>({
+        resolver: zodResolver(registerOwner),
+        defaultValues: {
+            name: formContext.propertyForm?.name,
+            lastName: formContext.propertyForm?.lastName,
+            username: formContext.propertyForm?.username,
+            email: formContext.propertyForm?.email,
+            password: formContext.propertyForm?.password,
+            confirmPassword: formContext.propertyForm?.confirmPassword,
         }
-        if (data.password !== data.confirmPassword) {
-            setPasswordIsEqual(false);
-        } else {
-            setPasswordIsEqual(true);
+    });
+    const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
+        formContext.updatePropertyForm(values);
+        const fcmToken = await localforage.getItem('fcmToken');
+
+        try {
+            const response = await register(values, fcmToken as string);
+            if (response.error) {
+                ownerForm.setError('username',{
+                   message: response.errorDescription as string
+                });
+            }
+        } catch (e) {
+            ownerForm.setError('root.server',{
+                message: 'Unhandled error. Feel free to report to avisos@click2eat.es'
+            });
         }
-    }, [data]);
+
+    }
     return (
-        <>
-            <div className="flex gap-3 flex-col">
-                <div className="flex md:flex-row flex-col gap-3">
-                    <FormInputText
-                        required={true}
-                        icon={<FaUser/>}
-                        name={"name"}
-                        value={data.name || ''}
-                        inputType="text"
-                        placeholder="Nombre"
-                        labelClassName="w-full xl:w-1/2"
-                        onChange={handleChange}
-                    />
-                    <FormInputText
-                        required={true}
-                        icon={<FaUser/>}
-                        name={"lastName"}
-                        value={data.lastName || ''}
-                        inputType="text"
-                        placeholder="Apellido"
-                        labelClassName="w-full xl:w-1/2"
-                        onChange={handleChange}
-                    />
+        <div className={"space-y-4"}>
+            <Form {...ownerForm}>
+                <form className={"space-y-3"}>
+                    <div className="flex md:flex-row flex-col gap-3">
+                        <FormField
+                            name={"name"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Nombre
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Nombre"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name={"lastName"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Apellido
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Apellido"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="flex md:flex-row flex-col gap-3">
+                        <FormField
+                            name={"username"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Nombre usuario
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Nombre usuario"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name={"email"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Correo Electrónico
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Correo electrónico"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="flex md:flex-row flex-col gap-3">
+                        <FormField
+                            name={"password"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Contraseña
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input type={"password"} placeholder={"Contraseña"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name={"confirmPassword"}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Confirmar contraseña
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input type={"password"} placeholder={"Confirmar contraseña"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <p className={"text-center text-xs text-red-500 font-light"}>
+                        {/*@ts-ignore/*/}
+                        {ownerForm.formState.errors && ownerForm.formState.errors.confirm?.message || ownerForm.formState.errors.root?.server.message}
+                    </p>
+                </form>
+                <div className='w-full flex justify-center gap-8'>
+                    <Button type={"button"} onClick={() => {
+                        formContext.onHandlePrev();
+                    }}>Atrás</Button>
+                    <Button type={"button"} onClick={ownerForm.handleSubmit(onSubmit)}>Registrarse</Button>
                 </div>
-                <div className="flex md:flex-row flex-col gap-3">
-                    <FormInputText
-                        required={true}
-                        icon={<FaUserCircle/>}
-                        placeholder="Nombre usuario"
-                        inputType={"text"}
-                        name={"username"}
-                        value={data.username || ''}
-                        labelClassName={"w-full xl:w-1/2"}
-                        onChange={handleChange}
-                    />
-                    <FormInputText
-                        required={true}
-                        name={"email"}
-                        value={data.email || ''}
-                        icon={<MdEmail/>}
-                        onChange={handleChange}
-                        labelClassName="w-full xl:w-1/2"
-                        placeholder={"Correo electrónico"}
-                        inputType={"text"}
-                    />
-                </div>
-                <div className="flex md:flex-row flex-col gap-3">
-                    <FormInputText
-                        required={true}
-                        name={"password"}
-                        value={data.password || ''}
-                        icon={<MdLock/>}
-                        inputType="password"
-                        labelClassName={`w-full xl:w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
-                        placeholder="Contraseña"
-                        onChange={handleChange}
-                    />
-                    <FormInputText
-                        required={true}
-                        name={"confirmPassword"}
-                        value={data.confirmPassword || ''}
-                        icon={<MdLock/>}
-                        inputType="password"
-                        labelClassName={`w-full xl:w-1/2 ${!passwordIsEqual ? 'border-red-500 focus:border-red-500' : ''}`}
-                        placeholder="Confirmar contraseña"
-                        onChange={handleChange}/>
-                </div>
-            </div>
-        </>
+            </Form>
+        </div>
     )
 }
 

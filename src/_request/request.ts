@@ -5,10 +5,13 @@ import {cookies} from "next/headers";
 
 type Request_Type = 'GET' | 'POST' | 'DELETE';
 
+
 export interface RequestResponse {
     error: boolean,
     errorDescription: string | null,
-    message: [] | {} | null
+    message: {
+        response: any
+    } | null
 }
 
 class RequestError extends Error {
@@ -30,6 +33,7 @@ class SessionNotFound extends Error {
         this.errorCode = 403;
     }
 }
+
 export async function requestWithSession(endpoint: string, method: Request_Type, body: BodyInit, nextOptions?: NextFetchRequestConfig) {
     try {
         const cookieStore = cookies();

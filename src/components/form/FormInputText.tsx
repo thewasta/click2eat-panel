@@ -1,4 +1,6 @@
 import React from "react";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label"
 
 type InputType = "text" | "password" | "email" | "number";
 
@@ -18,29 +20,33 @@ export default function FormInputText({
                                           required,
                                           placeholder,
                                           inputType,
-                                          inputClassName,
-                                          labelClassName,
                                           name,
                                           value,
                                           onChange,
                                           icon,
                                       }: FormInputProps) {
-    let customLabelClassName = `input bg-white input-bordered flex items-center gap-2 ${labelClassName}`;
-    let customInputClassName = `input input-bordered w-full ${inputClassName}`;
 
     if (icon) {
         return (
-            <label className={customLabelClassName}>
-                {icon}
-                <input required={required} type={inputType} className='grow' name={name} value={value} placeholder={placeholder} onChange={onChange}/>
-            </label>
+            <div className={"grid w-full max-w-sm items-center gap-1.5"}>
+                <Label htmlFor={name}>
+                    {placeholder}
+                </Label>
+                <Input required={required} id={name} type={inputType} name={name} value={value}
+                       placeholder={placeholder} onChange={onChange}/>
+            </div>
         )
     }
-    customLabelClassName = `input bg-white input-bordered flex items-center gap-2 ${labelClassName}`;
-    customInputClassName = `grow ${inputClassName}`;
+
+
     return (
-        <label className={customLabelClassName}>
-            <input required={required} type={inputType} name={name} className={customInputClassName} value={value} placeholder={placeholder} onChange={onChange}/>
-        </label>
+        <Input
+            required={required}
+            type={inputType}
+            name={name}
+            value={value}
+            placeholder={placeholder}
+            onChange={onChange}
+        />
     )
 }

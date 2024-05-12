@@ -1,95 +1,21 @@
 'use client'
 import Image from "next/image";
 import MiddleLeftSide from "@/components/auth/middleLeftSide";
-import React, {useCallback, useState} from "react";
+import React from "react";
 import MiddleRightSide from "@/components/auth/middleRigthSide";
-import RegisterBusiness, {RegisterBusinessData} from "@/components/auth/RegisterBusiness";
-import RegisterOwner, {RegisterOwnerData} from "@/components/auth/RegisterOwner";
+import RegisterBusiness from "@/components/auth/RegisterBusiness";
+import RegisterOwner from "@/components/auth/RegisterOwner";
 import Link from "next/link";
-import {register} from "@/_request/auth/auth";
-import * as localforage from "localforage";
+import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
 
 export default function RegisterPage() {
-    const [data, setData] = useState<RegisterOwnerData | RegisterBusinessData>({
-        name: '',
-        lastName: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
+    const {step} = useRegisterAccountContext();
 
-    const [formHasError, setFormHasError] = useState<boolean>(false);
-
-    const [formMessageError, setFormMessageError] =
-        useState<string>('* Por favor, rellena todos los campos del formulario')
-    const useCall = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = event.target;
-        setData({
-            ...data,
-            [name]: value
-        });
-    }, [data]);
-
-    const validateForm = () => {
-        const ownerData = data as RegisterOwnerData;
-        const businessData = data as RegisterBusinessData;
-
-        if (ownerData.password !== ownerData.confirmPassword) {
-            setFormMessageError('* Las contraseñas no coinciden');
-            return true;
-        }
-        if (ownerData.password.length < 8) {
-            setFormMessageError('* La contraseña debe tener al menos 8 caracteres');
-            return true;
-        }
-
-        return !businessData.businessName || !businessData.document || !businessData.address ||
-            !businessData.postalCode || !businessData.province || !businessData.town || !businessData.country ||
-            !ownerData.name || !ownerData.lastName || !ownerData.username || !ownerData.email || !ownerData.password ||
-            !ownerData.confirmPassword;
-
-    };
-    const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (validateForm()) {
-            setFormHasError(true);
-            return;
-        }
-        setFormHasError(false);
-        const fcmToken = await localforage.getItem('fcmToken');
-        const ownerData = data as RegisterOwnerData;
-        const businessData = data as RegisterBusinessData;
-        const owner: RegisterOwnerData = {
-            name: ownerData.name,
-            lastName: ownerData.lastName,
-            username: ownerData.username,
-            email: ownerData.email,
-            password: ownerData.password,
-            confirmPassword: ownerData.confirmPassword
-        }
-        const business: RegisterBusinessData = {
-            businessName: businessData.businessName,
-            document: businessData.document,
-            address: businessData.address,
-            postalCode: businessData.postalCode,
-            province: businessData.province,
-            town: businessData.town,
-            country: businessData.country
-        }
-        try {
-            await register(business, owner, fcmToken as string);
-        } catch (e) {
-            console.log(e);
-            setFormHasError(true);
-        }
-    };
-
-    const [activeTab, setActiveTab] = useState<number>(0);
     const formElements = [
-        <RegisterBusiness key={1} data={data as RegisterBusinessData} handleChange={useCall}/>,
-        <RegisterOwner key={2} data={data as RegisterOwnerData} handleChange={useCall}/>
+        <RegisterBusiness key={1}/>,
+        <RegisterOwner key={2}/>
     ];
+
     return (
         <>
             <MiddleLeftSide>
@@ -114,46 +40,17 @@ export default function RegisterPage() {
                     <h3 className="text-3xl font-semibold mb-3 text-[#060606]">
                         Crear cuenta
                     </h3>
-                    <p className="text-base text-gray-600 mb-4">
+                    <p className="text-xs text-muted-foreground mb-4">
                         Crea una cuenta para empezar a gestionar tu negocio
                     </p>
                 </div>
-                <form className="w-full flex flex-col gap-3 items-start" onSubmit={handleSubmitForm}>
+                <div className="w-full flex flex-col gap-3 items-start">
                     <div className="form-control w-full">
                         {
-                            formElements[activeTab]
+                            formElements[step]
                         }
                     </div>
-                    <div className='w-full flex justify-center'>
-                        <div className="join">
-                            <button
-                                disabled={activeTab === 0}
-                                onClick={() => setActiveTab(prevState => prevState - 1)}
-                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
-                                Atrás
-                            </button>
-                            <button
-                                disabled={activeTab === formElements.length - 1}
-                                onClick={() => setActiveTab(prevState => prevState + 1)}
-                                className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'>
-                                Siguiente
-                            </button>
-                            {
-                                activeTab === formElements.length - 1 ?
-                                    <button
-                                        className='btn text-white disabled:text-white border-0 join-item bg-primary hover:bg-secondary'
-                                        type={"submit"}>Registrarse</button> :
-                                    null
-                            }
-                        </div>
-                    </div>
-                </form>
-                {
-                    formHasError &&
-                    <div className="mt-4">
-                        <p className="text-red-400 text-xs">{formMessageError}</p>
-                    </div>
-                }
+                </div>
                 <div className="w-full flex items-center justify-center mt-4">
                     <p className="text-sm font-normal text-[#060606]">¿Ya tienes cuenta?
                         <Link href={"/login"}

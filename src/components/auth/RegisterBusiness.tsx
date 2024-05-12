@@ -1,98 +1,172 @@
 import React from "react";
-import FormInputText from "@/components/form/FormInputText";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
+import {z} from "zod";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 
-export interface RegisterBusinessData {
-    businessName: string;
-    document: string;
-    address: string;
-    postalCode: string;
-    province: string;
-    town: string;
-    country: string;
-}
+const RegisterBusinessForm = () => {
+    const formContext = useRegisterAccountContext();
+    const registerBusiness = z.object({
+        businessName: z.string({required_error: 'businessName is required'}).min(1),
+        document: z.string({required_error: 'document is required'}).min(1),
+        address: z.string({required_error: 'address is required'}).min(1),
+        postalCode: z.coerce.number({
+            required_error: 'postalCode is required',
+            invalid_type_error: 'postalCode is required'
+        }).min(4),
+        province: z.string({required_error: 'province is required'}).min(1),
+        town: z.string({required_error: 'town is required'}).min(1),
+        country: z.string({required_error: 'country is required'}).min(1),
+    });
 
-interface RegisterBusinessProps {
-    data: RegisterBusinessData;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const RegisterBusinessForm = (props: RegisterBusinessProps) => {
-    const {data, handleChange} = props
+    const businessForm = useForm<z.infer<typeof registerBusiness>>({
+        resolver: zodResolver(registerBusiness),
+        defaultValues: {
+            businessName: formContext.propertyForm?.businessName,
+            document: formContext.propertyForm?.document,
+            address: formContext.propertyForm?.address,
+            postalCode: formContext.propertyForm?.postalCode,
+            province: formContext.propertyForm?.province,
+            town: formContext.propertyForm?.town,
+            country: formContext.propertyForm?.country,
+        }
+    });
+    const onSubmit: SubmitHandler<z.infer<typeof registerBusiness>> = (values: z.infer<typeof registerBusiness>) => {
+        formContext.updatePropertyForm(values);
+        formContext.onHandleNext();
+    }
 
     return (
-        <>
-            <div className="flex gap-3 flex-col">
-                <div className="flex flex-col xl:flex-row gap-3">
-                    <FormInputText
-                        required={true}
-                        placeholder={"Nombre empresa"}
-                        inputType={"text"}
-                        name={"businessName"}
-                        onChange={handleChange}
-                        value={data.businessName || ''}
-                        labelClassName="w-full xl:w-1/2"
-                    />
-                    <FormInputText
-                        required={true}
-                        placeholder={"NIF"}
-                        inputType={"text"}
-                        name={"document"}
-                        value={data.document || ''}
-                        onChange={handleChange}
-                        labelClassName="w-full xl:w-1/2"
-                    />
-                </div>
-                <div className="flex flex-col xl:flex-row gap-3">
-                    <FormInputText
-                        placeholder={"Dirección"}
-                        inputType={"text"}
-                        name={"address"}
-                        value={data.address || ''}
-                        labelClassName={"w-full xl:w-2/3"}
-                        onChange={handleChange}
-                    />
-                    <FormInputText
-                        required={true}
-                        placeholder={"Código postal"}
-                        inputType={"text"}
-                        name={"postalCode"}
-                        value={data.postalCode || ''}
-                        onChange={handleChange}
-                        labelClassName={"w-full xl:w-1/3"}
-                    />
-                </div>
-                <div className="flex flex-col xl:flex-row gap-3">
-                    <FormInputText
-                        required={true}
-                        placeholder={"Provincia"}
-                        inputType={"text"}
-                        name={"province"}
-                        value={data.province || ''}
-                        onChange={handleChange}
-                        labelClassName="w-full xl:w-1/3"
-                    />
-                    <FormInputText
-                        required={true}
-                        placeholder={"Localidad"}
-                        inputType={"text"}
-                        name={"town"}
-                        value={data.town || ''}
-                        onChange={handleChange}
-                        labelClassName="w-full xl:w-1/3"
-                    />
-                    <FormInputText
-                        required={true}
-                        placeholder={"País"}
-                        inputType={"text"}
-                        name={"country"}
-                        value={data.country || ''}
-                        onChange={handleChange}
-                        labelClassName="w-full xl:w-1/3"
-                    />
-                </div>
+        <div className={"space-y-4"}>
+            <Form {...businessForm} >
+                <form className={"space-y-3"}>
+                    <div className={"flex flex-col xl:flex-row gap-3"}>
+                        <FormField
+                            name={"businessName"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Nombre empresa
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Razón social"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name={"document"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        NIF
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"DNI/NIF"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                    </div>
+                    <div className={"flex flex-col xl:flex-row gap-3"}>
+                        <FormField
+                            name={"address"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Dirección
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Dirección empresa"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                        <FormField
+                            name={"postalCode"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/2"}>
+                                    <FormLabel>
+                                        Código postal
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input type={"number"} placeholder={"Código postal"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                    </div>
+                    <div className={"flex flex-col xl:flex-row gap-3"}>
+                        <FormField
+                            name={"province"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        Provincia
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Provincia"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                        <FormField
+                            name={"town"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        Localidad
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"Localidad"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                        <FormField
+                            name={"country"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        País
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"País"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                    </div>
+                </form>
+            </Form>
+            <div className='w-full flex justify-center gap-8'>
+                <Button type={"button"} onClick={businessForm.handleSubmit(onSubmit)}>Siguiente</Button>
             </div>
-        </>
-    )
+        </div>
+    );
 }
 
 export default RegisterBusinessForm;
