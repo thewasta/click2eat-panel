@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import FcmTokenComp from "@/components/firebase/firebaseForeground";
+import {UserAppContextProvider} from "@/lib/context/auth/user-context";
+import {ReactNode} from "react";
 
 const inter = Roboto({weight: ['100', '300', '400','500','700','900'],subsets:['latin']});
 
@@ -17,13 +19,15 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
         <body className={`${inter.className} overflow-hidden`}>
             <FcmTokenComp/>
-            {children}
+            <UserAppContextProvider>
+                {children}
+            </UserAppContextProvider>
         </body>
     </html>
   );

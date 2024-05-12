@@ -1,21 +1,6 @@
 "use client"
 import {createContext, ReactNode, useContext, useState} from "react";
-
-export type RegisterAccount = {
-    businessName?: string | undefined;
-    document?: string | undefined;
-    address?: string | undefined;
-    postalCode?: number | undefined;
-    province?: string | undefined;
-    town?: string | undefined;
-    country?: string | undefined;
-    name?: string | undefined;
-    lastName?: string | undefined;
-    username?: string | undefined;
-    email?: string | undefined;
-    password?: string | undefined;
-    confirmPassword?: string | undefined;
-}
+import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 
 export interface RegisterAccountContextProps {
     propertyForm: RegisterAccount | null;
@@ -32,7 +17,7 @@ export const RegisterAccountContext = createContext<RegisterAccountContextProps 
     step: 0,
     updatePropertyForm: () => null
 })
-
+RegisterAccountContext.displayName = "RegisterAccountFormContext"
 
 interface RegisterAccountContextProviderProps {
     children: ReactNode
