@@ -4,15 +4,15 @@ import {ProductTable} from "@/components/ui/product-table";
 
 async function getProducts(): Promise<Product[]> {
     const response = await retrieveProducts();
-
-    return response.message?.response as Product[];
+    //@ts-ignore
+    return response.message as Product[];
 }
 
 export default async function ProductsPage() {
     const products = await getProducts();
     return (
         <div className={"col-span-3"}>
-            { products && <ProductTable columns={columns} data={products}/>}
+            <ProductTable columns={columns} data={products || []}/>
         </div>
     );
 }
