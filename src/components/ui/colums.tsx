@@ -4,6 +4,8 @@ import {ColumnDef} from "@tanstack/react-table";
 import {FaSort} from "react-icons/fa";
 import {revalidateContent} from "@/_request/revalidateContent";
 import Image from "next/image";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {BsThreeDots} from "react-icons/bs";
 
 export type Product = {
     id: string,
@@ -79,14 +81,19 @@ export const columns: ColumnDef<Product>[] = [
         id: 'actions',
         cell: (_) => {
             return (
-                <div className="dropdown dropdown-left dropdown-end md:dropdown-bottom">
-                    <div tabIndex={0} role="button" className={"p-3"}>...</div>
-                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-background rounded-box w-52">
-                        <li className={"text-black"} onClick={() => revalidateContent('/dashboard/home/menu')}>
-                            <a>Editar</a></li>
-                        <li className={"text-black"}><a>Eliminar</a></li>
-                    </ul>
-                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <BsThreeDots />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => revalidateContent('/dashboard/home/menu')}>
+                            Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            Eliminar
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             )
         }
     }
