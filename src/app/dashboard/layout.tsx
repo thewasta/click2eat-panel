@@ -20,7 +20,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     className={"lg:col-span-6 md:col-span-4 col-span-1 md:grid-cols-3"}>
                     {/* Header   */}
                     <header className="flex items-center justify-between p-4 h-16 shadow-md w-full border-b">
-                        <form className="sm:w-[30%] w-1/2">
+                        <form className="w-[30%] md:w-[50%]">
                             <div className="relative">
                                 <RiSearchLine className="absolute left-2 top-3"/>
                                 <Input className="pl-8 pr-4 py-2 outline-none rounded-lg w-full"

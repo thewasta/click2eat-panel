@@ -86,12 +86,12 @@ export default function SidebarComponent() {
         :
         (
             <Drawer direction={"left"}>
-                <DrawerTrigger className={"absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full"}>
+                <DrawerTrigger className={"z-40 absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full"}>
                     <MenuIcon/>
                 </DrawerTrigger>
                 <DrawerContent>
                     <aside
-                        className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between bg-white">
+                        className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between">
                         <div className="h-16 pl-5 flex items-center 2xl:justify-start justify-center">
                             <h1 className="uppercase font-bold tracking-[4px] cursor-default">
                                 TU LOGO

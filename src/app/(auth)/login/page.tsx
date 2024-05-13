@@ -46,6 +46,7 @@ export default function AuthLogin() {
             form.setError('root.server', {
                 message: response.errorDescription as string
             });
+            return;
         }
         userAppContext.setUser({
             id: response.message.user.id,
