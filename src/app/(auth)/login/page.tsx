@@ -35,6 +35,10 @@ export default function AuthLogin() {
     const userAppContext= useUserAppContext();
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
+        defaultValues: {
+            username: '',
+            password: ''
+        }
     });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
         const loginDto: LoginAccountDto = {
@@ -46,19 +50,19 @@ export default function AuthLogin() {
             form.setError('root.server', {
                 message: response.errorDescription as string
             });
-            return;
+        } else {
+            userAppContext.setUser({
+                id: response.message.user.id,
+                email: response.message.user.email,
+                lastname: response.message.user.lastname,
+                name: response.message.user.name,
+                username: response.message.user.username,
+                status: response.message.user.status,
+                rol: response.message.user.rol,
+                business: response.message.business,
+            });
+            router.push('/dashboard');
         }
-        userAppContext.setUser({
-            id: response.message.user.id,
-            email: response.message.user.email,
-            lastname: response.message.user.lastname,
-            name: response.message.user.name,
-            username: response.message.user.username,
-            status: response.message.user.status,
-            rol: response.message.user.rol,
-            business: response.message.business,
-        });
-        router.push('/dashboard');
     }
     return (
         <>
@@ -98,7 +102,7 @@ export default function AuthLogin() {
                                             Nombre de usuario
                                         </FormLabel>
                                         <FormControl>
-                                            <Input className={"w-1/2"} defaultValue={''}
+                                            <Input className={"w-1/2"}
                                                    placeholder={"nombre de usuario"} {...field}/>
                                         </FormControl>
                                         <FormMessage className={"text-xs text-red-500 font-light"}/>
@@ -110,7 +114,7 @@ export default function AuthLogin() {
                                         Contraseña
                                     </FormLabel>
                                     <FormControl>
-                                        <Input type={"password"} className={"w-1/2 !focus-visible::ring-orange-400"} defaultValue={''}
+                                        <Input type={"password"} className={"w-1/2"}
                                                placeholder={"contraseña"} {...field}/>
                                     </FormControl>
                                     <FormMessage className={"text-xs text-red-500 font-light"}/>
