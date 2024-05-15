@@ -17,6 +17,7 @@ import {
     NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {Separator} from "@/components/ui/separator";
+import Link from "next/link";
 
 const menuItems = [
     {
@@ -69,13 +70,14 @@ export default function SidebarComponent() {
                         {
                             menuItems.map((item, index) => (
                                 <NavigationMenuItem key={index}>
-                                    <NavigationMenuLink
-                                        href={item.path}
-                                        className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
-                                    >
-                                        {item.icon}
-                                        {item.name}
-                                    </NavigationMenuLink>
+                                    <Link href={item.path} passHref>
+                                        <NavigationMenuLink
+                                            className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
+                                        >
+                                            {item.icon}
+                                            {item.name}
+                                        </NavigationMenuLink>
+                                    </Link>
                                 </NavigationMenuItem>
                             ))
                         }
@@ -102,13 +104,14 @@ export default function SidebarComponent() {
                                 {
                                     menuItems.map((item, index) => (
                                         <NavigationMenuItem key={index}>
-                                            <NavigationMenuLink
-                                                href={item.path}
-                                                className={`text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
-                                            >
-                                                {item.icon}
-                                                {item.name}
-                                            </NavigationMenuLink>
+                                            <Link href={item.path} passHref>
+                                                <NavigationMenuLink
+                                                    className={`text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
+                                                >
+                                                    {item.icon}
+                                                    {item.name}
+                                                </NavigationMenuLink>
+                                            </Link>
                                         </NavigationMenuItem>
                                     ))
                                 }
