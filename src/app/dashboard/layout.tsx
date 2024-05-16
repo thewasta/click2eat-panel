@@ -1,10 +1,7 @@
 import type {Metadata} from "next";
 import React, {Suspense} from "react";
 import SidebarComponent from "@/components/navbar/sidebar";
-import {RiArrowDownSLine, RiCheckboxBlankCircleFill, RiNotification2Line, RiSearchLine} from "react-icons/ri";
-import {Input} from "@/components/ui/input";
 import Loading from "@/app/dashboard/loading";
-import {ThemeSwitch} from "@/components/navbar/ThemeSwitch";
 import {DashboardHeader} from "@/components/navbar/DashboardHeader";
 import {ScrollArea} from "@/components/ui/scroll-area";
 

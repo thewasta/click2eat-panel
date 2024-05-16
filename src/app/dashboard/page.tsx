@@ -1,7 +1,6 @@
 "use client"
 
 import {useUserAppContext} from "@/lib/context/auth/user-context";
-import {ScrollArea} from "@/components/ui/scroll-area";
 export default function HomeDashboard() {
     // const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-red-800 bg-violet-600";
     const appContext = useUserAppContext();
