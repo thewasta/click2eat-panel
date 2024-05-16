@@ -6,6 +6,7 @@ import {Input} from "@/components/ui/input";
 import Loading from "@/app/dashboard/loading";
 import {ThemeSwitch} from "@/components/navbar/ThemeSwitch";
 import {DashboardHeader} from "@/components/navbar/DashboardHeader";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 export const metadata: Metadata = {
     title: "Restaurant QR | Panel",
@@ -22,9 +23,11 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     {/* Header   */}
                     <DashboardHeader/>
                     {/*Dashboard content*/}
-                    <div className="grid grid-cols-3 p-12 gap-2">
-                        {children}
-                    </div>
+                    <ScrollArea className={"h-[calc(90vh+30px)]"}>
+                        <div className={"p-12"}>
+                            {children}
+                        </div>
+                    </ScrollArea>
                 </div>
             </div>
         </Suspense>
