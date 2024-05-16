@@ -7,6 +7,7 @@ import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {redirect} from "next/navigation";
 import {RedirectType} from "next/dist/client/components/redirect";
 import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
+import {revalidatePath} from "next/cache";
 
 
 const base64Secret = process.env.JWT_SECRET as string;
@@ -116,6 +117,9 @@ export async function register(
     }
 }
 
+export async function logout() {
+    cookies().delete(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
+}
 const registerBusiness = async (
     businessName: string | undefined,
     document: string | undefined,

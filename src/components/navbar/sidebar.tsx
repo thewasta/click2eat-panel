@@ -70,7 +70,7 @@ export default function SidebarComponent() {
                         {
                             menuItems.map((item, index) => (
                                 <NavigationMenuItem key={index}>
-                                    <Link href={item.path} passHref>
+                                    <Link href={item.path} legacyBehavior passHref>
                                         <NavigationMenuLink
                                             className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
                                         >

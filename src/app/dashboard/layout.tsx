@@ -5,6 +5,7 @@ import {RiArrowDownSLine, RiCheckboxBlankCircleFill, RiNotification2Line, RiSear
 import {Input} from "@/components/ui/input";
 import Loading from "@/app/dashboard/loading";
 import {ThemeSwitch} from "@/components/navbar/ThemeSwitch";
+import {DashboardHeader} from "@/components/navbar/DashboardHeader";
 
 export const metadata: Metadata = {
     title: "Restaurant QR | Panel",
@@ -19,35 +20,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                 <div
                     className={"lg:col-span-6 md:col-span-4 col-span-1 md:grid-cols-3"}>
                     {/* Header   */}
-                    <header className="flex items-center justify-between p-4 h-16 shadow-md w-full border-b">
-                        <form className="w-[30%] md:w-[50%]">
-                            <div className="relative">
-                                <RiSearchLine className="absolute left-2 top-3"/>
-                                <Input className="pl-8 pr-4 py-2 outline-none rounded-lg w-full"
-                                       placeholder="Buscar..."/>
-                            </div>
-                        </form>
-                        <nav className="sm:w-[70%] w-1/2 flex justify-end">
-                            <ul className="flex items-center gap-4">
-                                <li>
-                                    <ThemeSwitch/>
-                                </li>
-                                <li>
-                                    <a href="#" className="relative">
-                                        <RiNotification2Line/>
-                                        <RiCheckboxBlankCircleFill
-                                            className="absolute -right-[1px] -top-[1px] text-[9px] text-red-500"/>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="flex items-center gap-2">
-                                        [USERNAME]
-                                        <RiArrowDownSLine/>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </header>
+                    <DashboardHeader/>
                     {/*Dashboard content*/}
                     <div className="grid grid-cols-3 p-12 gap-2">
                         {children}
