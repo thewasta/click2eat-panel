@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, {Suspense, useState} from "react";
 import {login} from '@/_request/auth/auth'
 import Link from "next/link";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
+import {Loader} from "lucide-react";
 
 const loginSchema = z.object({
     username: z.string({
@@ -31,6 +32,7 @@ const loginSchema = z.object({
 });
 export default function AuthLogin() {
 
+    const [isSubmitting,setIsSubmitting] = useState<boolean>(false)
     const router = useRouter();
     const userAppContext= useUserAppContext();
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -41,6 +43,7 @@ export default function AuthLogin() {
         }
     });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+        setIsSubmitting(true);
         const loginDto: LoginAccountDto = {
             username: values.username,
             password: values.password
@@ -50,6 +53,7 @@ export default function AuthLogin() {
             form.setError('root.server', {
                 message: response.errorDescription as string
             });
+            setIsSubmitting(false);
         } else {
             userAppContext.setUser({
                 id: response.message.user.id,
@@ -61,33 +65,39 @@ export default function AuthLogin() {
                 rol: response.message.user.rol,
                 business: response.message.business,
             });
+            setIsSubmitting(false);
             router.push('/dashboard');
         }
     }
     return (
         <>
             <MiddleLeftSide>
-                <div className="absolute hidden md:flex top-[20%] left-[10%] flex-col">
-                    <h1 className="text-4xl text-white font-extrabold my-4">
-                        Click2Eat
-                    </h1>
-                    <p className="text-xl text-white font-normal">
-                        Sistema gestión para tu negocio
-                    </p>
-                </div>
-                <Image
-                    src="https://placehold.co/750x800"
-                    alt=""
-                    width={750}
-                    height={800}
-                    className="w-full h-full object-cover"
-                />
+                {/*<div className="absolute hidden md:flex top-[20%] left-[10%] flex-col">*/}
+                {/*    <h1 className="text-4xl text-black font-extrabold my-4">*/}
+                {/*        Click2Eat*/}
+                {/*    </h1>*/}
+                {/*    <p className="text-xl text-black font-normal">*/}
+                {/*        Sistema gestión para tu negocio*/}
+                {/*    </p>*/}
+                {/*</div>*/}
+                <Suspense fallback={<Loader/>}>
+                    <Image
+                        src="/assets/auth_main.avif"
+                        alt=""
+                        width={852}
+                        height={520}
+                        className="w-full h-full object-cover"
+                    />
+                </Suspense>
             </MiddleLeftSide>
             {/*bg-[#E0E0E0]*/}
             <MiddleRightSide customClass="justify-center flex gap-5">
                 <div className="w-full flex flex-col justify-center gap-4">
                     <div className="flex flex-col w-full mb-2">
-                        <h3 className="text-3xl font-semibold mb-3 text-center">
+                        <h2 className={"text-center uppercase tracking-wide font-bold text-4xl"}>
+                            Click<span className="text-green-500">2Eat</span>
+                        </h2>
+                        <h3 className="text-xl font-semibold mb-3 text-center">
                             Iniciar Sesión
                         </h3>
                     </div>
@@ -103,6 +113,11 @@ export default function AuthLogin() {
                                         </FormLabel>
                                         <FormControl>
                                             <Input className={"w-1/2"}
+                                                   onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                                                       if (event.key === 'Enter') {
+                                                           form.handleSubmit(onSubmit)()
+                                                       }
+                                                   }}
                                                    placeholder={"nombre de usuario"} {...field}/>
                                         </FormControl>
                                         <FormMessage className={"text-xs text-red-500 font-light"}/>
@@ -115,6 +130,11 @@ export default function AuthLogin() {
                                     </FormLabel>
                                     <FormControl>
                                         <Input type={"password"} className={"w-1/2"}
+                                               onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                                                   if (event.key === 'Enter') {
+                                                       form.handleSubmit(onSubmit)()
+                                                   }
+                                               }}
                                                placeholder={"contraseña"} {...field}/>
                                     </FormControl>
                                     <FormMessage className={"text-xs text-red-500 font-light"}/>
@@ -128,6 +148,7 @@ export default function AuthLogin() {
                     <div className="flex items-center justify-center">
                         <Button
                             type="button"
+                            disabled={isSubmitting}
                             onClick={form.handleSubmit(onSubmit)}>
                             Acceder
                         </Button>
