@@ -19,9 +19,13 @@ interface UserAppContextProviderProps {
 
 export function UserAppContextProvider({children}: UserAppContextProviderProps) {
     const [user, setUser] = useState<User | null>(null)
+    const updateUser = (user: User) => {
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+    }
     return (
         <UserAppContext.Provider
-            value={{user, setUser}}
+            value={{user, setUser: updateUser}}
         >
             {
                 children

@@ -10,6 +10,8 @@ import Link from "next/link";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Sheet, SheetTrigger} from "@/components/ui/sheet";
+import {CreateProductSheet} from "@/components/products/create-product-sheet";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -35,7 +37,7 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
     });
 
     return (
-        <>
+        <Sheet>
             <div className="flex gap-1 items-center py-4 join">
                 <Input
                     className={"w-1/3"}
@@ -47,13 +49,12 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
-                <Button asChild>
-                    <Link
-                        href={"/dashboard/menu/create"}
-                    >
+                <SheetTrigger asChild>
+                    <Button>
                         Crear producto
-                    </Link>
-                </Button>
+                    </Button>
+                </SheetTrigger>
+                <CreateProductSheet/>
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -113,6 +114,6 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                     </Button>
                 </div>
             </div>
-        </>
+        </Sheet>
     )
 }
