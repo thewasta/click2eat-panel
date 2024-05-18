@@ -1,6 +1,6 @@
 import {retrieveProducts} from "@/_request/product/productRetriever";
 import {columns, Product} from "@/components/ui/colums";
-import {ProductTable} from "@/components/ui/product-table";
+import {ProductTable} from "@/components/products/product-table";
 
 async function getProducts(): Promise<Product[]> {
     const response = await retrieveProducts();
