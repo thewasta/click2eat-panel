@@ -1,11 +1,12 @@
 'use client'
 
-import {ColumnDef} from "@tanstack/react-table";
-import {FaSort} from "react-icons/fa";
-import {revalidateContent} from "@/_request/revalidateContent";
+import { ColumnDef } from "@tanstack/react-table";
+import { FaSort } from "react-icons/fa";
 import Image from "next/image";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {BsThreeDots} from "react-icons/bs";
+import { Pencil, Trash2 } from "lucide-react";
+import { Button } from "./button";
+import { remove } from "@/_request/product/product.service";
+import { useMutation } from "@tanstack/react-query";
 
 export type Product = {
     id: string,
@@ -40,7 +41,7 @@ export const columns: ColumnDef<Product>[] = [
                     <div className="avatar">
                         <div className="mask mask-squircle w-12 h-12">
                             <Image src={`https://api-dev.click2eat.es/${imageFilePath}`} alt={"image product"}
-                                   width={25} height={25} unoptimized/>
+                                width={25} height={25} unoptimized />
                         </div>
                     </div>
                 </div>
@@ -79,21 +80,18 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         id: 'actions',
-        cell: (_) => {
+        cell: ({row}) => {
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <BsThreeDots />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => revalidateContent('/dashboard/home/menu')}>
-                            Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            Eliminar
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                    <Button variant={"ghost"} size={"icon"}>
+                        <Pencil />
+                    </Button>
+                    <Button variant={"ghost"} size={"icon"}>
+                        <Trash2 onClick={async () => {
+                            remove(parseInt(row.original.id));
+                        }} />
+                    </Button>
+                </>
             )
         }
     }

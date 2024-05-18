@@ -5,6 +5,7 @@ import FcmTokenComp from "@/components/firebase/firebaseForeground";
 import {Providers} from "@/app/providers";
 import {UserAppContextProvider} from "@/lib/context/auth/user-context";
 import {ReactNode} from "react";
+import {Toaster} from "@/components/ui/sonner";
 
 const inter = Roboto({weight: ['100', '300', '400','500','700','900'],subsets:['latin']});
 
@@ -24,13 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className} overflow-hidden`}>
+        <body className={`${inter.className}`}>
             <Providers>
-            <FcmTokenComp/>
-            <UserAppContextProvider>
-                {children}
-            </UserAppContextProvider>
+                <FcmTokenComp/>
+                <UserAppContextProvider>
+                    {children}
+                </UserAppContextProvider>
             </Providers>
+            <Toaster/>
         </body>
     </html>
   );

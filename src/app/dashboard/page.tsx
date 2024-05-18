@@ -8,7 +8,7 @@ export default function HomeDashboard() {
         <>
             <div className="col-span-2">
                         <span className="font-bold text-xl">
-                            Buenos días, [{appContext.user && appContext.user.username}].
+                            Buenos días, [{appContext.user && appContext.user()?.username}].
                         </span>
                 <p className="text-gray-500 text-sm">
                     Esto es lo que está sucediendo hoy en <span className="underline">[Nombre tienda]</span>

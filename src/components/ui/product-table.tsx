@@ -5,24 +5,37 @@ import {
     getFilteredRowModel
 } from "@tanstack/table-core";
 import {flexRender, useReactTable} from "@tanstack/react-table";
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Sheet, SheetTrigger} from "@/components/ui/sheet";
-import {CreateProductSheet} from "@/components/products/create-product-sheet";
+import {useQuery} from "@tanstack/react-query";
+import {retrieveProducts} from "@/_request/product/productRetriever";
+import {log} from "node:util";
+import {User} from "@/lib/models/Account/User";
+import {Skeleton} from "@/components/ui/skeleton";
+import {useUserAppContext} from "@/lib/context/auth/user-context";
+import {toast} from "sonner";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
-    data: TData[];
 }
 
-export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
+export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TValue>) {
+
+    const {user} = useUserAppContext();
+    const {data: products, error, isLoading} = useQuery({
+        queryKey: ["products", user()?.business.businessUuid],
+        queryFn: async () => retrieveProducts(),
+        refetchInterval: 15 * 1000, // Every minutes
+        retry: false
+    });
+    
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
-        data,
+        data: products?.message as TData || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -37,7 +50,7 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
     });
 
     return (
-        <Sheet>
+        <>
             <div className="flex gap-1 items-center py-4 join">
                 <Input
                     className={"w-1/3"}
@@ -49,12 +62,13 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
-                <SheetTrigger asChild>
-                    <Button>
+                <Button asChild>
+                    <Link
+                        href={"/dashboard/menu/create"}
+                    >
                         Crear producto
-                    </Button>
-                </SheetTrigger>
-                <CreateProductSheet/>
+                    </Link>
+                </Button>
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -77,26 +91,49 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                        {
+                            products &&
+                            (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            )
+                        }
+                        {
+                            isLoading &&
+                            (
+                                <>
+                                    <TableRow>
+                                        {
+                                            columns.map((col, index) => (
+                                                <TableCell key={index}>
+                                                    <Skeleton className="h-4 w-full"/>
+                                                </TableCell>
+                                            ))
+                                        }
+                                    </TableRow>
+                                </>
+                            )
+                        }
+                        {
+                            products?.message.length === 0 &&
+                            (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
+                            )
+                        }
                     </TableBody>
                 </Table>
             </div>
@@ -114,6 +151,6 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                     </Button>
                 </div>
             </div>
-        </Sheet>
+        </>
     )
 }

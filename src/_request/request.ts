@@ -34,7 +34,7 @@ class SessionNotFound extends Error {
     }
 }
 
-export async function requestWithSession(endpoint: string, method: Request_Type, body: BodyInit, nextOptions?: NextFetchRequestConfig) {
+export async function requestWithSession(endpoint: string, method: Request_Type, body?: BodyInit, nextOptions?: NextFetchRequestConfig) {
     try {
         const cookieStore = cookies();
         const sessionToken = cookieStore.get(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
@@ -50,6 +50,7 @@ export async function requestWithSession(endpoint: string, method: Request_Type,
             ...(nextOptions && {next: nextOptions})
         });
 
+        console.log(request);
         if (403 === request.status) {
             throw new SessionNotFound();
         }
@@ -57,6 +58,13 @@ export async function requestWithSession(endpoint: string, method: Request_Type,
         if (500 === request.status) {
             let errorResponse = await request.json();
             throw new RequestError(ErrorCodes.ServerError, ErrorCodes.ServerError, errorResponse);
+        }
+        if (request.status === 204) {
+            return {
+                error: false,
+                errorDescription: null,
+                message: null
+            }
         }
         const response = await request.json();
         return {

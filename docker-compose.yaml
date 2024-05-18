@@ -32,6 +32,12 @@ services:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
     command: npm run dev
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2048M
     volumes:
       - .:/app
       - /app/node_modules
