@@ -31,9 +31,9 @@ const menuItems = [
         path: '/dashboard/menu',
     },
     {
-        name: 'Pedidos',
+        name: 'Mesas',
         icon: <FaBowlFood className="h-6"/>,
-        path: '/dashboard/orders',
+        path: '/dashboard/mesas',
     },
     {
         name: 'Reservas',
