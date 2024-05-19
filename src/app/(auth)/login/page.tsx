@@ -31,9 +31,9 @@ const loginSchema = z.object({
             message: 'Password is required'
         })
 });
-export default function AuthLogin() {
+export default function LoginPage() {
 
-    const [isSubmitting,setIsSubmitting] = useState<boolean>(false)
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const router = useRouter();
     const userAppContext= useUserAppContext();
     const form = useForm<z.infer<typeof loginSchema>>({

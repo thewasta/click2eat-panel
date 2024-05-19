@@ -1,41 +1,33 @@
 'use client'
 import {
-    ColumnDef, getCoreRowModel, getPaginationRowModel,
-    SortingState, getSortedRowModel, ColumnFiltersState,
-    getFilteredRowModel
+    ColumnDef,
+    ColumnFiltersState,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    SortingState
 } from "@tanstack/table-core";
 import {flexRender, useReactTable} from "@tanstack/react-table";
-import {useEffect, useMemo, useState} from "react";
-import Link from "next/link";
+import {useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {useQuery} from "@tanstack/react-query";
-import {retrieveProducts} from "@/_request/product/productRetriever";
-import {log} from "node:util";
-import {User} from "@/lib/models/Account/User";
-import {Skeleton} from "@/components/ui/skeleton";
-import {useUserAppContext} from "@/lib/context/auth/user-context";
-import {toast} from "sonner";
+import {Sheet, SheetTrigger} from "@/components/ui/sheet";
+import {CreateProductSheet} from "@/components/products/create-product-sheet";
+import {TableSkeletonColumns} from "@/components/ui/table-skeleton-columns";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    isLoading: boolean;
 }
 
-export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TValue>) {
-
-    const {user} = useUserAppContext();
-    const {data: products, error, isLoading} = useQuery({
-        queryKey: ["products", user()?.business.businessUuid],
-        queryFn: async () => retrieveProducts(),
-        refetchInterval: 15 * 1000, // Every minutes
-        retry: false
-    });
-    
+export function ProductTable<TData, TValue>({columns, data: products, isLoading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
-        data: products?.message as TData || [],
+        data: products,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -50,7 +42,7 @@ export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TVa
     });
 
     return (
-        <>
+        <Sheet>
             <div className="flex gap-1 items-center py-4 join">
                 <Input
                     className={"w-1/3"}
@@ -62,13 +54,12 @@ export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TVa
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
-                <Button asChild>
-                    <Link
-                        href={"/dashboard/menu/create"}
-                    >
+                <SheetTrigger asChild>
+                    <Button>
                         Crear producto
-                    </Link>
-                </Button>
+                    </Button>
+                </SheetTrigger>
+                <CreateProductSheet/>
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -111,21 +102,11 @@ export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TVa
                         {
                             isLoading &&
                             (
-                                <>
-                                    <TableRow>
-                                        {
-                                            columns.map((col, index) => (
-                                                <TableCell key={index}>
-                                                    <Skeleton className="h-4 w-full"/>
-                                                </TableCell>
-                                            ))
-                                        }
-                                    </TableRow>
-                                </>
+                                <TableSkeletonColumns columns={6} rows={4}/>
                             )
                         }
                         {
-                            products?.message.length === 0 &&
+                            (!isLoading && products?.length === 0) &&
                             (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -151,6 +132,6 @@ export function ProductTable<TData, TValue>({columns}: DataTableProps<TData, TVa
                     </Button>
                 </div>
             </div>
-        </>
+        </Sheet>
     )
 }

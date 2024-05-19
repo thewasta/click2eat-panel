@@ -8,19 +8,13 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import Image from "next/image";
 import {create} from "@/_request/product/create";
-import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {User} from "@/lib/models/Account/User";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {toast} from "sonner";
 
-const MAX_FILE_SIZE = 1024 * 1024 * 10;
-const ACCEPTED_IMAGE_MIME_TYPES = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/webp",
-];
 const createProductSchema = z.object({
     name: z.string({
         required_error: 'Product name is required'
@@ -39,6 +33,19 @@ const createProductSchema = z.object({
 });
 
 export function CreateProductSheet() {
+    const queryClient = useQueryClient();
+    const createMutation = useMutation({
+        mutationFn: create,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['products']
+            });
+            toast.success("Creado correctamente");
+        },
+        onError: () => {
+            toast.error("No ha sido posible crear el producto.");
+        }
+    });
     const form = useForm<z.infer<typeof createProductSchema>>({
         resolver: zodResolver(createProductSchema),
         defaultValues: {
@@ -64,11 +71,7 @@ export function CreateProductSheet() {
             formData.append('image', values.image);
             form.reset();
             setImagePreview(null);
-            try {
-                await create(formData);
-            }catch (e) {
-                console.error(e);
-            }
+            createMutation.mutate(formData)
         }
     }
 
