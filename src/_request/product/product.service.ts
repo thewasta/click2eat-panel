@@ -7,7 +7,11 @@ export async function productRetriever() {
 }
 
 export async function createProduct(formData: FormData) {
-
+    const ENDPOINT = 'api/v1/products';
+    const response = await requestWithSession(ENDPOINT, 'POST', formData);
+    if (response.error) {
+        throw new Error(response.errorDescription);
+    }
 }
 
 export async function removeProduct(productId: number): Promise<any> {

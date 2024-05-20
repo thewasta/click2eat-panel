@@ -5,15 +5,22 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {ChangeEvent, useState} from "react";
 import Image from "next/image";
-import {create} from "@/_request/product/create";
 import {User} from "@/lib/models/Account/User";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {toast} from "sonner";
+import {createProduct} from "@/_request/product/product.service";
 
 const createProductSchema = z.object({
     name: z.string({
@@ -32,29 +39,40 @@ const createProductSchema = z.object({
     })
 });
 
-export function CreateProductSheet() {
+interface ICreateProductSheet {
+    setSheetOpen: (value: boolean) => void
+}
+
+export function CreateProductSheet({setSheetOpen}: ICreateProductSheet) {
     const queryClient = useQueryClient();
-    const createMutation = useMutation({
-        mutationFn: create,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ['products']
-            });
-            toast.success("Creado correctamente");
-        },
-        onError: () => {
-            toast.error("No ha sido posible crear el producto.");
-        }
-    });
     const form = useForm<z.infer<typeof createProductSchema>>({
         resolver: zodResolver(createProductSchema),
         defaultValues: {
             name: '',
             description: '',
-            image: '',
+            image: null,
             price: 0,
-            category: ''
+            category: "0"
         }
+    });
+
+    const createMutation = useMutation({
+        mutationFn: createProduct,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['products']
+            });
+            form.reset({},{keepValues: false});
+            setImagePreview(null);
+
+            toast.success("Creado correctamente");
+        },
+        onError: (error, variables, context) => {
+            toast.error("No ha sido posible crear el producto.",{
+                description: error.message
+            });
+        },
+
     });
     const onSubmit: SubmitHandler<z.infer<typeof createProductSchema>> = async (values: z.infer<typeof createProductSchema>) => {
         const userRaw = localStorage.getItem('user');
@@ -69,10 +87,9 @@ export function CreateProductSheet() {
             formData.append('status', "1");
             formData.append('businessUuid', user?.business.businessUuid as string);
             formData.append('image', values.image);
-            form.reset();
-            setImagePreview(null);
             createMutation.mutate(formData)
         }
+        setSheetOpen(false);
     }
 
     const [imagePreview, setImagePreview] = useState<string | null>()
@@ -135,14 +152,18 @@ export function CreateProductSheet() {
                                         Categoría
                                     </FormLabel>
                                     <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={(value) => form.setValue('category', value)} defaultValue={field.value}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder={"Selecciona Categoría"}/>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectGroup>
+                                                    <SelectItem value={"0"}>Seleccionar categoría</SelectItem>
                                                     <SelectItem value={"1"}>
                                                         Categoría 1
+                                                    </SelectItem>
+                                                    <SelectItem value={"2"}>
+                                                        Categoría 2
                                                     </SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>

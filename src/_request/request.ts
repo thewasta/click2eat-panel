@@ -50,7 +50,6 @@ export async function requestWithSession(endpoint: string, method: Request_Type,
             ...(nextOptions && {next: nextOptions})
         });
 
-        console.log(request);
         if (403 === request.status) {
             throw new SessionNotFound();
         }
