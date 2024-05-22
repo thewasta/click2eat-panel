@@ -1,21 +1,24 @@
-'use client'
-
-import {ColumnDef} from "@tanstack/react-table";
-import {FaSort} from "react-icons/fa";
-import {revalidateContent} from "@/_request/revalidateContent";
+import { ColumnDef } from "@tanstack/react-table";
+import { FaSort } from "react-icons/fa";
 import Image from "next/image";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {BsThreeDots} from "react-icons/bs";
+import ProductTableActionsRows from "@/components/products/table-actions-row";
 
 export type Product = {
-    id: string,
-    name: string,
-    price: number,
-    category: string,
-    status: string
+    businessUuid: string;
+    id: string;
+    name: string;
+    price: number;
+    category: string;
+    status: string;
+    image: string;
+    description: string;
 };
 
-export const columns: ColumnDef<Product>[] = [
+
+interface ProductsColumnsProps {
+    onDelete: (bankAccount: any) => void;
+}
+export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Product>[] => [
     {
         accessorKey: 'id',
         header: ({ column }) => {
@@ -24,11 +27,14 @@ export const columns: ColumnDef<Product>[] = [
                     className={"flex items-center gap-1"}
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    <span>ID</span>
+                    <span>Nº</span>
                     <FaSort />
                 </button>
             )
         },
+        cell: ({row}) => {
+            return parseInt(row.id) + 1;
+        }
     },
     {
         accessorKey: 'image',
@@ -40,7 +46,7 @@ export const columns: ColumnDef<Product>[] = [
                     <div className="avatar">
                         <div className="mask mask-squircle w-12 h-12">
                             <Image src={`https://api-dev.click2eat.es/${imageFilePath}`} alt={"image product"}
-                                   width={25} height={25} unoptimized/>
+                                width={25} height={25} unoptimized />
                         </div>
                     </div>
                 </div>
@@ -79,22 +85,6 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         id: 'actions',
-        cell: (_) => {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <BsThreeDots />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => revalidateContent('/dashboard/home/menu')}>
-                            Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            Eliminar
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        }
+        cell: ({row}) => <ProductTableActionsRows row={row} onDelete={onDelete}/>
     }
 ];

@@ -15,6 +15,7 @@ import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 import {Loader} from "lucide-react";
+import {useMutation} from "@tanstack/react-query";
 
 const loginSchema = z.object({
     username: z.string({
@@ -30,9 +31,9 @@ const loginSchema = z.object({
             message: 'Password is required'
         })
 });
-export default function AuthLogin() {
+export default function LoginPage() {
 
-    const [isSubmitting,setIsSubmitting] = useState<boolean>(false)
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const router = useRouter();
     const userAppContext= useUserAppContext();
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -42,32 +43,42 @@ export default function AuthLogin() {
             password: ''
         }
     });
+    const loginMutation = useMutation({
+        mutationFn: login,
+        onSuccess: (response:any) => {
+            if (response.error) {
+                form.setError('root.server', {
+                    message: response.errorDescription as string
+                });
+            } else {
+                userAppContext.setUser({
+                    id: response.message.user.id,
+                    email: response.message.user.email,
+                    lastname: response.message.user.lastname,
+                    name: response.message.user.name,
+                    username: response.message.user.username,
+                    status: response.message.user.status,
+                    rol: response.message.user.rol,
+                    business: response.message.business,
+                });
+                router.push('/dashboard');
+            }
+            router.push('/')
+        },
+        onError: () => {
+            form.setError('root.server', {
+                message: 'Server error'
+            });
+            setIsSubmitting(false)
+        }
+    });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
         setIsSubmitting(true);
         const loginDto: LoginAccountDto = {
             username: values.username,
             password: values.password
         };
-        const response = await login(loginDto);
-        if (response.error) {
-            form.setError('root.server', {
-                message: response.errorDescription as string
-            });
-            setIsSubmitting(false);
-        } else {
-            userAppContext.setUser({
-                id: response.message.user.id,
-                email: response.message.user.email,
-                lastname: response.message.user.lastname,
-                name: response.message.user.name,
-                username: response.message.user.username,
-                status: response.message.user.status,
-                rol: response.message.user.rol,
-                business: response.message.business,
-            });
-            setIsSubmitting(false);
-            router.push('/dashboard');
-        }
+        loginMutation.mutate(loginDto);
     }
     return (
         <>

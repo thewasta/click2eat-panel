@@ -1,28 +1,33 @@
 'use client'
 import {
-    ColumnDef, getCoreRowModel, getPaginationRowModel,
-    SortingState, getSortedRowModel, ColumnFiltersState,
-    getFilteredRowModel
+    ColumnDef,
+    ColumnFiltersState,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    SortingState
 } from "@tanstack/table-core";
 import {flexRender, useReactTable} from "@tanstack/react-table";
 import {useState} from "react";
-import Link from "next/link";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Sheet, SheetTrigger} from "@/components/ui/sheet";
 import {CreateProductSheet} from "@/components/products/create-product-sheet";
+import {TableSkeletonColumns} from "@/components/ui/table-skeleton-columns";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    isLoading: boolean;
 }
 
-export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
+export function ProductTable<TData, TValue>({columns, data: products, isLoading}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
-        data,
+        data: products,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -36,8 +41,10 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
         }
     });
 
+    const [sheetOpen, setSheetOpen] = useState<boolean>(false);
+
     return (
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <div className="flex gap-1 items-center py-4 join">
                 <Input
                     className={"w-1/3"}
@@ -54,7 +61,7 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         Crear producto
                     </Button>
                 </SheetTrigger>
-                <CreateProductSheet/>
+                <CreateProductSheet setSheetOpen={setSheetOpen}/>
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -77,26 +84,39 @@ export function ProductTable<TData, TValue>({columns, data}: DataTableProps<TDat
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                        {
+                            products &&
+                            (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            )
+                        }
+                        {
+                            isLoading &&
+                            (
+                                <TableSkeletonColumns columns={6} rows={4}/>
+                            )
+                        }
+                        {
+                            (!isLoading && products?.length === 0) &&
+                            (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
+                            )
+                        }
                     </TableBody>
                 </Table>
             </div>
