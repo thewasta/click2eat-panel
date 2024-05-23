@@ -1,26 +1,27 @@
-import {request} from "@/_request/request";
-import { Product } from "./model/product";
+import {handleRequest} from "@/_request/request";
+import {Product} from "./model/product";
 
 interface IProductsResponse {
     error: boolean;
     errorDescription: null | string;
-    message: Product[]
+    message: Product[] | null
 }
 export async function retrieveProducts():Promise<IProductsResponse> {
     const ENDPOINT = 'auth/products';
-    const response = await request(ENDPOINT, 'GET');
-    if(response.message) {
+    try {
+        const response = await handleRequest('GET', ENDPOINT);
         return {
             error: false,
             errorDescription: null,
+            //todo API DEBE DEVOLVER EL MISMO RESPUESTA QUE EL RESTO, ESTÁ DEVOLVIENDO ARRAY
             //@ts-ignore
-            message: response.message
+            message: response
         }
-    }
-    return {
-        error: false,
-        errorDescription: null,
-        //@ts-ignore
-        message: response.message
+    }catch (e) {
+        return {
+            error: true,
+            errorDescription: 'Unhandled error',
+            message: null
+        }
     }
 }

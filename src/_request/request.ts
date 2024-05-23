@@ -2,6 +2,7 @@
 
 import {ErrorCodes} from "@/_lib/constants/errorCodes";
 import {cookies} from "next/headers";
+import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, Method} from "axios";
 
 type Request_Type = 'GET' | 'POST' | 'DELETE';
 
@@ -91,47 +92,41 @@ export async function requestWithSession(endpoint: string, method: Request_Type,
     }
 }
 
-export async function request(endpoint: string, method: Request_Type, body?: {}, nextOptions?: NextFetchRequestConfig): Promise<RequestResponse> {
+export interface SuccessResponse<T> {
+    error: boolean;
+    errorDescription: null | string;
+    response: T | null;
+}
+
+export type Response<T> = SuccessResponse<T>;
+
+
+const http: AxiosInstance = axios.create({
+    baseURL: process.env.API_BASE_URL as string,
+    headers: {
+        'Content-Type': 'application/json',
+    }
+})
+export const handleRequest = async <T>(method: Method, endpoint: string, options?: AxiosRequestConfig): Promise<Response<T>> => {
     try {
-        const response = await fetch(`${process.env.API_BASE_URL}${endpoint}` as string, {
-            credentials: 'include',
-            method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            ...(method !== 'GET' && {body: JSON.stringify(body)}),
-            ...(nextOptions && {next: nextOptions})
+        const response: AxiosResponse<Response<T>> = await http({
+            method,
+            url: endpoint,
+            ...options
         });
-
-        if (response.status === 403) {
-            let errorResponse = await response.json();
-            throw new RequestError(ErrorCodes.WrongUserOrPassword, ErrorCodes.WrongUserOrPassword, errorResponse);
+        return response.data;
+    } catch (e) {
+        if (e instanceof AxiosError) {
+            return {
+                error: true,
+                errorDescription: e.response?.data.message,
+                response: null
+            }
         }
-        if (response.status === 500) {
-            let errorResponse = await response.json();
-            throw new RequestError(ErrorCodes.ServerError, ErrorCodes.ServerError, errorResponse);
-        }
-        const responseBody = await response.json();
         return {
-            error: false,
-            errorDescription: null,
-            message: responseBody
-        }
-    } catch (error) {
-        if (error instanceof RequestError) {
-            return {
-                error: true,
-                errorDescription: error.response.description,
-                message: null
-            }
-
-        } else {
-            return {
-                error: true,
-                //@ts-ignore
-                errorDescription: error.description,
-                message: null
-            }
-        }
+            error: true,
+            errorDescription: 'Server error',
+            response: null
+        };
     }
 }
