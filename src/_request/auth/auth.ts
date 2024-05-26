@@ -35,7 +35,7 @@ export async function login(login: LoginAccountDto): Promise<any> {
             return {
                 error: false,
                 errorDescription: null,
-                message: request
+                message: request.response
             };
         }
     } catch (error) {
