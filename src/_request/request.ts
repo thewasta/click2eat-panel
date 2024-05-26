@@ -109,9 +109,12 @@ const http: AxiosInstance = axios.create({
 })
 export const handleRequest = async <T>(method: Method, endpoint: string, options?: AxiosRequestConfig): Promise<Response<T>> => {
     try {
+        const sessionCookie = cookies().get(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
+
         const response: AxiosResponse<Response<T>> = await http({
             method,
             url: endpoint,
+            ...(sessionCookie && {headers: {Authorization: `Bearer ${sessionCookie.value}`}}),
             ...options
         });
         return response.data;
