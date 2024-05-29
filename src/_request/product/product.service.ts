@@ -1,6 +1,6 @@
 "use server"
 
-import {handleRequest, requestWithSession} from "../request";
+import {handleRequest} from "../request";
 
 export async function productRetriever(): Promise<any> {
     const ENDPOINT = 'auth/products';
@@ -24,9 +24,15 @@ export async function productRetriever(): Promise<any> {
 
 export async function createProduct(formData: FormData) {
     const ENDPOINT = 'api/v1/products';
-    const response = await requestWithSession(ENDPOINT, 'POST', formData);
+    const response = await handleRequest('POST', ENDPOINT, {
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+
     if (response.error) {
-        throw new Error(response.errorDescription);
+        throw new Error(response.errorDescription || 'Error de servidor');
     }
 }
 
@@ -41,6 +47,11 @@ export async function removeProduct(productId: number): Promise<any> {
         }
     }
 
+    return {
+        error: false,
+        errorDescription: null,
+        message: null
+    }
 }
 
 export async function editProduct(formData: FormData): Promise<any> {
