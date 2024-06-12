@@ -1,6 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FaSort } from "react-icons/fa";
-import Image from "next/image";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
 
 export type Product = {
@@ -42,14 +41,8 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
         cell: (cell) => {
             const imageFilePath = cell.getValue();
             return (
-                <div className="flex items-center gap-3">
-                    <div className="avatar">
-                        <div className="mask mask-squircle w-12 h-12">
-                            <Image src={`https://api-dev.click2eat.es/${imageFilePath}`} alt={"image product"}
-                                width={25} height={25} unoptimized />
-                        </div>
-                    </div>
-                </div>
+                <img className={"object-cover h-16 w-12"} src={`https://api-dev.click2eat.es/${imageFilePath}`}
+                     alt={"image product"}/>
             );
         }
     },
