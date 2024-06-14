@@ -7,8 +7,6 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
 import {ChangeEvent} from "react";
-import {Button} from "@/components/ui/button";
-import {ChevronLeft} from "lucide-react";
 import {useRouter} from "next/navigation";
 
 const editProductSchema = z.object({
@@ -46,9 +44,6 @@ export default function EditProductPage({params}: { params: { id: string } }) {
 
     return (
         <>
-            <Button onClick={() => router.back()}>
-                <ChevronLeft />
-            </Button>
             <Form {...pageForm}>
                 <form encType={"multipart/form-data"} className={"space-y-3"}>
                     <FormField
