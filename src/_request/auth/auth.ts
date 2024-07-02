@@ -6,47 +6,54 @@ import * as jose from 'jose';
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 import {LoginResponse} from "@/_request/auth/types/LoginResponse";
+import {createClient} from "@/lib/supabase/server";
+import {redirect} from "next/navigation";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
 const cookieStore = cookies();
 
-export async function login(login: LoginAccountDto): Promise<any> {
-    const ENDPOINT = 'auth/login';
-    try {
-        const tokenExpiration = new Date(0);
-        const request = await handleRequest<LoginResponse>('POST', ENDPOINT, {
-            data: {
-                username: login.username,
-                password: login.password
-            }
-        });
+export async function withGoogleLogin() {
+    const supabase = createClient()
 
-        if (request.error) {
-            return {
-                error: true,
-                errorDescription: request.errorDescription,
-                message: null
-            }
-        }
-
-        if (request.response) {
-            await createSessionCookie(request.response?.token, tokenExpiration);
-            return {
-                error: false,
-                errorDescription: null,
-                message: request.response
-            };
-        }
-    } catch (error) {
-        cookieStore.delete(process.env.NEXT_PUBLIC_COOKIE_NAME as string);
-        return Promise.reject({
-            error: true,
-            //@ts-ignore
-            errorDescription: error.description,
-            message: null
-        })
+    const {data, error} = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
+        },
+    });
+    if (data.url) {
+        redirect(data.url);
     }
+}
+
+export async function withPasswordLogin(formData: LoginAccountDto) {
+    const supabase = createClient();
+
+    const data = {
+        email: formData.username,
+        password: formData.password
+    }
+    const {error} = await supabase.auth.signInWithPassword(data)
+    if (error) {
+        console.error(error.cause, error.name, error.message)
+    }
+    redirect('/');
+}
+
+export async function withPasswordRegister(formData: LoginAccountDto) {
+    const supabase = createClient();
+
+    const data = {
+        email: formData.username,
+        password: formData.password
+    }
+
+    const {error} = await supabase.auth.signUp(data);
+    if (error) {
+        console.log(error)
+    }
+    redirect('/');
 }
 
 async function createSessionCookie(token: string, tokenExpiration: Date) {
@@ -97,7 +104,7 @@ export async function register(
                 message: null
             }
         }
-        if (response.response){
+        if (response.response) {
             await createSessionCookie(response.response.token, tokenExpiration);
             return {
                 error: false,
@@ -116,7 +123,7 @@ export async function register(
 }
 
 export async function logout() {
-    cookieStore.delete(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
+    await createClient().auth.signOut();
 }
 
 const registerBusiness = async (

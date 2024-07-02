@@ -17,5 +17,7 @@ namespace NodeJS {
         NEXT_PUBLIC_FCM_MEASUREMENT_ID: string;
         SENTRY_DSN: string;
         NEXT_PUBLIC_SENTRY_DSN: string;
+        NEXT_PUBLIC_AUTH0_CALLBACK_URL: string;
+        NEXT_PUBLIC_DOMAIN: string;
     }
 }

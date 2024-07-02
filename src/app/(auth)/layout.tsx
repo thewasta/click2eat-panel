@@ -1,6 +1,9 @@
-import React from "react";
+import React, {Suspense} from "react";
 import type {Metadata} from "next";
 import {RegisterAccountContextProvider} from "@/lib/context/auth/register-account-context";
+import MiddleLeftSide from "@/components/auth/middleLeftSide";
+import {Loader} from "lucide-react";
+import MiddleRightSide from "@/components/auth/middleRigthSide";
 
 export const metadata: Metadata = {
     title: "Click2Eat | Iniciar Sesión",
@@ -10,9 +13,20 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
     return (
         <main className="min-h-screen flex items-center justify-center">
             <div className="w-full h-screen flex items-start">
-                <RegisterAccountContextProvider>
+                <MiddleLeftSide>
+                    <Suspense fallback={<Loader/>}>
+                        <img
+                            alt={"Main login image"}
+                            src="/assets/auth_main.avif"
+                            width={852}
+                            height={520}
+                            className="w-full h-full object-cover"
+                        />
+                    </Suspense>
+                </MiddleLeftSide>
+                <MiddleRightSide>
                     {children}
-                </RegisterAccountContextProvider>
+                </MiddleRightSide>
             </div>
         </main>
     );
