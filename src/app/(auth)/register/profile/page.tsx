@@ -1,31 +1,12 @@
 "use client"
 
 import React, {ReactNode} from "react";
-import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
+import {profileSchema, RegisterProfileDTO} from "@/app/(auth)/register/profile/formValidation";
 
-const profileSchema = z.object({
-    name: z.string({
-        required_error: 'Name is required'
-    }).min(1, {
-        message: 'Name is required'
-    }),
-    lastname: z.string({
-        required_error: 'Name is required'
-    }).min(1, {
-        message: 'Name is required'
-    }),
-    avatar: z.string({
-        required_error: 'Name is required'
-    }).min(1, {
-        message: 'Name is required'
-    }),
-})
-
-export type RegisterProfileDTO = z.infer<typeof profileSchema>;
 export default function RegisterProfilePage(): ReactNode {
     const registerForm = useForm<RegisterProfileDTO>({
         resolver: zodResolver(profileSchema),

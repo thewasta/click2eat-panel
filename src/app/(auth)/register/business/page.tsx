@@ -1,5 +1,5 @@
 import React from "react";
-import RegisterBusinessForm from "@/components/auth/RegisterBusiness";
+import RegisterBusinessForm from "@/app/(auth)/register/business/components/RegisterBusiness";
 
 export default async function RegisterBusinessPage() {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import RegisterBusinessLocalForm from "@/components/auth/RegisterBusinessLocal";
+import RegisterBusinessLocalForm from "@/app/(auth)/register/local/components/RegisterBusinessLocal";
 export default async function RegisterBusinessLocalPage() {
     return (
         <>

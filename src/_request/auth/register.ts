@@ -1,6 +1,6 @@
 'use server'
 import {createClient} from "@/lib/supabase/server";
-import {RegisterBusinessDto} from "@/components/auth/RegisterBusiness";
+import {RegisterBusinessDto} from "@/app/(auth)/register/business/formValidation";
 
 export async function registerBusiness(formValues: RegisterBusinessDto) {
     const supabase = createClient();
@@ -16,27 +16,18 @@ export async function registerBusiness(formValues: RegisterBusinessDto) {
         document_type: 'NIF',
         document_number: formValues.document
     }).select('*');
-    console.log({
-        businessError
-    })
     if (businessError && business === null) throw new Error('Error al crear la empresa');
     await supabase.auth.updateUser({
         data: {
             hasBusiness: true,
         },
     });
-    console.log({
-        business: business[0].id,
-        user: user.id
-    });
-    const {data, error} = await supabase.from('business_user_pivot').insert({
+
+    const {data: _, error} = await supabase.from('business_user_pivot').insert({
         business: business[0].id,
         user: user.id
     }).select('*');
-    console.log({
-        data
-        , error
-    })
+
     if (error) {
         throw new Error('error en la tabla pivote');
     }
@@ -71,7 +62,7 @@ export async function registerBusinessLocal(values: FormData) {
         throw new Error('Error al guardar local');
     }
     const {
-        data: businessLocalPivot,
+        data: _,
         error: businessLocalPivotError
     } = await supabase.from('business_local_user_pivot').insert({
         business_local: data[0].id,
