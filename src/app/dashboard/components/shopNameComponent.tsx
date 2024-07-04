@@ -23,7 +23,7 @@ export default function ShopNameComponent() {
 
     return (
         <span className={'underline'}>
-            {business ?? 'NO DATA'}
+            {business ?? '[COMPANY_NAME]'}
         </span>
     )
 }
