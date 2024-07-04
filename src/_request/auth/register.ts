@@ -23,6 +23,7 @@ export async function registerBusiness(formValues: RegisterBusinessDto) {
         },
     });
 
+    //@todo UPDATE user role to owner
     const {data: _, error} = await supabase.from('business_user_pivot').insert({
         business: business[0].id,
         user: user.id
