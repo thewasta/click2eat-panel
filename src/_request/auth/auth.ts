@@ -14,7 +14,7 @@ const secret = Buffer.from(base64Secret, 'base64');
 const cookieStore = cookies();
 
 export async function withGoogleLogin() {
-    const supabase = createClient()
+    const supabase = createClient();
 
     const {data, error} = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -22,6 +22,7 @@ export async function withGoogleLogin() {
             redirectTo: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
         },
     });
+    if (error) throw new Error('Error de autenticación');
     if (data.url) {
         redirect(data.url);
     }

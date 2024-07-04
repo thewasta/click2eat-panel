@@ -1,10 +1,8 @@
 "use client"
 
-import React, {Suspense, useState} from "react";
+import React, {useState} from "react";
 import {withGoogleLogin, withPasswordLogin, withPasswordRegister} from '@/_request/auth/auth'
 import Link from "next/link";
-import MiddleLeftSide from "@/components/auth/middleLeftSide";
-import MiddleRightSide from "@/components/auth/middleRigthSide";
 import {Button} from "@/components/ui/button";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -13,7 +11,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useRouter} from "next/navigation";
-import {Loader} from "lucide-react";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
 
@@ -31,11 +28,13 @@ const loginSchema = z.object({
             message: 'Password is required'
         })
 });
+
+export type LoginDto = z.infer<typeof loginSchema>;
 export default function LoginPage() {
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const router = useRouter();
-    const form = useForm<z.infer<typeof loginSchema>>({
+    const form = useForm<LoginDto>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             username: '',
@@ -44,7 +43,7 @@ export default function LoginPage() {
     });
     const loginMutation = useMutation({
         mutationFn: withPasswordLogin,
-        onSuccess: (response:any) => {
+        onSuccess: (response: any) => {
             if (response.error) {
                 form.setError('root.server', {
                     message: response.errorDescription as string
@@ -62,7 +61,7 @@ export default function LoginPage() {
 
     const registerMutation = useMutation({
         mutationFn: withPasswordRegister,
-        onSuccess: (response:any) => {
+        onSuccess: (response: any) => {
             toast.success('Login correcto');
         },
         onError: () => {
@@ -72,7 +71,14 @@ export default function LoginPage() {
             setIsSubmitting(false)
         }
     });
-    const onRegister: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+
+    const googleMutation = useMutation({
+        mutationFn: withGoogleLogin,
+        onError: () => {
+            toast.error('Ha ocurrido un error.');
+        },
+    })
+    const onRegister: SubmitHandler<LoginDto> = async (values: LoginDto) => {
         setIsSubmitting(true);
         const loginDto: LoginAccountDto = {
             username: values.username,
@@ -81,7 +87,7 @@ export default function LoginPage() {
 
         registerMutation.mutate(loginDto);
     }
-    const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+    const onSubmit: SubmitHandler<LoginDto> = async (values: LoginDto) => {
         setIsSubmitting(true);
         const loginDto: LoginAccountDto = {
             username: values.username,
@@ -91,7 +97,7 @@ export default function LoginPage() {
     }
     return (
         <>
-            <div className="w-full flex flex-col justify-center gap-4">
+            <div className="w-full h-full flex flex-col justify-center gap-4">
                 <div className="flex flex-col w-full mb-2">
                     <h2 className={"text-center uppercase tracking-wide font-bold text-4xl"}>
                         Click<span className="text-green-500">2Eat</span>
@@ -111,13 +117,13 @@ export default function LoginPage() {
                                         Correo electrónico
                                     </FormLabel>
                                     <FormControl>
-                                        <Input className={"w-1/2"}
+                                        <Input className={"w-full md:w-1/2"}
                                                onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
                                                    if (event.key === 'Enter') {
                                                        form.handleSubmit(onSubmit)()
                                                    }
                                                }}
-                                               placeholder={"correo electrónico"} {...field}/>
+                                               placeholder={"mimail@foo.com"} {...field}/>
                                     </FormControl>
                                     <FormMessage className={"text-xs text-red-500 font-light"}/>
                                 </FormItem>
@@ -128,13 +134,13 @@ export default function LoginPage() {
                                     Contraseña
                                 </FormLabel>
                                 <FormControl>
-                                    <Input type={"password"} className={"w-1/2"}
+                                    <Input type={"password"} className={"w-full md:w-1/2"}
                                            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
                                                if (event.key === 'Enter') {
                                                    form.handleSubmit(onSubmit)()
                                                }
                                            }}
-                                           placeholder={"contraseña"} {...field}/>
+                                           placeholder={"************"} {...field}/>
                                 </FormControl>
                                 <FormMessage className={"text-xs text-red-500 font-light"}/>
                             </FormItem>
@@ -147,19 +153,19 @@ export default function LoginPage() {
                 <div className="flex gap-2 items-center justify-center">
                     <Button
                         type="button"
-                        disabled={isSubmitting}
+                        disabled={loginMutation.isPending}
                         onClick={form.handleSubmit(onSubmit)}>
                         Acceder
                     </Button>
                     <Button
                         type={"button"}
-                        disabled={isSubmitting}
+                        disabled={loginMutation.isPending}
                         onClick={form.handleSubmit(onRegister)}
                     >
                         Registrarse
                     </Button>
                     <Button type="button"
-                            onClick={() => withGoogleLogin()}>
+                            onClick={() => googleMutation.mutate()}>
                         <svg className="mr-2 -ml-1 w-4 h-4" aria-hidden="true" focusable="false" data-prefix="fab"
                              data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                             <path fill="currentColor"
