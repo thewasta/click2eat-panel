@@ -37,14 +37,17 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
         }
     },
     {
-        accessorKey: 'image',
+        accessorKey: 'images',
         header: 'Imagen',
-        cell: (cell) => {
-            const imageFilePath = cell.getValue();
+        cell: ({cell,row}) => {
+            const imageFilePath = cell.getValue<string[]>()[0] as string;
             return (
-                <img className={"object-cover h-16 w-12"} src={`https://api-dev.click2eat.es/${imageFilePath}`}
-                     alt={"image product"}/>
-            );
+                <div className={'aspect-h-1 aspect-w-1 w-16'}>
+                    <img className={"object-cover"}
+                         src={`${process.env.NEXT_PUBLIC_BUCKET_STORAGE}${imageFilePath}`}
+                         alt={"image product"}/>
+                </div>
+            )
         }
     },
     {
