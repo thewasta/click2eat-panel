@@ -10,6 +10,9 @@ const config = {
 	],
   prefix: "",
   theme: {
+    aspectRatio: {
+      square: '1 / 1',
+    },
     container: {
       center: true,
       padding: "2rem",
@@ -74,7 +77,10 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  corePlugins: {
+    aspectRatio: false
+  },
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/aspect-ratio')],
 } satisfies Config
 
 export default config

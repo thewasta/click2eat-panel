@@ -19,6 +19,8 @@ import {
 import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 
+import {Icon} from 'lucide-react';
+
 const menuItems = [
     {
         name: 'Panel',
@@ -29,6 +31,11 @@ const menuItems = [
         name: 'Productos',
         icon: <BiSolidFoodMenu className="h-6"/>,
         path: '/dashboard/products',
+    },
+    {
+        name: 'Categorías',
+        icon: <BiSolidFoodMenu className="h-6"/>,
+        path: '/dashboard/categories'
     },
     {
         name: 'Pedidos',
@@ -88,7 +95,8 @@ export default function SidebarComponent() {
         :
         (
             <Drawer direction={"left"}>
-                <DrawerTrigger className={"z-40 absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full"}>
+                <DrawerTrigger
+                    className={"z-40 absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full"}>
                     <MenuIcon/>
                 </DrawerTrigger>
                 <DrawerContent>
