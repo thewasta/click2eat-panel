@@ -25,8 +25,8 @@ export async function registerBusiness(formValues: RegisterBusinessDto) {
 
     //@todo UPDATE user role to owner
     const {data: _, error} = await supabase.from('business_user_pivot').insert({
-        business: business[0].id,
-        user: user.id
+        business_id: business[0].business_id,
+        user_id: user.id
     }).select('*');
 
     if (error) {
@@ -37,10 +37,11 @@ export async function registerBusiness(formValues: RegisterBusinessDto) {
 export async function registerBusinessLocal(values: FormData) {
     const supabase = createClient();
     const {data: {user}} = await supabase.auth.getUser();
+    if (!user) throw new Error('User session not valid')
     const {
         data: businessUserPivot,
         error: businessUserPivotError
-    } = await supabase.from('business_user_pivot').select('*').eq('user', user?.id);
+    } = await supabase.from('business_user_pivot').select('*').eq('user_id', user.id);
 
     if (businessUserPivotError) throw new Error('Error en tabla pivote');
 
@@ -49,25 +50,22 @@ export async function registerBusinessLocal(values: FormData) {
     const image = values.get('image');
 
     const {data, error} = await supabase.from('business_local').insert({
-        business_id: business.business,
-        address: values.get('address'),
-        postal_code: values.get('postalCode'),
-        town: values.get('town'),
-        province: values.get('province'),
-        country: values.get('country')
+        business_id: business.business_id,
+        address: values.get('address') as string,
+        postal_code: values.get('postalCode') as string,
+        town: values.get('town') as string,
+        province: values.get('province') as string,
+        country: values.get('country') as string
     }).select('*');
     if (error && !data) {
-        console.log({
-            error
-        })
         throw new Error('Error al guardar local');
     }
     const {
         data: _,
         error: businessLocalPivotError
     } = await supabase.from('business_local_user_pivot').insert({
-        business_local: data[0].id,
-        user: user?.id
+        business_local_id: data[0].business_local_id,
+        user_id: user?.id
     });
     if (businessLocalPivotError) {
         throw new Error('Error en la tabla pivote');
@@ -78,6 +76,6 @@ export async function registerBusinessLocal(values: FormData) {
         }
     });
     if (image) {
-        await supabase.storage.from('click2eat').upload(`${business.business}/${data[0].id}_business_local`, image);
+        await supabase.storage.from('click2eat').upload(`${business.business_id}/${data[0].business_local_id}_business_local`, image);
     }
 }
