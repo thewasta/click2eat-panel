@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FaSort } from "react-icons/fa";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
+import {Tables} from "@/types/database/database";
 
 export type Product = {
     businessUuid: string;
@@ -68,6 +69,10 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
     {
         accessorKey: 'category',
         header: 'Categoría',
+        cell: ({cell,row}) => {
+            const category = cell.getValue<Tables<'category'>>();
+            return category.name
+        }
     },
     {
         accessorKey: 'status',
