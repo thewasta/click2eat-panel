@@ -12,11 +12,17 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {CategoryItemInput} from "@/app/dashboard/products/components/categoryItemInput";
 import {Textarea} from "@/components/ui/textarea";
-import {ChangeEvent} from "react";
+import React, {ChangeEvent, useEffect} from "react";
 import {Tables} from "@/types/database/database";
 import {retrieve as categoryRetrieve} from "@/app/actions/category/category.service";
 import {Button} from "@/components/ui/button";
 import {Switch} from "@/components/ui/switch";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {format} from "date-fns";
+import {es} from 'date-fns/locale'
+import {Calendar} from "@/components/ui/calendar";
+import {CalendarIcon} from "lucide-react";
 
 export default function CreateProductPage()  {
     const queryClient = useQueryClient();
@@ -28,18 +34,29 @@ export default function CreateProductPage()  {
         retry: true,
     });
 
+    useEffect(() => {
+        if (categoriesError === null) {
+            queryClient.invalidateQueries({
+                queryKey: ["categories"]
+            });
+            queryClient.refetchQueries({
+                queryKey: ["categories"]
+            });
+        }
+    }, [categoriesError])
     const form = useForm<CreateProductDTO>({
         resolver: zodResolver(createProductSchema),
         defaultValues: {
             name: '',
             description: '',
-            image: undefined,
+            images: undefined,
             price: 0,
             category: '',
             subCategory: '',
             offerPrice: 0,
             highlight: false,
-            status: ''
+            status: '',
+            publishDate: undefined,
         }
     });
 
@@ -49,8 +66,6 @@ export default function CreateProductPage()  {
             await queryClient.invalidateQueries({
                 queryKey: ['products']
             });
-            form.reset({}, {keepValues: false});
-
             toast.success("Creado correctamente");
         },
         onError: (error, variables, context) => {
@@ -73,13 +88,13 @@ export default function CreateProductPage()  {
                 <Button variant={'ghost'}>
                     Guardar borrador
                 </Button>
-                <Button>
+                <Button onClick={form.handleSubmit(onSubmit)}>
                     Publicar
                 </Button>
             </section>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} encType={"multipart/form-data"}
-                      className={"space-y-3"}>
+                      className={"space-y-5"}>
                     <FormField
                         name={'highlight'}
                         control={form.control}
@@ -122,40 +137,87 @@ export default function CreateProductPage()  {
                             )}
                         />
                         <FormField
-                            name={"category"}
+                            control={form.control}
+                            name="publishDate"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="pr-4">Programar publicación</FormLabel>
+                                    <Popover
+                                    >
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant="outline"
+                                                    className={cn(
+                                                        'w-full pl-3 text-left font-normal',
+                                                        !field.value && 'text-muted-foreground',
+                                                    )}
+                                                >
+                                                    {field.value ? (
+                                                        `${field.value.toLocaleString([])}`
+                                                    ) : (
+                                                        <span>01/01/2024, 0:00:00</span>
+                                                    )}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent>
+                                            <Calendar
+                                                locale={es}
+                                                className="p-0 capitalize"
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) => date < new Date()}
+                                                initialFocus
+                                            />
+                                            <Input
+                                                type="time"
+                                                className="mt-2"
+                                                // take hours and minutes and update our Date object then change date object to our new value
+                                                onChange={(selectedTime) => {
+                                                    const currentTime = field.value;
+                                                    currentTime?.setHours(
+                                                        parseInt(selectedTime.target.value.split(':')[0]),
+                                                        parseInt(selectedTime.target.value.split(':')[1]),
+                                                        0,
+                                                    );
+                                                    field.onChange(currentTime);
+                                                }}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                    <FormDescription>
+                                        Fecha y hora a partir de la que estará disponible el producto.
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name={'price'}
                             control={form.control}
                             render={({field}) => (
                                 <FormItem
-                                    className={'w-full md:w-2/6'}
                                 >
                                     <FormLabel>
-                                        Categoría
+                                        Precio
                                     </FormLabel>
-                                    <Select required onValueChange={(value) => form.setValue('category', value)}
-                                            defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={"Selecciona Categoría"}/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value={"0"}>Seleccionar categoría</SelectItem>
-                                                {
-                                                    categories &&
-                                                    categories.map((category, index) => (
-                                                        <CategoryItemInput {...category} key={index}/>
-                                                    ))
-                                                }
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    <FormControl>
+                                        <Input
+                                            autoComplete={"off"}
+                                            type={"number"}
+                                            placeholder={"Precio"}
+                                            {...field}
+                                        />
+                                    </FormControl>
                                     <FormMessage/>
                                 </FormItem>
                             )}
                         />
                         <FormField
-                            name={"status"}
+                            name={'status'}
                             control={form.control}
                             render={({field}) => (
                                 <FormItem
@@ -174,13 +236,13 @@ export default function CreateProductPage()  {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectItem value={"0"}>Seleccionar Estado</SelectItem>
-                                                <SelectItem value={'1'}>
+                                                <SelectItem value={'DRAFT'}>
                                                     Borrador
                                                 </SelectItem>
-                                                <SelectItem value={'2'}>
+                                                <SelectItem value={'PUBLISHED'}>
                                                     Activo
                                                 </SelectItem>
-                                                <SelectItem value={'3'}>
+                                                <SelectItem value={'DISCONTINUED'}>
                                                     Descatalogado
                                                 </SelectItem>
                                             </SelectGroup>
@@ -193,17 +255,18 @@ export default function CreateProductPage()  {
                     </div>
                     <div className={'flex flex-col xl:flex-row gap-3'}>
                         <FormField
-                            name={"price"}
+                            name={'offerPrice'}
                             control={form.control}
                             render={({field}) => (
                                 <FormItem
                                     className={'w-full md:w-1/6'}
                                 >
                                     <FormLabel>
-                                        Precio
+                                        Oferta
                                     </FormLabel>
                                     <FormControl>
                                         <Input
+                                            required={false}
                                             autoComplete={"off"}
                                             type={"number"}
                                             placeholder={"Precio"}
@@ -247,6 +310,39 @@ export default function CreateProductPage()  {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            name={"category"}
+                            control={form.control}
+                            render={({field}) => (
+                                <FormItem
+                                    className={'w-full md:w-2/6'}
+                                >
+                                    <FormLabel>
+                                        Categoría
+                                    </FormLabel>
+                                    <Select required onValueChange={(value) => form.setValue('category', value)}
+                                            defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={"Selecciona Categoría"}/>
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value={"0"}>Seleccionar categoría</SelectItem>
+                                                {
+                                                    categories &&
+                                                    categories.map((category, index) => (
+                                                        <CategoryItemInput {...category} key={index}/>
+                                                    ))
+                                                }
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
                     </div>
                     <FormField
                         name={"description"}
@@ -262,11 +358,12 @@ export default function CreateProductPage()  {
                                         {...field}
                                     />
                                 </FormControl>
+                                <FormMessage/>
                             </FormItem>
                         )}
                     />
                     <FormField
-                        name={"image"}
+                        name={"images"}
                         render={({field: {ref, name, onChange, onBlur}}) => (
                             <FormItem>
                                 <FormLabel>
@@ -276,7 +373,6 @@ export default function CreateProductPage()  {
                                     <Input
                                         multiple
                                         accept={'image/*'}
-                                        required
                                         type={"file"}
                                         onChange={(event: ChangeEvent<HTMLInputElement>) => {
                                             const filesArray = Array.from(event.target.files || []);
@@ -293,6 +389,9 @@ export default function CreateProductPage()  {
                     />
                 </form>
             </Form>
+            {
+                JSON.stringify(form.formState.errors) ?? ''
+            }
         </div>
     )
 }

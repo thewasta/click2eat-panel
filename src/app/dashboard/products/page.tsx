@@ -24,7 +24,7 @@ export default function ProductsPage() {
 
     useEffect(() => {
         if (error) {
-            router.replace('/');
+            router.refresh();
         }
     }, [error]);
 

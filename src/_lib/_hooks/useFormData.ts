@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 
-type FormDataValue = string | number | boolean | File | File[];
+type FormDataValue = string | number | boolean | File | File[] | Date;
 
 type DTO = Record<string, FormDataValue>;
 

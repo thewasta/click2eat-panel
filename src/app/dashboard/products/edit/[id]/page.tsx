@@ -25,7 +25,7 @@ const editProductSchema = z.object({
         required_error: 'a Image is required'
     })
 });
-export default function EditProductPage({params}: { params: { id: string } }) {
+export default function EditProductPage({params}: { params: { uid: string } }) {
 
     const router = useRouter();
     const pageForm = useForm<z.infer<typeof editProductSchema>>({
