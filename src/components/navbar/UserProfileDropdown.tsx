@@ -29,9 +29,11 @@ export function UserProfileDropdown() {
                   </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator/>
-              <DropdownMenuItem onClick={async () => {
-                  await logout()
-                  router.replace('/');
+              <DropdownMenuItem onClick={() => {
+                  logout()
+                      .then(_ => {
+                          router.refresh();
+                      });
               }}>
                   Salir
               </DropdownMenuItem>
