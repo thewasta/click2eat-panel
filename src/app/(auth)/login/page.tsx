@@ -177,14 +177,6 @@ export default function LoginPage() {
 
                 </div>
             </div>
-            <div className="w-full flex items-center justify-center">
-                <p className="text-sm font-normal">¿No tienes cuenta?
-                    <Link href={"/register"}
-                          className="ml-1 font-semibold underline underline-offset-2 cursor-pointer">
-                        Registrate
-                    </Link>
-                </p>
-            </div>
         </>
     );
 }
