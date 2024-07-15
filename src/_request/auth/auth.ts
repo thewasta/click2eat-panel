@@ -38,6 +38,7 @@ export async function withPasswordLogin(formData: LoginAccountDto) {
     const {error} = await supabase.auth.signInWithPassword(data)
     if (error) {
         console.error(error.cause, error.name, error.message)
+        throw new Error(error.stack)
     }
     redirect('/');
 }
@@ -52,7 +53,7 @@ export async function withPasswordRegister(formData: LoginAccountDto) {
 
     const {error} = await supabase.auth.signUp(data);
     if (error) {
-        console.log(error)
+        throw new Error(error.stack)
     }
     redirect('/');
 }
