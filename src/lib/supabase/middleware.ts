@@ -66,7 +66,6 @@ export async function updateSession(req: NextRequest) {
     const url = req.nextUrl.clone();
 
     if (error && (url.pathname !== '/login' && url.pathname !== '/auth/callback')) {
-        await supabase.auth.signOut();
         url.pathname = '/login';
         return NextResponse.redirect(url);
     }
@@ -87,7 +86,9 @@ export async function updateSession(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        if (!req.nextUrl.pathname.startsWith('/dashboard')) {
+        if (!req.nextUrl.pathname.startsWith('/dashboard') &&
+            !req.nextUrl.pathname.startsWith('/register')
+        ) {
             url.pathname = '/dashboard';
             return NextResponse.redirect(url);
         }
@@ -105,12 +106,14 @@ function userRequireMetadata(user: User, req: NextRequest) {
     }
 
     if (!user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal &&
+        user?.user_metadata.full_name !== undefined &&
         currentPath !== '/register/business'
     ) {
         return '/register/business';
     }
 
     if (user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal &&
+        user?.user_metadata.full_name !== undefined &&
         currentPath !== '/register/local'
     ) {
         return '/register/local';
