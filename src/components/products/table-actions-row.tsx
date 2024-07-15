@@ -12,7 +12,7 @@ interface IProductTableActionProps<TData> {
 const ProductTableActionsRows = <TData, >({row, onDelete}: IProductTableActionProps<TData>) => {
     return (
         <>
-            <Link href={`/dashboard/menu/edit/${(row.original as Tables<'product'>).product_id}`}>
+            <Link href={`/dashboard/products/edit/${(row.original as Tables<'product'>).product_id}`}>
                 <Button variant={"ghost"} size={"icon"}>
                     <Pencil />
                 </Button>

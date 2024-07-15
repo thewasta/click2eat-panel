@@ -65,6 +65,11 @@ export async function create(values: TypedFormData<CreateProductDTO>): Promise<a
     }
 }
 
-export async function remove(): Promise<any> {
+export async function removeProduct(productId: string): Promise<any> {
+    const supabase = createClient();
 
+    const {data, error,statusText} = await supabase.from('product').delete().eq('product_id', productId).select('*');
+    if (error) {
+        throw new Error(error.message);
+    }
 }
