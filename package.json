@@ -9,7 +9,9 @@
     "lint": "next lint",
     "test": "npx playwright test",
     "test:report": "npx playwright show-report test-results",
-    "gen:types": "npx supabase gen types typescript --project-id  > src/types/database/database.ts"
+    "gen:types": "npx supabase gen types typescript --project-id  > src/types/database/database.ts",
+    "env:pull": "npx dotenv-vault@latest pull",
+    "env:push": "npx dotenv-vault@latest push"
   },
   "dependencies": {
     "@amcharts/amcharts5": "^5.8.4",
