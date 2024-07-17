@@ -9,8 +9,10 @@ import {toast} from "sonner";
 import {registerBusinessLocal} from "@/_request/auth/register";
 import {useMutation} from "@tanstack/react-query";
 import {RegisterBusinessLocalDto, registerLocalSchema} from "@/app/(auth)/register/local/formValidation";
+import {useRouter} from "next/navigation";
 
 export function RegisterBusinessLocalForm() {
+    const {push} = useRouter();
     const businessForm = useForm<RegisterBusinessLocalDto>({
         resolver: zodResolver(registerLocalSchema),
         defaultValues: {
@@ -32,8 +34,9 @@ export function RegisterBusinessLocalForm() {
             toast.success('Registro completado', {
                 description: 'En breves segundos serás redirigido a tu panel'
             });
+            push('/dashboard');
         },
-        onError: (error, variables, context) => {
+        onError: () => {
             toast.error('Error de registro', {
                 description: 'Este error ha sido reportado'
             });

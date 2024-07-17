@@ -1,19 +1,19 @@
 'use client'
 
-import React, {ReactNode, useState} from "react";
+import React, {ReactNode} from "react";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {z} from "zod";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {registerBusiness as actionRegisterBusiness} from "@/_request/auth/register";
 import {toast} from "sonner";
-import {redirect} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
 import {registerBusiness, RegisterBusinessDto} from "@/app/(auth)/register/business/formValidation";
 
 export function RegisterBusinessForm(): ReactNode {
+    const {push} = useRouter();
     const businessForm = useForm<RegisterBusinessDto>({
         resolver: zodResolver(registerBusiness),
         defaultValues: {
@@ -29,11 +29,11 @@ export function RegisterBusinessForm(): ReactNode {
 
     const mutation = useMutation({
         mutationFn: actionRegisterBusiness,
-        onSuccess: async (data, variables, context) => {
+        onSuccess: async () => {
             toast.success('Registrado correctamente');
-            redirect('/register/local');
+            push('/register/local');
         },
-        onError: (error, variables, context) => {
+        onError: (error) => {
             console.log(error);
             toast.error('Error al registrar');
         }
