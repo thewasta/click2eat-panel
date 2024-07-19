@@ -1,0 +1,45 @@
+.bodyContainer {
+    display: flex;
+    gap: 20px;
+}
+
+.tableContainer {
+    display: flex;
+    row-gap: 5px;
+    width: 100px;
+    flex-direction: column;
+}
+
+.chairsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.chair {
+    width: 40px;
+    height: 20px;
+    background-color: orange;
+    border-radius: 20px 20px 0 0;
+}
+
+.chairBottom {
+
+    transform: rotate(180deg);
+}
+
+.table {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.four {
+    width: 140px
+}
+
+.six {
+    width: 180px;
+}
