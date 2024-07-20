@@ -18,22 +18,46 @@ import {
 } from "@/components/ui/navigation-menu";
 import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
+import {ReactNode} from "react";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 
-const menuItems = [
+type SubMenu = Menu & {
+    icon: null
+}
+
+type Menu = {
+    name: string;
+    icon: ReactNode
+    path: string;
+    subMenu?: SubMenu[]
+}
+const menuItems: Menu[] = [
     {
         name: 'Panel',
         icon: <MdDashboard className="h-6"/>,
         path: '/dashboard/',
     },
     {
-        name: 'Productos',
+        name: 'Menú',
         icon: <BiSolidFoodMenu className="h-6"/>,
         path: '/dashboard/products',
-    },
-    {
-        name: 'Categorías',
-        icon: <BiSolidFoodMenu className="h-6"/>,
-        path: '/dashboard/categories'
+        subMenu: [
+            {
+                name: 'Productos',
+                icon: null,
+                path: '/dashboard/products'
+            },
+            {
+                name: 'Categorías',
+                icon: null,
+                path: '/dashboard/categories'
+            },
+            // {
+            //     name: 'Ingredientes',
+            //     icon: null,
+            //     path: '/dashboard/ingredients'
+            // },
+        ]
     },
     {
         name: 'Pedidos',
@@ -71,21 +95,47 @@ export default function SidebarComponent() {
                 </div>
                 <Separator/>
                 <NavigationMenu className={"hola-example"}>
-                    <NavigationMenuList className={"flex-col gap-3"} aria-orientation={"vertical"}>
-                        {
-                            menuItems.map((item, index) => (
-                                <NavigationMenuItem key={index}>
-                                    <Link href={item.path} legacyBehavior passHref>
-                                        <NavigationMenuLink
-                                            className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
-                                        >
-                                            {item.icon}
-                                            {item.name}
-                                        </NavigationMenuLink>
-                                    </Link>
-                                </NavigationMenuItem>
-                            ))
-                        }
+                    <NavigationMenuList>
+                        <Accordion type={"single"} collapsible>
+                            {
+                                menuItems.map((menu, index) => {
+                                    if (menu.subMenu) {
+                                        return (
+                                            <AccordionItem value={menu.name} key={index} className={"border-b-0"}>
+                                                <AccordionTrigger className={'justify-center gap-3'}>{menu.name}</AccordionTrigger>
+                                                <AccordionContent>
+                                                    {menu.subMenu.map((subMenuItem, index) => (
+                                                        <NavigationMenuItem key={index}>
+                                                            <Link href={subMenuItem.path} legacyBehavior passHref>
+                                                                <NavigationMenuLink
+                                                                    className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == subMenuItem.path ? activeClassname : ''}`}
+                                                                >
+                                                                    {subMenuItem.icon}
+                                                                    {subMenuItem.name}
+                                                                </NavigationMenuLink>
+                                                            </Link>
+                                                        </NavigationMenuItem>
+                                                    ))
+                                                    }
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        );
+                                    }
+                                    return (
+                                        <NavigationMenuItem key={index}>
+                                            <Link href={menu.path} legacyBehavior passHref>
+                                                <NavigationMenuLink
+                                                    className={`py-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == menu.path ? activeClassname : ''}`}
+                                                >
+                                                    {menu.name}
+                                                    {menu.icon}
+                                                </NavigationMenuLink>
+                                            </Link>
+                                        </NavigationMenuItem>
+                                    );
+                                })
+                            }
+                        </Accordion>
                     </NavigationMenuList>
                 </NavigationMenu>
             </aside>
