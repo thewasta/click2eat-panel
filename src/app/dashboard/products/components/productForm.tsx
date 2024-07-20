@@ -43,7 +43,7 @@ export default function ProductForm<T>({product, submitHandler, isEdit, categori
     });
     return (
         <div>
-            <section className={'flex justify-end mb-3'}>
+            <section className={'flex gap-2 justify-end mb-3'}>
                 {
                     isEdit ?
                         (
@@ -54,8 +54,8 @@ export default function ProductForm<T>({product, submitHandler, isEdit, categori
                         ) :
                         (
                             <>
-                                <Button variant={'ghost'}>
-                                    <SaveIcon className={'ml-2'}/>
+                                <Button variant={'ghost'} className={'flex gap-2 items-center'}>
+                                    <SaveIcon/>
                                     Guardar borrador
                                 </Button>
                                 {/*@ts-ignore*/}
@@ -69,7 +69,7 @@ export default function ProductForm<T>({product, submitHandler, isEdit, categori
             <Form {...form}>
                 {/*@ts-ignore*/}
                 <form onSubmit={form.handleSubmit(submitHandler)} encType={"multipart/form-data"}
-                      className={"space-y-5"}>
+                      className={"space-y-5 px-1"}>
                     <FormField
                         name={'highlight'}
                         control={form.control}
