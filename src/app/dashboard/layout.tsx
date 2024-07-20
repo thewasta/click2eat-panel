@@ -20,10 +20,8 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
                     {/* Header   */}
                     <DashboardHeader/>
                     {/*Dashboard content*/}
-                    <ScrollArea className={"h-full"}>
-                        <div className={"p-12"}>
-                            {children}
-                        </div>
+                    <ScrollArea className={"p-12 h-[calc(90vh+30px)]"}>
+                        {children}
                     </ScrollArea>
                 </div>
             </div>

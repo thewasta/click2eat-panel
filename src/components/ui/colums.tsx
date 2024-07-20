@@ -1,7 +1,8 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { FaSort } from "react-icons/fa";
+import {ColumnDef} from "@tanstack/react-table";
+import {FaSort} from "react-icons/fa";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
 import {Tables} from "@/types/database/database";
+import {Badge} from "@/components/ui/badge";
 
 export type Product = {
     businessUuid: string;
@@ -18,17 +19,55 @@ export type Product = {
 interface ProductsColumnsProps {
     onDelete: (bankAccount: any) => void;
 }
-export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Product>[] => [
+
+export const getCategoriesColumns = (): ColumnDef<any>[] => [
     {
-        accessorKey: 'id',
-        header: ({ column }) => {
+        id: 'category_id',
+        header: ({column}) => {
             return (
                 <button
                     className={"flex items-center gap-1"}
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     <span>Nº</span>
-                    <FaSort />
+                    <FaSort/>
+                </button>
+            )
+        },
+        cell: ({row}) => {
+            return parseInt(row.id) + 1;
+        },
+    },
+    {
+        id: 'name',
+        accessorKey: 'name',
+        header: 'Nombre',
+    },
+    {
+        accessorKey: 'status',
+        header: 'Activo',
+        cell: ({row,cell}) => (
+            cell.getValue() ?
+                <Badge>
+                    Activo
+                </Badge> :
+                <Badge variant={'destructive'}>
+                    Inactivo
+                </Badge>
+        )
+    }
+]
+export const getProductColumns = ({onDelete}: ProductsColumnsProps): ColumnDef<Product>[] => [
+    {
+        accessorKey: 'id',
+        header: ({column}) => {
+            return (
+                <button
+                    className={"flex items-center gap-1"}
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    <span>Nº</span>
+                    <FaSort/>
                 </button>
             )
         },
@@ -39,7 +78,7 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
     {
         accessorKey: 'images',
         header: 'Imagen',
-        cell: ({cell,row}) => {
+        cell: ({cell, row}) => {
             const imageFilePath = cell.getValue<string[]>()[0] as string;
             return (
                 <div className={'aspect-h-1 aspect-w-1 w-16'}>
@@ -57,14 +96,14 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
     },
     {
         accessorKey: 'price',
-        header: ({ column }) => {
+        header: ({column}) => {
             return (
                 <button
                     className={"flex items-center gap-1"}
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     <span>Precio</span>
-                    <FaSort />
+                    <FaSort/>
                 </button>
             )
         },
@@ -72,7 +111,7 @@ export const getProductColumns = ({onDelete}:ProductsColumnsProps): ColumnDef<Pr
     {
         accessorKey: 'category',
         header: 'Categoría',
-        cell: ({cell,row}) => {
+        cell: ({cell, row}) => {
             const category = cell.getValue<Tables<'category'>>();
             return category.name
         }

@@ -14,7 +14,7 @@ export default function Template({children}: { children: ReactNode }) {
     const router = useRouter();
     const pathNames = paths.split('/').filter(path => path);
     return (
-        <div className={"Example-template"}>
+        <>
             <Breadcrumb>
                 <BreadcrumbList>
                     {
@@ -38,6 +38,6 @@ export default function Template({children}: { children: ReactNode }) {
                 </BreadcrumbList>
             </Breadcrumb>
             {children}
-        </div>
+        </>
     )
 }

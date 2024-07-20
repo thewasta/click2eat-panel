@@ -20,13 +20,21 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isLoading: boolean;
+    entityName: string;
+    searchBy: string;
 }
 
-export function ProductTable<TData, TValue>({columns, data: products, isLoading}: DataTableProps<TData, TValue>) {
+export function ProductTable<TData, TValue>({
+                                                columns,
+                                                data,
+                                                isLoading,
+                                                entityName,
+                                                searchBy
+                                            }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
-        data: products,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -47,15 +55,15 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     className={"w-1/3"}
                     type={"text"}
                     name={"filter"}
-                    placeholder="Nombre producto..."
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                    placeholder={`Nombre ${entityName}...`}
+                    value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
+                        table.getColumn(searchBy)?.setFilterValue(event.target.value)
                     }
                 />
                 <Button asChild>
                     <Link href={'/dashboard/products/create'}>
-                        Crear producto
+                        Crear {entityName}
                     </Link>
                 </Button>
             </div>
@@ -81,7 +89,7 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     </TableHeader>
                     <TableBody>
                         {
-                            products &&
+                            data &&
                             (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
@@ -104,7 +112,7 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                             )
                         }
                         {
-                            (!isLoading && products?.length === 0) &&
+                            (!isLoading && data?.length === 0) &&
                             (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -116,20 +124,22 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     </TableBody>
                 </Table>
             </div>
-            <div className={"w-full flex justify-end mt-4"}>
-                <div className={"join"}>
-                    <Button
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >Atrás
-                    </Button>
-                    <Button
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >Siguiente
-                    </Button>
+            {
+                false ?? <div className={"w-full flex justify-end mt-4"}>
+                    <div className={"space-x-2"}>
+                        <Button
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >Atrás
+                        </Button>
+                        <Button
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >Siguiente
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            }
         </>
     )
 }

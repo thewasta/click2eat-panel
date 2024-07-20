@@ -18,7 +18,7 @@ export function Providers({children}: { children: ReactNode }) {
         <ThemeProvider attribute={"class"} defaultTheme={"dark"} enableSystem>
             <QueryClientProvider client={queryClient}>
                     {children}
-                { process.env.NODE_ENV === "development" && <ReactQueryDevtools/>}
+                { process.env.NODE_ENV === "development" && <ReactQueryDevtools buttonPosition={'top-left'}/>}
             </QueryClientProvider>
         </ThemeProvider>
     )
