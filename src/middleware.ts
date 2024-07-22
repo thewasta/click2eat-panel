@@ -29,14 +29,10 @@ export async function middleware(req: NextRequest) {
         }
         return NextResponse.next();
     }
-    console.log({
-        isAuthenticated
-    })
-    if (!isAuthenticated) {
-        if (req.nextUrl.pathname.startsWith('/')) {
-            url.pathname = '/login';
-            return NextResponse.redirect(url);
-        }
+
+    if (!isAuthenticated && (req.nextUrl.pathname !== '/login' && req.nextUrl.pathname !== '/register')) {
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
     }
 
     return NextResponse.next();
@@ -44,9 +40,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        '/',
-        '/login',
-        '/register',
-        '/dashboard/:path*'
+        '/((?!assets/|_next/static|_next/image|favicon.ico|manifest.json|firebase-messaging-sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ]
 }
