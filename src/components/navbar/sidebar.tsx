@@ -28,7 +28,7 @@ const menuItems = [
     {
         name: 'Productos',
         icon: <BiSolidFoodMenu className="h-6"/>,
-        path: '/menu',
+        path: '/products',
     },
     {
         name: 'Pedidos',
