@@ -23,32 +23,32 @@ const menuItems = [
     {
         name: 'Panel',
         icon: <MdDashboard className="h-6"/>,
-        path: '/dashboard/',
+        path: '/',
     },
     {
         name: 'Productos',
         icon: <BiSolidFoodMenu className="h-6"/>,
-        path: '/dashboard/menu',
+        path: '/menu',
     },
     {
         name: 'Pedidos',
         icon: <FaBowlFood className="h-6"/>,
-        path: '/dashboard/orders',
+        path: '/orders',
     },
     {
         name: 'Reservas',
         icon: <FaCalendarDay className="h-6"/>,
-        path: '/dashboard/reservations',
+        path: '/reservations',
     },
     {
         name: 'Personal',
         icon: <IoPersonSharp className="h-6"/>,
-        path: '/dashboard/personal',
+        path: '/personal',
     },
     {
         name: 'Informes',
         icon: <HiDocumentReport className="h-6"/>,
-        path: '/dashboard/reports',
+        path: '/reports',
     },
 ];
 const activeClassname = 'text-red-400';

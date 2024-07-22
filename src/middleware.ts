@@ -22,20 +22,18 @@ export async function middleware(req: NextRequest) {
 
     const url = req.nextUrl.clone();
 
-    if (req.nextUrl.pathname === '/') {
-        url.pathname = '/login';
-        return NextResponse.redirect(url);
-    }
-
     if (isAuthenticated) {
         if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/register') {
-            url.pathname = '/dashboard';
+            url.pathname = '/';
             return NextResponse.redirect(url);
         }
         return NextResponse.next();
     }
+    console.log({
+        isAuthenticated
+    })
     if (!isAuthenticated) {
-        if (req.nextUrl.pathname.startsWith('/dashboard')) {
+        if (req.nextUrl.pathname.startsWith('/')) {
             url.pathname = '/login';
             return NextResponse.redirect(url);
         }
