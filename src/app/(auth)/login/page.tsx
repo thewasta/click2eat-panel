@@ -15,16 +15,16 @@ import {useMutation} from "@tanstack/react-query";
 
 const loginSchema = z.object({
     username: z.string({
-        required_error: 'A username is required'
+        required_error: 'Rellena los campos obligatorios'
     })
         .min(1, {
-            message: 'Please, check your username'
+            message: 'Rellena los campos obligatorios'
         }),
     password: z.string({
-        required_error: 'Password id required'
+        required_error: 'Rellena los campos obligatorios'
     })
         .min(1, {
-            message: 'Password is required'
+            message: 'Rellena los campos obligatorios'
         })
 });
 export default function LoginPage() {

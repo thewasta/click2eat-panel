@@ -10,16 +10,16 @@ import {Button} from "@/components/ui/button";
 const RegisterBusinessForm = () => {
     const formContext = useRegisterAccountContext();
     const registerBusiness = z.object({
-        businessName: z.string({required_error: 'businessName is required'}).min(1),
-        document: z.string({required_error: 'document is required'}).min(1),
-        address: z.string({required_error: 'address is required'}).min(1),
+        businessName: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+        document: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+        address: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
         postalCode: z.coerce.number({
-            required_error: 'postalCode is required',
-            invalid_type_error: 'postalCode is required'
+            required_error: 'Rellena los campos obligatorios',
+            invalid_type_error: 'Rellena los campos obligatorios'
         }).min(4),
-        province: z.string({required_error: 'province is required'}).min(1),
-        town: z.string({required_error: 'town is required'}).min(1),
-        country: z.string({required_error: 'country is required'}).min(1),
+        province: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+        town: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+        country: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
     });
 
     const businessForm = useForm<z.infer<typeof registerBusiness>>({
