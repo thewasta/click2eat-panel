@@ -1,11 +1,12 @@
 "use client"
-import {getProductColumns, Product} from "@/components/ui/colums";
+import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
 import {useCallback, useEffect, useMemo} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {productRetriever, removeProduct} from "@/_request/product/product.service";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
+import {Product} from "@/_lib/dto/productDto";
 
 export default function ProductsPage() {
     const router = useRouter();

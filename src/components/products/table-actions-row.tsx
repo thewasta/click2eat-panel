@@ -1,8 +1,8 @@
 import {Row} from "@tanstack/table-core";
 import {Button} from "@/components/ui/button";
 import {Pencil, Trash2} from "lucide-react";
-import {Product} from "@/components/ui/colums";
 import Link from "next/link";
+import {Product} from "@/_lib/dto/productDto";
 
 interface IProductTableActionProps<TData> {
     row: Row<TData>;
