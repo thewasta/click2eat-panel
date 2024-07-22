@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     manifest: '/manifest.json',
     icons: {
         'apple': '/icons/apple-touch-icon.png',
+    },
+    robots: {
+        follow: false,
+        index: false
     }
 };
 
