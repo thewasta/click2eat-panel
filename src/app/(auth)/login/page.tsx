@@ -56,7 +56,7 @@ export default function LoginPage() {
                 rol: response.message.user.rol,
                 business: response.message.business,
             });
-            router.replace('/dashboard')
+            router.replace('/')
         },
         onError: (error, variables, context) => {
             console.log(error)

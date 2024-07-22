@@ -16,6 +16,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Sheet, SheetTrigger} from "@/components/ui/sheet";
 import {CreateProductSheet} from "@/components/products/create-product-sheet";
 import {TableSkeletonColumns} from "@/components/ui/table-skeleton-columns";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -41,10 +42,8 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
         }
     });
 
-    const [sheetOpen, setSheetOpen] = useState<boolean>(false);
-
     return (
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <>
             <div className="flex gap-1 items-center py-4 join">
                 <Input
                     className={"w-1/3"}
@@ -56,12 +55,11 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
-                <SheetTrigger asChild>
-                    <Button>
+                <Button asChild>
+                    <Link href={'/products/create'}>
                         Crear producto
-                    </Button>
-                </SheetTrigger>
-                <CreateProductSheet setSheetOpen={setSheetOpen}/>
+                    </Link>
+                </Button>
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -134,6 +132,6 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     </Button>
                 </div>
             </div>
-        </Sheet>
+        </>
     )
 }
