@@ -17,6 +17,8 @@ import {Database} from "@/types/database/database";
 import {useForm} from "react-hook-form";
 import {CreateProductDTO, createProductSchema} from "@/app/dashboard/products/formValidation";
 import {zodResolver} from "@hookform/resolvers/zod";
+import ImageCropper from "@/components/imageCropper";
+import {Card, CardContent} from "@/components/ui/card";
 
 interface IEditProductForm<T> {
     product: Database["public"]["Tables"]["product"]["Row"] | null,
@@ -362,6 +364,7 @@ export default function ProductForm<T>({product, submitHandler, isEdit, categori
                             </FormItem>
                         )}
                     />
+                    <ImageCropper/>
                 </form>
             </Form>
         </div>
