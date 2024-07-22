@@ -8,10 +8,11 @@ export default function HomeDashboard() {
         <>
             <div className="col-span-2">
                         <span className="font-bold text-xl">
-                            Buenos días, [{appContext.user && appContext.user()?.username}].
+                            Buenos días, {appContext.user && `${appContext.user()?.name} ${appContext.user()?.lastname}`}.
                         </span>
                 <p className="text-gray-500 text-sm">
-                    Esto es lo que está sucediendo hoy en <span className="underline">[Nombre tienda]</span>
+                    Esto es lo que está sucediendo hoy en <span
+                    className="underline">{appContext.user()?.business.name || 'NOMBRE_EMPRESA'}</span>
                 </p>
                 <div className="grid grid-cols-3">
                 </div>
