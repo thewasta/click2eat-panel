@@ -7,22 +7,24 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 
-const RegisterBusinessForm = () => {
+const registerBusiness = z.object({
+    businessName: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    document: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    address: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    postalCode: z.coerce.number({
+        required_error: 'Rellena los campos obligatorios',
+        invalid_type_error: 'Rellena los campos obligatorios'
+    }).min(4),
+    province: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    town: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    country: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
+    timeZone: z.number()
+});
+type RegisterFormDTO = z.infer<typeof registerBusiness>;
+export default function RegisterBusinessForm() {
     const formContext = useRegisterAccountContext();
-    const registerBusiness = z.object({
-        businessName: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-        document: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-        address: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-        postalCode: z.coerce.number({
-            required_error: 'Rellena los campos obligatorios',
-            invalid_type_error: 'Rellena los campos obligatorios'
-        }).min(4),
-        province: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-        town: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-        country: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    });
 
-    const businessForm = useForm<z.infer<typeof registerBusiness>>({
+    const businessForm = useForm<RegisterFormDTO>({
         resolver: zodResolver(registerBusiness),
         defaultValues: {
             businessName: formContext.propertyForm?.businessName,
@@ -32,9 +34,10 @@ const RegisterBusinessForm = () => {
             province: formContext.propertyForm?.province,
             town: formContext.propertyForm?.town,
             country: formContext.propertyForm?.country,
+            timeZone: new Date().getTimezoneOffset() / 60
         }
     });
-    const onSubmit: SubmitHandler<z.infer<typeof registerBusiness>> = (values: z.infer<typeof registerBusiness>) => {
+    const onSubmit: SubmitHandler<RegisterFormDTO> = (values: RegisterFormDTO) => {
         formContext.updatePropertyForm(values);
         formContext.onHandleNext();
     }
@@ -81,7 +84,7 @@ const RegisterBusinessForm = () => {
                             name={"address"}
                             control={businessForm.control}
                             render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
+                                <FormItem className={"w-full xl:w-1/3"}>
                                     <FormLabel>
                                         Dirección
                                     </FormLabel>
@@ -97,7 +100,7 @@ const RegisterBusinessForm = () => {
                             name={"postalCode"}
                             control={businessForm.control}
                             render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
+                                <FormItem className={"w-full xl:w-1/3"}>
                                     <FormLabel>
                                         Código postal
                                     </FormLabel>
@@ -109,8 +112,6 @@ const RegisterBusinessForm = () => {
                             )}
                         >
                         </FormField>
-                    </div>
-                    <div className={"flex flex-col xl:flex-row gap-3"}>
                         <FormField
                             name={"province"}
                             control={businessForm.control}
@@ -121,6 +122,24 @@ const RegisterBusinessForm = () => {
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder={"Provincia"} {...field}/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                    </div>
+                    <div className={"flex flex-col xl:flex-row gap-3"}>
+                        <FormField
+                            name={"timeZone"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        Zona Horaria
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"-2,-1,0,+1,+2,"} {...field}/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
@@ -168,5 +187,3 @@ const RegisterBusinessForm = () => {
         </div>
     );
 }
-
-export default RegisterBusinessForm;

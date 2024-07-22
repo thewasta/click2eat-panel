@@ -41,7 +41,7 @@ export const handleRequest = async <T>(method: Method, endpoint: string, options
         if (e instanceof AxiosError) {
             return {
                 error: true,
-                errorDescription: e.response?.data.message,
+                errorDescription: e.response?.data.errorDescription,
                 response: null
             }
         }

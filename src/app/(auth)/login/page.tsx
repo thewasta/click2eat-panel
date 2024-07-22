@@ -12,6 +12,7 @@ import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
+import {toast} from "sonner";
 
 const loginSchema = z.object({
     username: z.string({
@@ -42,26 +43,23 @@ export default function LoginPage() {
     const loginMutation = useMutation({
         mutationFn: login,
         onSuccess: (response:any) => {
-            if (response.error) {
-                form.setError('root.server', {
-                    message: response.errorDescription as string
-                });
-            } else {
-                userAppContext.setUser({
-                    id: response.message.user.id,
-                    email: response.message.user.email,
-                    lastname: response.message.user.lastname,
-                    name: response.message.user.name,
-                    username: response.message.user.username,
-                    status: response.message.user.status,
-                    rol: response.message.user.rol,
-                    business: response.message.business,
-                });
-                router.push('/dashboard');
-            }
-            router.push('/')
+            toast.success('Acceso correcto',{
+                description: 'En breve será redirigido'
+            })
+            userAppContext.setUser({
+                id: response.message.user.id,
+                email: response.message.user.email,
+                lastname: response.message.user.lastname,
+                name: response.message.user.name,
+                username: response.message.user.username,
+                status: response.message.user.status,
+                rol: response.message.user.rol,
+                business: response.message.business,
+            });
+            router.replace('/dashboard')
         },
-        onError: () => {
+        onError: (error, variables, context) => {
+            console.log(error)
             form.setError('root.server', {
                 message: 'Server error'
             });

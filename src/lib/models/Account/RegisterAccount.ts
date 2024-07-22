@@ -12,4 +12,6 @@ export type RegisterAccount = {
     email?: string | undefined;
     password?: string | undefined;
     confirmPassword?: string | undefined;
+    fcmToken?: string | undefined;
+    timeZone?: number;
 }
