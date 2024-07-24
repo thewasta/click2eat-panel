@@ -48,7 +48,8 @@ export default function ProductsPage() {
     const columns = useMemo(() => getProductColumns({onDelete}), [])
     return (
         <div className={"col-span-3"}>
-            <ProductTable data={data?.message || []} columns={columns} isLoading={isLoading}/>
+            {/*@ts-ignore*/}
+            <ProductTable data={data?.message.products || []} columns={columns} isLoading={isLoading}/>
         </div>
     );
 }

@@ -119,7 +119,7 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                 </Table>
             </div>
             <div className={"w-full flex justify-end mt-4"}>
-                <div className={"join"}>
+                <div className={"space-x-2"}>
                     <Button
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
