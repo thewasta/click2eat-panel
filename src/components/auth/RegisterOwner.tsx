@@ -10,6 +10,8 @@ import {register} from "@/_request/auth/auth";
 import * as localforage from "localforage";
 import {useRouter} from "next/navigation";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
+import {useMutation} from "@tanstack/react-query";
+import {toast} from "sonner";
 
 const RegisterOwnerForm = () => {
     const formContext = useRegisterAccountContext();
@@ -49,18 +51,10 @@ const RegisterOwnerForm = () => {
         }
     });
     const router = useRouter();
-    const userAppContext= useUserAppContext();
-    const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
-        formContext.updatePropertyForm(values);
-        const fcmToken = await localforage.getItem('fcmToken');
-
-        try {
-            const response = await register(values, fcmToken as string);
-            if (response.error) {
-                ownerForm.setError('username',{
-                   message: response.errorDescription as string
-                });
-            }
+    const userAppContext = useUserAppContext();
+    const mutation = useMutation({
+        mutationFn: register,
+        onSuccess: (response) => {
             userAppContext.setUser({
                 id: response.message.user.id,
                 email: response.message.user.email,
@@ -70,14 +64,24 @@ const RegisterOwnerForm = () => {
                 status: response.message.user.status,
                 rol: response.message.user.rol,
                 business: response.message.business,
+            })
+            router.push('/');
+        },
+        onError: (error, variables, context) => {
+            ownerForm.setError('username', {
+                message: error.message
             });
-            router.push('/dashboard');
-        } catch (e) {
-            ownerForm.setError('root.server',{
-                message: 'Unhandled error. Feel free to report to avisos@click2eat.es'
-            });
+            toast.error('Ha ocurrido un error.', {
+                description: error.message
+            })
         }
-
+    })
+    const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
+        const fcmToken = await localforage.getItem('fcmToken');
+        formContext.updatePropertyForm({...values, fcmToken: fcmToken as string});
+        if (formContext.propertyForm) {
+            mutation.mutate(formContext.propertyForm)
+        }
     }
     return (
         <div className={"space-y-4"}>

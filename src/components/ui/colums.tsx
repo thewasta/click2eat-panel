@@ -1,19 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FaSort } from "react-icons/fa";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
-
-export type Product = {
-    businessUuid: string;
-    id: string;
-    name: string;
-    price: number;
-    category: string;
-    status: string;
-    image: string;
-    description: string;
-};
-
-
+import {Product} from "@/_lib/dto/productDto";
 interface ProductsColumnsProps {
     onDelete: (bankAccount: any) => void;
 }

@@ -1,10 +1,15 @@
+type ProductStatus = "ACTIVE" | "DISCONTINUE" | "INACTIVE";
 export interface Product {
     "id": string;
     "name": string;
     "description": string;
     "price": number;
-    "category": number;
-    "status": boolean;
+    "offerPrice": number;
+    "publishDate": Date;
+    "category": string;
+    "subCategory": string;
+    "status": ProductStatus;
+    "highlight": boolean
     "businessUuid": string;
-    "image": string;
+    "images": [];
 }

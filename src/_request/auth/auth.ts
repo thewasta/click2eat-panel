@@ -6,6 +6,7 @@ import * as jose from 'jose';
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 import {LoginResponse} from "@/_request/auth/types/LoginResponse";
+import {setCookie} from "cookies-next";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
@@ -23,11 +24,7 @@ export async function login(login: LoginAccountDto): Promise<any> {
         });
 
         if (request.error) {
-            return {
-                error: true,
-                errorDescription: request.errorDescription,
-                message: null
-            }
+            throw new Error(request.errorDescription || 'Fallo de autenticación');
         }
 
         if (request.response) {
@@ -60,63 +57,64 @@ async function createSessionCookie(token: string, tokenExpiration: Date) {
             expires: tokenExpiration,
             path: '/'
         });
+        setCookie(
+            process.env.NEXT_PUBLIC_COOKIE_NAME,
+            token,
+            {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                expires: tokenExpiration,
+                path: '/'
+            }
+        )
     }
 }
 
 export async function register(
-    register: RegisterAccount,
-    fcmToken: string): Promise<any> {
-    try {
-        const ENDPOINT = 'auth/register';
+    register: RegisterAccount): Promise<any> {
+    const ENDPOINT = 'auth/register';
 
-        const {businessUuid} = await registerBusiness(
-            register.businessName,
-            register.document,
-            register.address,
-            register.postalCode,
-            register.province,
-            register.town,
-            register.country,
-        );
-        const response = await handleRequest<LoginResponse>('POST', ENDPOINT, {
-            data: {
-                "email": register.email,
-                "lastname": register.lastName,
-                "name": register.name,
-                "username": register.username,
-                "password": register.password,
-                "fcmToken": fcmToken,
-                "businessUuid": businessUuid
-            }
-        });
-        const tokenExpiration = new Date(0);
-        if (response.error) {
-            return {
-                error: true,
-                errorDescription: response.errorDescription,
-                message: null
-            }
+    const responseBusiness = await registerBusiness(
+        register.businessName,
+        register.document,
+        register.address,
+        register.postalCode,
+        register.province,
+        register.town,
+        register.country,
+    );
+
+    if (responseBusiness.error || responseBusiness.response.businessUuid === undefined) {
+        throw new Error(responseBusiness.errorDescription);
+    }
+    const response = await handleRequest<LoginResponse>('POST', ENDPOINT, {
+        data: {
+            "email": register.email,
+            "lastname": register.lastName,
+            "name": register.name,
+            "username": register.username,
+            "password": register.password,
+            "fcmToken": register.fcmToken,
+            "businessUuid": responseBusiness.response.businessUuid
         }
-        if (response.response){
-            await createSessionCookie(response.response.token, tokenExpiration);
-            return {
-                error: false,
-                errorDescription: null,
-                message: response
-            }
+    });
+    const tokenExpiration = new Date(0);
+    if (response.error) {
+        throw new Error(response.errorDescription as string);
+    }
+    if (response.response) {
+        await createSessionCookie(response.response.token, tokenExpiration);
+        return {
+            error: false,
+            errorDescription: null,
+            message: response.response
         }
-    } catch (error) {
-        return Promise.reject({
-            error: true,
-            //@ts-ignore
-            errorDescription: error.description,
-            message: null
-        })
     }
 }
 
 export async function logout() {
-    cookieStore.delete(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
+    cookieStore.set(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`, "", {expires: new Date(0)});
 }
 
 const registerBusiness = async (

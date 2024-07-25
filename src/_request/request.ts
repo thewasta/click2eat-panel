@@ -38,10 +38,11 @@ export const handleRequest = async <T>(method: Method, endpoint: string, options
         });
         return response.data;
     } catch (e) {
+        console.log(e);
         if (e instanceof AxiosError) {
             return {
                 error: true,
-                errorDescription: e.response?.data.message,
+                errorDescription: e.response?.data.errorDescription,
                 response: null
             }
         }
