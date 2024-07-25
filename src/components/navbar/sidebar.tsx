@@ -8,8 +8,6 @@ import {IoPersonSharp} from "react-icons/io5";
 import {HiDocumentReport} from "react-icons/hi";
 import {usePathname} from "next/navigation";
 import {useMediaQuery} from "@/_lib/_hooks/useMediaQuery";
-import {Drawer, DrawerContent, DrawerTrigger} from "@/components/ui/drawer";
-import {MenuIcon} from "lucide-react";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -18,6 +16,21 @@ import {
 } from "@/components/ui/navigation-menu";
 import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {Button} from "@/components/ui/button";
+import {MenuIcon} from "lucide-react";
+
+type SubMenu = Menu & {
+    icon: null
+}
+
+type Menu = {
+    name: string;
+    icon: string;
+    path: string;
+    subMenu?: SubMenu[]
+}
 
 const menuItems = [
     {
@@ -26,9 +39,21 @@ const menuItems = [
         path: '/dashboard/',
     },
     {
-        name: 'Productos',
+        name: 'Menú',
         icon: <BiSolidFoodMenu className="h-6"/>,
-        path: '/dashboard/menu',
+        path: '/dashboard/products',
+        subMenu: [
+            {
+                name: 'Productos',
+                icon: null,
+                path: '/dashboard/products'
+            },
+            {
+                name: 'Categorías',
+                icon: null,
+                path: '/dashboard/categories'
+            },
+        ]
     },
     {
         name: 'Pedidos',
@@ -56,6 +81,55 @@ export default function SidebarComponent() {
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
     const pathname = usePathname();
+    const navigationList = () => {
+        return (
+            <NavigationMenu>
+                <NavigationMenuList className={"flex-col gap-3"} aria-orientation={"vertical"}>
+                    <Accordion type={"single"} collapsible>
+                        {
+                            menuItems.map((menu, index) => {
+                                if (menu.subMenu) {
+                                    return (
+                                        <AccordionItem value={menu.name} key={index} className={"border-b-0"}>
+                                            <AccordionTrigger
+                                                className={'justify-center gap-3'}>{menu.name}</AccordionTrigger>
+                                            <AccordionContent>
+                                                {menu.subMenu.map((subMenuItem, index) => (
+                                                    <NavigationMenuItem key={index}>
+                                                        <Link href={subMenuItem.path} legacyBehavior passHref>
+                                                            <NavigationMenuLink
+                                                                className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == subMenuItem.path ? activeClassname : ''}`}
+                                                            >
+                                                                {subMenuItem.icon}
+                                                                {subMenuItem.name}
+                                                            </NavigationMenuLink>
+                                                        </Link>
+                                                    </NavigationMenuItem>
+                                                ))
+                                                }
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    );
+                                }
+                                return (
+                                    <NavigationMenuItem key={index}>
+                                        <Link href={menu.path} legacyBehavior passHref>
+                                            <NavigationMenuLink
+                                                className={`py-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == menu.path ? activeClassname : ''}`}
+                                            >
+                                                {menu.name}
+                                                {menu.icon}
+                                            </NavigationMenuLink>
+                                        </Link>
+                                    </NavigationMenuItem>
+                                );
+                            })
+                        }
+                    </Accordion>
+                </NavigationMenuList>
+            </NavigationMenu>
+        );
+    }
     return isDesktop ?
         (<aside
                 className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between border-r">
@@ -65,60 +139,32 @@ export default function SidebarComponent() {
                     </h1>
                 </div>
                 <Separator/>
-                <NavigationMenu className={"hola-example"}>
-                    <NavigationMenuList className={"flex-col gap-3"} aria-orientation={"vertical"}>
-                        {
-                            menuItems.map((item, index) => (
-                                <NavigationMenuItem key={index}>
-                                    <Link href={item.path} legacyBehavior passHref>
-                                        <NavigationMenuLink
-                                            className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
-                                        >
-                                            {item.icon}
-                                            {item.name}
-                                        </NavigationMenuLink>
-                                    </Link>
-                                </NavigationMenuItem>
-                            ))
-                        }
-                    </NavigationMenuList>
-                </NavigationMenu>
+                {
+                    navigationList()
+                }
             </aside>
         )
         :
         (
-            <Drawer direction={"left"}>
-                <DrawerTrigger className={"z-40 absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full"}>
-                    <MenuIcon/>
-                </DrawerTrigger>
-                <DrawerContent>
-                    <aside
-                        className="col-span-1 fixed md:static top-0 w-[80%] sm:w-1/3 md:w-full h-full flex flex-col justify-between">
-                        <div className="h-16 pl-5 flex items-center 2xl:justify-start justify-center">
-                            <h1 className="uppercase font-bold tracking-[4px] cursor-default">
-                                TU LOGO
-                            </h1>
-                        </div>
-                        <NavigationMenu className={"hola-example"}>
-                            <NavigationMenuList className={"flex-col gap-3"} aria-orientation={"vertical"}>
-                                {
-                                    menuItems.map((item, index) => (
-                                        <NavigationMenuItem key={index}>
-                                            <Link href={item.path} passHref>
-                                                <NavigationMenuLink
-                                                    className={`text-gray-500 p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == item.path ? activeClassname : ''}`}
-                                                >
-                                                    {item.icon}
-                                                    {item.name}
-                                                </NavigationMenuLink>
-                                            </Link>
-                                        </NavigationMenuItem>
-                                    ))
-                                }
-                            </NavigationMenuList>
-                        </NavigationMenu>
-                    </aside>
-                </DrawerContent>
-            </Drawer>
+            <Sheet>
+                <SheetTrigger asChild className={'z-40 absolute bottom-4 right-4 bg-primary p-3 text-2xl text-white rounded-full hover:bg-primary hover:text-white'}>
+                    <Button variant={'ghost'}>
+                        <MenuIcon/>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>
+                            TU LOGO
+                        </SheetTitle>
+                        <SheetDescription>
+                            [COMPANY_NAME]
+                        </SheetDescription>
+                    </SheetHeader>
+                    {
+                        navigationList()
+                    }
+                </SheetContent>
+            </Sheet>
         );
 }
