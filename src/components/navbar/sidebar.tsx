@@ -28,7 +28,7 @@ type SubMenu = Menu & {
 type Menu = {
     name: string;
     icon: string;
-    path: string;
+    path?: string;
     subMenu?: SubMenu[]
 }
 
@@ -41,17 +41,16 @@ const menuItems = [
     {
         name: 'Menú',
         icon: <BiSolidFoodMenu className="h-6"/>,
-        path: '/dashboard/products',
         subMenu: [
             {
                 name: 'Productos',
                 icon: null,
-                path: '/dashboard/products'
+                path: '/products'
             },
             {
                 name: 'Categorías',
                 icon: null,
-                path: '/dashboard/categories'
+                path: '/products/categories'
             },
         ]
     },
@@ -60,11 +59,11 @@ const menuItems = [
         icon: <FaBowlFood className="h-6"/>,
         path: '/orders',
     },
-    {
-        name: 'Reservas',
-        icon: <FaCalendarDay className="h-6"/>,
-        path: '/reservations',
-    },
+    // {
+    //     name: 'Reservas',
+    //     icon: <FaCalendarDay className="h-6"/>,
+    //     path: '/reservations',
+    // },
     {
         name: 'Personal',
         icon: <IoPersonSharp className="h-6"/>,
