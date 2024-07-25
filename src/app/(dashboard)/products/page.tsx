@@ -16,8 +16,12 @@ export default function ProductsPage() {
     const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
         queryKey: ["products"],
         queryFn: async () => productRetriever(),
-        refetchInterval: 120 * 1000, // Every minutes
-        retry: false
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchIntervalInBackground: false
     });
 
     useEffect(() => {
@@ -49,7 +53,7 @@ export default function ProductsPage() {
     return (
         <div className={"col-span-3"}>
             {/*@ts-ignore*/}
-            <ProductTable data={data?.message.products || []} columns={columns} isLoading={isLoading}/>
+            <ProductTable data={data?.message.response || []} columns={columns} isLoading={isLoading}/>
         </div>
     );
 }

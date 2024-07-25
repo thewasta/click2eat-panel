@@ -21,11 +21,10 @@ import {CategoryItemInput} from "@/components/form/categoryItemInput";
 interface IEditProductForm<T> {
     product: Product | null,
     submitHandler: (values: T) => void,
-    isEdit: boolean,
     categories: any[]
 }
 
-export default function ProductForm<T>({product, submitHandler, isEdit, categories}: IEditProductForm<T>) {
+export default function ProductForm<T>({product, submitHandler, categories}: IEditProductForm<T>) {
 
     const form = useForm<CreateProductDTO>({
         resolver: zodResolver(createProductSchema),
@@ -48,10 +47,11 @@ export default function ProductForm<T>({product, submitHandler, isEdit, categori
         <div>
             <section className={'flex justify-end mb-3'}>
                 {
-                    isEdit ?
+                    product ?
                         (
                             <Button>
-                                <SaveIcon className={'mr-3'}/>
+                                {/*@ts-ignore*/}
+                                <SaveIcon className={'mr-3'} onClick={form.handleSubmit(submitHandler)}/>
                                 Guardar Cambios
                             </Button>
                         ) :

@@ -63,3 +63,7 @@ export async function editProduct(formData: FormData): Promise<any> {
     console.log(formData.get('description'))
     console.log(formData.get('category'))
 }
+
+export async function productById(productId: number): Promise<any> {
+
+}
