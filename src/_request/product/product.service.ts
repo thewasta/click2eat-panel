@@ -1,6 +1,8 @@
 "use server"
 
 import {handleRequest} from "../request";
+import {TypedFormData} from "@/_lib/_hooks/useFormData";
+import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 
 export async function productRetriever(): Promise<any> {
     const ENDPOINT = 'auth/products';
@@ -22,7 +24,7 @@ export async function productRetriever(): Promise<any> {
     }
 }
 
-export async function createProduct(formData: FormData) {
+export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
     const ENDPOINT = 'api/v1/products';
     const response = await handleRequest('POST', ENDPOINT, {
         data: formData,
@@ -60,4 +62,8 @@ export async function editProduct(formData: FormData): Promise<any> {
     console.log(formData.get('price'))
     console.log(formData.get('description'))
     console.log(formData.get('category'))
+}
+
+export async function productById(productId: number): Promise<any> {
+
 }

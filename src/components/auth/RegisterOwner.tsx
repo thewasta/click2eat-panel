@@ -65,7 +65,7 @@ const RegisterOwnerForm = () => {
                 rol: response.message.user.rol,
                 business: response.message.business,
             })
-            router.push('/dashboard');
+            router.push('/');
         },
         onError: (error, variables, context) => {
             ownerForm.setError('username', {

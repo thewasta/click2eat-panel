@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import React, {Suspense} from "react";
 import SidebarComponent from "@/components/navbar/sidebar";
-import Loading from "@/app/dashboard/loading";
+import Loading from "@/app/(dashboard)/loading";
 import {DashboardHeader} from "@/components/navbar/DashboardHeader";
 import {ScrollArea} from "@/components/ui/scroll-area";
 

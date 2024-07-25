@@ -1,11 +1,12 @@
 "use client"
-import {getProductColumns, Product} from "@/components/ui/colums";
+import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
 import {useCallback, useEffect, useMemo} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {productRetriever, removeProduct} from "@/_request/product/product.service";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
+import {Product} from "@/_lib/dto/productDto";
 
 export default function ProductsPage() {
     const router = useRouter();
@@ -15,8 +16,12 @@ export default function ProductsPage() {
     const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
         queryKey: ["products"],
         queryFn: async () => productRetriever(),
-        refetchInterval: 120 * 1000, // Every minutes
-        retry: false
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchIntervalInBackground: false
     });
 
     useEffect(() => {
@@ -47,7 +52,8 @@ export default function ProductsPage() {
     const columns = useMemo(() => getProductColumns({onDelete}), [])
     return (
         <div className={"col-span-3"}>
-            <ProductTable data={data?.message || []} columns={columns} isLoading={isLoading}/>
+            {/*@ts-ignore*/}
+            <ProductTable data={data?.message.response || []} columns={columns} isLoading={isLoading}/>
         </div>
     );
 }

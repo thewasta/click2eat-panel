@@ -6,6 +6,7 @@ import * as jose from 'jose';
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 import {LoginResponse} from "@/_request/auth/types/LoginResponse";
+import {setCookie} from "cookies-next";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
@@ -56,6 +57,17 @@ async function createSessionCookie(token: string, tokenExpiration: Date) {
             expires: tokenExpiration,
             path: '/'
         });
+        setCookie(
+            process.env.NEXT_PUBLIC_COOKIE_NAME,
+            token,
+            {
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                expires: tokenExpiration,
+                path: '/'
+            }
+        )
     }
 }
 
@@ -102,7 +114,7 @@ export async function register(
 }
 
 export async function logout() {
-    cookieStore.delete(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`);
+    cookieStore.set(`${process.env.NEXT_PUBLIC_COOKIE_NAME}`, "", {expires: new Date(0)});
 }
 
 const registerBusiness = async (
