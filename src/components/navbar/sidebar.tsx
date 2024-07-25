@@ -36,7 +36,7 @@ const menuItems = [
     {
         name: 'Panel',
         icon: <MdDashboard className="h-6"/>,
-        path: '/dashboard/',
+        path: '/dashboard',
     },
     {
         name: 'Menú',
@@ -76,7 +76,6 @@ const menuItems = [
         path: '/dashboard/reports',
     },
 ];
-const activeClassname = 'text-red-400';
 export default function SidebarComponent() {
     const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -98,7 +97,7 @@ export default function SidebarComponent() {
                                                     <NavigationMenuItem key={index}>
                                                         <Link href={subMenuItem.path} legacyBehavior passHref>
                                                             <NavigationMenuLink
-                                                                className={`p-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == subMenuItem.path ? activeClassname : ''}`}
+                                                                className={`p-4 flex items-center justify-center  gap-2 hover:text-primary hover:cursor-pointer transition-colors font-semibold ${pathname == subMenuItem.path ? 'text-primary' : ''}`}
                                                             >
                                                                 {subMenuItem.icon}
                                                                 {subMenuItem.name}
@@ -115,7 +114,7 @@ export default function SidebarComponent() {
                                     <NavigationMenuItem key={index}>
                                         <Link href={menu.path} legacyBehavior passHref>
                                             <NavigationMenuLink
-                                                className={`py-4 flex items-center justify-center  gap-2 hover:text-blue-600 hover:cursor-pointer transition-colors font-semibold ${pathname == menu.path ? activeClassname : ''}`}
+                                                className={`py-4 flex items-center justify-center  gap-2 hover:text-primary hover:cursor-pointer transition-colors font-semibold ${pathname == menu.path ? 'text-primary' : ''}`}
                                             >
                                                 {menu.name}
                                                 {menu.icon}
