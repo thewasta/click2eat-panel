@@ -16,6 +16,7 @@ export const createProductSchema = z.object({
     description: z.string().min(10,{
         message: 'Write a description'
     }),
+    ingredients: z.string().optional(),
     // @todo Debe ser plural
     image: z.array(z.instanceof(File)),
     status: z.string(),
