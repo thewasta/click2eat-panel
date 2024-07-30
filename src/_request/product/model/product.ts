@@ -5,7 +5,7 @@ export interface Product {
     "description": string;
     "price": number;
     "offerPrice": number;
-    "publishDate": Date;
+    "publishDate": Date|null;
     "category": string;
     "subCategory": string;
     "status": ProductStatus;
