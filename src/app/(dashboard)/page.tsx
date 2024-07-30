@@ -16,6 +16,11 @@ export default function HomeDashboard() {
                 </p>
                 <div className="grid grid-cols-3">
                     Buenos días, {<DashboardUserName/>}
+                    <p className="text-gray-500 text-sm">
+                        Esto es lo que está sucediendo hoy en <span
+                        className="underline">{<DashboardCompanyName/>}</span>
+                    </p>
+                </section>
                 </div>
             </div>
         </>
