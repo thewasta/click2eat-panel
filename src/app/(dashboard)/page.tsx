@@ -1,4 +1,5 @@
 "use client"
+import DashboardUserName from "@/components/dashboard/userName";
 import DashboardCardDetail from "@/components/dashboard/cardDetail";
 
 import {useUserAppContext} from "@/lib/context/auth/user-context";
