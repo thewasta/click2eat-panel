@@ -1,9 +1,8 @@
 "use client"
+import DashboardCardDetail from "@/components/dashboard/cardDetail";
 
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 export default function HomeDashboard() {
-    // const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-red-800 bg-violet-600";
-    const appContext = useUserAppContext();
     return (
         <>
             <div className="col-span-2">
@@ -16,11 +15,34 @@ export default function HomeDashboard() {
                 </p>
                 <div className="grid grid-cols-3">
                     Buenos días, {<DashboardUserName/>}
+            <div className="space-y-4">
+                <section>
+                    <span className="font-bold text-xl">
+                    Buenos días, {<DashboardUserName/>}
+                    </span>
                     <p className="text-gray-500 text-sm">
                         Esto es lo que está sucediendo hoy en <span
                         className="underline">{<DashboardCompanyName/>}</span>
                     </p>
                 </section>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <DashboardCardDetail
+                        title={'Total ventas'}
+                        description={'+20.1% desde mes anterior'}
+                        value={'$45,231.89'}
+                        icon={<DollarSign className={'h-4 w-4 text-muted-foreground'}/>}
+                    />
+                    <DashboardCardDetail
+                        title={'Clientes'}
+                        value={'+35'}
+                        description={'+20.1% desde mes anterior'}
+                        icon={<IoPeopleOutline className={'h-4 w-4 text-muted-foreground'}/>}
+                    />
+                    <DashboardCardDetail
+                        title={'Activo'}
+                        value={'11'}
+                        icon={<Activity/>}
+                    />
                 </div>
             </div>
         </>
