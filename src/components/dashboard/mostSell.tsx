@@ -20,7 +20,7 @@ export default function DashboardMostSell(props: DashboardMostSellProps) {
                         !!products.length && products.map((product, index) => (
                             <div className={'flex items-center'} key={index}>
                                 <Avatar>
-                                    <AvatarFallback>{product.images && product.images[0]}</AvatarFallback>
+                                    <AvatarFallback>{product.images}</AvatarFallback>
                                 </Avatar>
                                 <div className="ml-4 space-y-1">
                                     <p className="text-sm font-medium leading-none">{product.name}</p>
