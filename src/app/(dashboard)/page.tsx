@@ -15,6 +15,7 @@ export default function HomeDashboard() {
                     className="underline">{appContext.user()?.business.name || 'NOMBRE_EMPRESA'}</span>
                 </p>
                 <div className="grid grid-cols-3">
+                    Buenos días, {<DashboardUserName/>}
                 </div>
             </div>
         </>
