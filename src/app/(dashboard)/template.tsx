@@ -22,7 +22,7 @@ export default function Template({children}: { children: ReactNode }) {
                                 path !== "edit" && (
                                     <Fragment key={index}>
                                         <BreadcrumbItem className={"capitalize"}>
-                                            <BreadcrumbLink>
+                                            <BreadcrumbLink asChild>
                                                 <Link href={'/' + pathNames.slice(0, index + 1).join('/')}>
                                                     {path}
                                                 </Link>
