@@ -12,8 +12,9 @@ export async function middleware(req: NextRequest) {
     if (jwtToken?.value) {
         try {
             const decode = await jose.jwtVerify(jwtToken.value, secret);
+            const dateNow = new Date();
             if (decode.payload) {
-                isAuthenticated = true;
+                isAuthenticated = !(decode.payload.exp && decode.payload.exp < dateNow.getTime() / 1000);
             }
         } catch (e) {
             isAuthenticated = false;
