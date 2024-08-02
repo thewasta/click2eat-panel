@@ -14,8 +14,45 @@ jobs:
           color: '#0059ff'
           details: New push to repository click2eat-panel on environment PRO
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  test:
+    timeout-minutes: 5
+    needs:
+      - notification_start
+    name: Run tests
+    runs-on: ubuntu-latest
+    environment: pro
+    strategy:
+      matrix:
+        node-version: [ 20.12.2 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps
+      - name: Setup .env file
+        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+#      - name: Run Playwright tests
+#        run: npx playwright test
+      - name: Build
+        run: npm run build
+      - name: Build failed
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure()
+        with:
+          severity: error
+          details: ¡Han fallando los tests! Se cancela el despliegue
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_pro:
     name: Deploy to production
+    if: github.ref == 'refs/heads/main'
     needs:
       - notification_start
     runs-on: [self-hosted, prod]
