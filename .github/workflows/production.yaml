@@ -7,20 +7,8 @@ on:
     branches:
       - main
 jobs:
-  notification_start:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify start action
-        uses: rjstone/discord-webhook-notify@v1
-        with:
-          severity: info
-          color: '#0059ff'
-          details: New push to repository click2eat-panel on environment PRO
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   test:
     timeout-minutes: 5
-    needs:
-      - notification_start
     name: Run tests
     runs-on: ubuntu-latest
     environment: pro
@@ -51,7 +39,18 @@ jobs:
         if: failure()
         with:
           severity: error
-          details: ¡Han fallando los tests! Se cancela el despliegue
+          details: Han fallado los tests de PR a PRO.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  notification_start:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify start action
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          color: '#0059ff'
+          details: New push to repository click2eat-panel on environment PRO
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_pro:
     name: Deploy to production
