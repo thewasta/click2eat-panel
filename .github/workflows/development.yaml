@@ -1,16 +1,8 @@
-name: NextJS CI
+name: Deployment DEV
 on:
-  pull_request:
-    branches:
-      - main
-      - dev
   push:
     branches:
-      - main
       - dev
-    tags-ignore:
-      - '**'
-  workflow_dispatch:
 jobs:
   notification_start:
     runs-on: ubuntu-latest
@@ -20,7 +12,7 @@ jobs:
         with:
           severity: info
           color: '#0059ff'
-          details: New PUSH to the repository
+          details: New push to repository click2eat-panel on environment DEV
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   test:
     timeout-minutes: 5
@@ -43,12 +35,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci
-#      - name: Install Playwright Browsers
-#        run: npx playwright install --with-deps
+      #      - name: Install Playwright Browsers
+      #        run: npx playwright install --with-deps
       - name: Setup .env file
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
-#      - name: Run Playwright tests
-#        run: npx playwright test
+      #      - name: Run Playwright tests
+      #        run: npx playwright test
       - name: Build
         run: npm run build
       - name: Build failed
@@ -64,48 +56,8 @@ jobs:
 #          name: playwright-report
 #          path: test-results/
 #          retention-days: 30
-  deploy_pro:
-    name: Deploy to production
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - test
-    runs-on: [self-hosted, prod]
-    environment: pro
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          clean: false
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.12.2
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Setup .env file
-        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
-      - name: Build
-        run: node -r dotenv/config ./node_modules/.bin/next build
-      - name: Reload application
-        run: pm2 reload 0
-      - name: Deploy Success
-        uses: rjstone/discord-webhook-notify@v1
-        if: success()
-        with:
-          severity: info
-          details: Desplegado producción con éxito!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Deploy failed
-        uses: rjstone/discord-webhook-notify@v1
-        if: failure()
-        with:
-          severity: error
-          details: Ha fallado el despliegue a producción
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-  deploy_dev:
+  deploy:
     name: Deploy to development
-    if: github.ref == 'refs/heads/dev'
     needs:
       - test
     runs-on: [self-hosted, dev]
