@@ -1,13 +1,13 @@
 'use client'
 import {
-    ColumnDef,
-    ColumnFiltersState,
+    type ColumnDef,
+    type ColumnFiltersState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    SortingState
-} from "@tanstack/table-core";
+    type SortingState
+} from "@tanstack/react-table";
 import {flexRender, useReactTable} from "@tanstack/react-table";
 import {useState} from "react";
 import {Input} from "@/components/ui/input";
@@ -16,7 +16,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {TableSkeletonColumns} from "@/components/ui/table-skeleton-columns";
 import Link from "next/link";
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isLoading: boolean;
