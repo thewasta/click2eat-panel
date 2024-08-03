@@ -47,7 +47,7 @@ jobs:
       #      - name: Run Playwright tests
       #        run: npx playwright test
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Build failed
         uses: rjstone/discord-webhook-notify@v1
         if: failure()
