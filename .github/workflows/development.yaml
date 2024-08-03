@@ -87,7 +87,7 @@ jobs:
       - name: Setup .env file
         run: pnpm dlx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
-        run: node -r dotenv/config ./node_modules/.bin/next build
+        run: pnpm run build
       - name: Reload application
         run: pm2 reload 0
       - name: Deploy Success
