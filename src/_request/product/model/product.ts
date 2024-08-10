@@ -6,7 +6,7 @@ export interface Product {
     ingredients: string;
     "price": number;
     "offerPrice": number;
-    "publishDate": Date;
+    "publishDate": Date|null;
     "category": string;
     "subCategory": string;
     "status": ProductStatus;
