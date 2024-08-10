@@ -3,7 +3,7 @@
 import {MdDashboard} from "react-icons/md";
 import {BiSolidFoodMenu} from "react-icons/bi";
 import {FaBowlFood} from "react-icons/fa6";
-import {FaCalendarDay} from "react-icons/fa";
+import {FaReceipt} from "react-icons/fa";
 import {IoPersonSharp} from "react-icons/io5";
 import {HiDocumentReport} from "react-icons/hi";
 import {usePathname} from "next/navigation";
@@ -59,11 +59,11 @@ const menuItems = [
         icon: <FaBowlFood className="h-6"/>,
         path: '/orders',
     },
-    // {
-    //     name: 'Reservas',
-    //     icon: <FaCalendarDay className="h-6"/>,
-    //     path: '/reservations',
-    // },
+    {
+        name: 'TPV',
+        icon: <FaReceipt className="h-6"/>,
+        path: '/tpv',
+    },
     {
         name: 'Personal',
         icon: <IoPersonSharp className="h-6"/>,

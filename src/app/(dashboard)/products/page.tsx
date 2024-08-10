@@ -7,6 +7,8 @@ import {productRetriever, removeProduct} from "@/_request/product/product.servic
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
 import {Product} from "@/_lib/dto/productDto";
+import Link from "next/link";
+import {Button} from "@/components/ui/button";
 
 export default function ProductsPage() {
     const router = useRouter();
@@ -51,9 +53,19 @@ export default function ProductsPage() {
 
     const columns = useMemo(() => getProductColumns({onDelete}), [])
     return (
-        <div className={"col-span-3"}>
+        <>
             {/*@ts-ignore*/}
-            <ProductTable data={data?.message.response || []} columns={columns} isLoading={isLoading}/>
-        </div>
+            <ProductTable data={data?.message.response || []}
+                          columns={columns}
+                          isLoading={isLoading}
+                          entityName={'Producto'}
+                          searchBy={'name'}
+                          buttonAction={(<Button asChild>
+                              <Link href={'/products/create'}>
+                                  Crear producto
+                              </Link>
+                          </Button>)}
+            />
+        </>
     );
 }

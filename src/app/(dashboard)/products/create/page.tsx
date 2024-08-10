@@ -37,9 +37,10 @@ export default function CreateProductPage() {
         }
     })
     const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO) => {
-        values.status = '1';
-        const formData = createFormData({...values, businessUuid: appContext.user()?.business.businessUuid});
-        mutation.mutate(formData);
+        console.log(values);
+        // values.status = '1';
+        // const formData = createFormData({...values, businessUuid: appContext.user()?.business.businessUuid});
+        // mutation.mutate(formData);
     }
     return (
         <ProductForm product={null} submitHandler={submitHandler} categories={[]}/>

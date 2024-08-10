@@ -9,7 +9,7 @@ import {
     SortingState
 } from "@tanstack/table-core";
 import {flexRender, useReactTable} from "@tanstack/react-table";
-import {useState} from "react";
+import {ReactNode, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
@@ -19,14 +19,24 @@ import Link from "next/link";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    isLoading: boolean;
+    isLoading: boolean
+    entityName: string;
+    searchBy: string;
+    buttonAction: ReactNode
 }
 
-export function ProductTable<TData, TValue>({columns, data: products, isLoading}: DataTableProps<TData, TValue>) {
+export function ProductTable<TData, TValue>({
+                                                columns,
+                                                data,
+                                                isLoading,
+                                                entityName,
+                                                searchBy,
+                                                buttonAction
+                                            }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
-        data: products,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -47,17 +57,13 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     className={"w-1/3"}
                     type={"text"}
                     name={"filter"}
-                    placeholder="Nombre producto..."
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                    placeholder={`Nombre ${entityName}...`}
+                    value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                 />
-                <Button asChild>
-                    <Link href={'/products/create'}>
-                        Crear producto
-                    </Link>
-                </Button>
+                {buttonAction}
             </div>
             <div className={"rounded-md border"}>
                 <Table>
@@ -81,7 +87,7 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                     </TableHeader>
                     <TableBody>
                         {
-                            products &&
+                            data &&
                             (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
@@ -104,7 +110,7 @@ export function ProductTable<TData, TValue>({columns, data: products, isLoading}
                             )
                         }
                         {
-                            (!isLoading && products?.length === 0) &&
+                            (!isLoading && data?.length === 0) &&
                             (
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
