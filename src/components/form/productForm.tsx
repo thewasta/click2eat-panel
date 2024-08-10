@@ -3,7 +3,7 @@
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import { CalendarIcon, SaveIcon} from "lucide-react";
+import {ArrowRight, CalendarIcon, Minus, SaveIcon} from "lucide-react";
 import {Calendar} from "@/components/ui/calendar";
 import {es} from "date-fns/locale";
 import {useForm} from "react-hook-form";
@@ -12,11 +12,14 @@ import {Product} from "@/_request/product/model/product";
 import {CreateProductDTO, createProductSchema} from "@/_lib/dto/productFormDto";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
-import {ChangeEvent} from "react";
+import {ChangeEvent, useState} from "react";
 import {Switch} from "@/components/ui/switch";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {cn} from "@/lib/utils";
 import {CategoryItemInput} from "@/components/form/categoryItemInput";
+import {Card, CardContent} from "@/components/ui/card";
+import {Separator} from "@/components/ui/separator";
+import {toast} from "sonner";
 
 interface IEditProductForm<T> {
     product: Product | null,
@@ -26,11 +29,28 @@ interface IEditProductForm<T> {
 
 export default function ProductForm<T>({product, submitHandler, categories}: IEditProductForm<T>) {
 
+    const [ingredients, setIngredients] = useState<string[]>([]);
+    const [ingredient, setIngredient] = useState<string>('');
+    const handleAddIngredient = () => {
+        if (ingredients.length > 5) {
+            toast.warning('Máximo de ingredientes alcanzado', {
+                description: 'No es posible añadir más de 6 ingredientes por productos. Si requieres más, contacta con soporte'
+            });
+            return;
+        }
+        if (ingredients.indexOf(ingredient.toLowerCase()) === -1) {
+            setIngredients([...ingredients, ingredient.toLowerCase()]);
+            setIngredient('');
+        } else {
+            toast.warning('Ingrediente ya existe para este producto');
+        }
+    }
     const form = useForm<CreateProductDTO>({
         resolver: zodResolver(createProductSchema),
         defaultValues: {
             name: product?.name,
             description: product?.description,
+            ingredients: product?.ingredients,
             //@todo Debe ser plural
             image: undefined,
             price: product?.price,
@@ -50,8 +70,11 @@ export default function ProductForm<T>({product, submitHandler, categories}: IEd
                     product ?
                         (
                             <Button>
-                                {/*@ts-ignore*/}
-                                <SaveIcon className={'mr-3'} onClick={form.handleSubmit(submitHandler)}/>
+                                <SaveIcon className={'mr-3'} onClick={() => {
+                                    form.setValue('ingredients', ingredients.join(','));
+                                    {/*@ts-ignore*/}
+                                    form.handleSubmit(submitHandler)
+                                }}/>
                                 Guardar Cambios
                             </Button>
                         ) :
@@ -61,8 +84,11 @@ export default function ProductForm<T>({product, submitHandler, categories}: IEd
                                     <SaveIcon className={'mr-1'}/>
                                     Guardar borrador
                                 </Button>
-                                {/*@ts-ignore*/}
-                                <Button onClick={form.handleSubmit(submitHandler)}>
+                                <Button onClick={() => {
+                                    form.setValue('ingredients', ingredients.join(','));
+                                    {/*@ts-ignore*/}
+                                    form.handleSubmit(submitHandler);
+                                }}>
                                     Publicar
                                 </Button>
                             </div>
@@ -71,8 +97,13 @@ export default function ProductForm<T>({product, submitHandler, categories}: IEd
             </section>
             <Form {...form}>
                 {/*@ts-ignore*/}
-                <form onSubmit={form.handleSubmit(submitHandler)} encType={"multipart/form-data"}
+                <form onSubmit={() => {
+                    form.setValue('ingredients', ingredients.join(','));
+                    {/*@ts-ignore*/}
+                    form.handleSubmit(submitHandler);
+                }} encType={"multipart/form-data"}
                       className={"space-y-5"}>
+                    {/*@todo GET BUSINESS UID*/}
                     <Input readOnly className={'hidden'} name={'businessUid'} value={'papapapappapa'}/>
                     <FormField
                         name={'highlight'}
@@ -322,24 +353,92 @@ export default function ProductForm<T>({product, submitHandler, categories}: IEd
                             )}
                         />
                     </div>
-                    <FormField
-                        name={"description"}
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Descripción
-                                </FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        placeholder="Breve descripción de producto"
-                                        className="resize-none"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
+                    <div className={'flex flex-col xl:flex-row gap-3'}>
+                        <FormField
+                            name={"description"}
+                            render={({field}) => (
+                                <FormItem className={'w-1/3'}>
+                                    <FormLabel>
+                                        Descripción
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Breve descripción de producto"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <Card className={'pt-3 w-full bg-background'}>
+                            <CardContent>
+                                <FormField
+                                    name={'ingredients'}
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Ingredientes
+                                            </FormLabel>
+                                            <FormMessage/>
+                                            <div className={'flex gap-2'}>
+                                                <FormControl>
+                                                    <Input
+                                                        className={'w-1/3'}
+                                                        placeholder={'Cebolla, pimiento, bacon...'}
+                                                        value={ingredient}
+                                                        onChange={(e) => setIngredient(e.currentTarget.value)}
+                                                        onKeyDown={(event ) => {
+                                                            if (event.key === 'Enter') {
+                                                                handleAddIngredient()
+                                                            }
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <Button type={"button"} variant={'ghost'} size={'icon'}
+                                                        onClick={handleAddIngredient}>
+                                                    <ArrowRight className={'h-4 w-4'}/>
+                                                </Button>
+                                                <section className={'w-2/3'}>
+                                                    <ul className={'list-decimal flex flex-col gap-1'}>
+                                                        {
+                                                            ingredients.map((ingredient, index) => (
+                                                                <>
+                                                                    <li className={'flex items-center justify-between gap-3 capitalize'}
+                                                                        key={index}>
+                                                                        <span>
+                                                                            {ingredient}
+                                                                        </span>
+                                                                        <Button type={'button'} size={'icon'}
+                                                                                variant="destructive"
+                                                                                className={'h-4 w-4'}
+                                                                                onClick={() => {
+                                                                                    setIngredients(prevState => {
+                                                                                        const filter = prevState.filter(p => p !== ingredient);
+
+                                                                                        return [...filter];
+                                                                                    });
+                                                                                }}
+                                                                        >
+                                                                            <Minus className={'h-4 w-4'}/>
+                                                                        </Button>
+                                                                    </li>
+                                                                    <Separator/>
+                                                                </>
+                                                            ))
+                                                        }
+
+                                                    </ul>
+                                                </section>
+                                            </div>
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     <FormField
                         name={"image"}
                         render={({field: {ref, name, onChange, onBlur}}) => (
