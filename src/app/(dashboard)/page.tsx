@@ -19,6 +19,7 @@ const exampleProducts: Product[] = [
         name: 'Hamburguesa',
         businessUuid: '',
         category: 'Example category',
+        ingredients: '',
         highlight: false,
         images: [],
         price: 17,
