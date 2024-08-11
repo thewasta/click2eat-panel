@@ -4,15 +4,15 @@ import {login} from '@/_request/auth/auth'
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form} from "@/components/ui/form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {LoginFormSchema, loginSchema} from "@/types/validation/loginFormValidation";
+import {AppFormField} from "@/components/products/app-form-field";
 
 export default function LoginPage() {
 
@@ -73,43 +73,26 @@ export default function LoginPage() {
                 </div>
                 <Form {...form}>
                     <form className={"flex flex-col gap-5"}>
-                        <FormField
-                            name={"username"}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className={"flex flex-col justify-center items-center"}>
-                                    <FormLabel>
-                                        Nombre de usuario
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input className={"w-1/2"}
-                                               onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                   if (event.key === 'Enter') {
-                                                       form.handleSubmit(onSubmit)()
-                                                   }
-                                               }}
-                                               placeholder={"nombre de usuario"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage className={"text-xs text-red-500 font-light"}/>
-                                </FormItem>
-                            )}/>
-                        <FormField name={"password"} control={form.control} render={({field}) => (
-                            <FormItem className={"flex flex-col justify-center items-center"}>
-                                <FormLabel>
-                                    Contraseña
-                                </FormLabel>
-                                <FormControl>
-                                    <Input type={"password"} className={"w-1/2"}
-                                           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                               if (event.key === 'Enter') {
-                                                   form.handleSubmit(onSubmit)()
-                                               }
-                                           }}
-                                           placeholder={"contraseña"} {...field}/>
-                                </FormControl>
-                                <FormMessage className={"text-xs text-red-500 font-light"}/>
-                            </FormItem>
-                        )}/>
+                        <AppFormField
+                            name={'username'}
+                            formItemStyles={'flex flex-col justify-center items-center'}
+                            placeholder={'nombre de usuario'}
+                            className={'w-1/2'}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    form.handleSubmit(onSubmit);
+                                }
+                            }}
+                        />
+                        <AppFormField
+                            name={'password'}
+                            label={'Contraseña'}
+                            placeholder={'************'}
+                            type={'password'}
+                            formItemStyles={'flex flex-col justify-center items-center'}
+                            className={"w-1/2"}
+                            formMessageStyles={'text-xs text-red-500 font-light'}
+                        />
                     </form>
                     <p className={"text-center text-xs text-red-500 font-light"}>
                         {form.formState.errors && form.formState.errors.root?.server.message}
