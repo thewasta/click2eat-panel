@@ -2,7 +2,7 @@
 
 import {handleRequest} from "../request";
 import {TypedFormData} from "@/_lib/_hooks/useFormData";
-import {CreateProductDTO} from "@/_lib/dto/productFormDto";
+import {CreateProductFormSchema} from "@/_lib/dto/productFormDto";
 
 export async function productRetriever(): Promise<any> {
     const ENDPOINT = 'auth/products';
@@ -24,7 +24,7 @@ export async function productRetriever(): Promise<any> {
     }
 }
 
-export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
+export async function createProduct(formData: TypedFormData<CreateProductFormSchema>) {
     const ENDPOINT = 'api/v1/products';
     const response = await handleRequest('POST', ENDPOINT, {
         data: formData,

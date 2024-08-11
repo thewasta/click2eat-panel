@@ -27,4 +27,4 @@ export const createProductSchema = z.object({
     publishDate: z.date().optional()
 });
 
-export type CreateProductDTO = z.infer<typeof createProductSchema>;
+export type CreateProductFormSchema = z.infer<typeof createProductSchema>;

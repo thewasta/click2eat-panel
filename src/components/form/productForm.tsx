@@ -9,7 +9,7 @@ import {es} from "date-fns/locale";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Product} from "@/_request/product/model/product";
-import {CreateProductDTO, createProductSchema} from "@/_lib/dto/productFormDto";
+import {CreateProductFormSchema, createProductSchema} from "@/_lib/dto/productFormDto";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
 import {ChangeEvent, useState} from "react";
@@ -45,7 +45,7 @@ export default function ProductForm<T>({product, submitHandler, categories}: IEd
             toast.warning('Ingrediente ya existe para este producto');
         }
     }
-    const form = useForm<CreateProductDTO>({
+    const form = useForm<CreateProductFormSchema>({
         resolver: zodResolver(createProductSchema),
         defaultValues: {
             name: product?.name,

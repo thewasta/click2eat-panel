@@ -1,31 +1,17 @@
 import React from "react";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
-import {z} from "zod";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
+import {registerBusinessSchema, RegisterFormSchema} from "@/types/validation/registerBusinessFormValidation";
 
-const registerBusiness = z.object({
-    businessName: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    document: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    address: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    postalCode: z.coerce.number({
-        required_error: 'Rellena los campos obligatorios',
-        invalid_type_error: 'Rellena los campos obligatorios'
-    }).min(4),
-    province: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    town: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    country: z.string({required_error: 'Rellena los campos obligatorios'}).min(1),
-    timeZone: z.number()
-});
-type RegisterFormDTO = z.infer<typeof registerBusiness>;
 export default function RegisterBusinessForm() {
     const formContext = useRegisterAccountContext();
 
-    const businessForm = useForm<RegisterFormDTO>({
-        resolver: zodResolver(registerBusiness),
+    const businessForm = useForm<RegisterFormSchema>({
+        resolver: zodResolver(registerBusinessSchema),
         defaultValues: {
             businessName: formContext.propertyForm?.businessName,
             document: formContext.propertyForm?.document,
@@ -37,7 +23,7 @@ export default function RegisterBusinessForm() {
             timeZone: new Date().getTimezoneOffset() / 60
         }
     });
-    const onSubmit: SubmitHandler<RegisterFormDTO> = (values: RegisterFormDTO) => {
+    const onSubmit: SubmitHandler<RegisterFormSchema> = (values: RegisterFormSchema) => {
         formContext.updatePropertyForm(values);
         formContext.onHandleNext();
     }

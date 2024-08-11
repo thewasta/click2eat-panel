@@ -1,6 +1,5 @@
 import React from "react";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
-import {z} from "zod";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -12,35 +11,13 @@ import {useRouter} from "next/navigation";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
+import {RegisterOwnerFormSchema, registerOwnerSchema} from "@/types/validation/registerOwnerFormValidation";
 
 const RegisterOwnerForm = () => {
     const formContext = useRegisterAccountContext();
-    const registerOwner = z.object({
-        name: z.string({
-            required_error: 'name is required'
-        }).min(1),
-        lastName: z.string({
-            required_error: 'lastName is required'
-        }).min(1),
-        username: z.string({
-            required_error: 'username is required'
-        }).min(1),
-        email: z.string({
-            required_error: 'email is required'
-        }).email(),
-        password: z.string({
-            required_error: 'password is required'
-        }).min(8),
-        confirmPassword: z.string({
-            required_error: 'confirmPassword is required'
-        }).min(8),
-    }).refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords don't match",
-        path: ["confirm"],
-    });
 
-    const ownerForm = useForm<z.infer<typeof registerOwner>>({
-        resolver: zodResolver(registerOwner),
+    const ownerForm = useForm<RegisterOwnerFormSchema>({
+        resolver: zodResolver(registerOwnerSchema),
         defaultValues: {
             name: formContext.propertyForm?.name,
             lastName: formContext.propertyForm?.lastName,
@@ -76,7 +53,7 @@ const RegisterOwnerForm = () => {
             })
         }
     })
-    const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
+    const onSubmit: SubmitHandler<RegisterOwnerFormSchema> = async (values: RegisterOwnerFormSchema) => {
         const fcmToken = await localforage.getItem('fcmToken');
         formContext.updatePropertyForm({...values, fcmToken: fcmToken as string});
         if (formContext.propertyForm) {

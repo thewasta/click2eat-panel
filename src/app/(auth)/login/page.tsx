@@ -5,7 +5,6 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
@@ -13,27 +12,14 @@ import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
+import {LoginFormSchema, loginSchema} from "@/types/validation/loginFormValidation";
 
-const loginSchema = z.object({
-    username: z.string({
-        required_error: 'Rellena los campos obligatorios'
-    })
-        .min(1, {
-            message: 'Rellena los campos obligatorios'
-        }),
-    password: z.string({
-        required_error: 'Rellena los campos obligatorios'
-    })
-        .min(1, {
-            message: 'Rellena los campos obligatorios'
-        })
-});
 export default function LoginPage() {
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const router = useRouter();
     const userAppContext= useUserAppContext();
-    const form = useForm<z.infer<typeof loginSchema>>({
+    const form = useForm<LoginFormSchema>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             username: '',
@@ -66,7 +52,7 @@ export default function LoginPage() {
             setIsSubmitting(false)
         }
     });
-    const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
+    const onSubmit: SubmitHandler<LoginFormSchema> = async (values: LoginFormSchema) => {
         setIsSubmitting(true);
         const loginDto: LoginAccountDto = {
             username: values.username,

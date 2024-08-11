@@ -1,7 +1,7 @@
 'use client'
 import ProductForm from "@/components/form/productForm";
 import {SubmitHandler} from "react-hook-form";
-import {CreateProductDTO} from "@/_lib/dto/productFormDto";
+import {CreateProductFormSchema} from "@/_lib/dto/productFormDto";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createProduct} from "@/_request/product/product.service";
 import {toast} from "sonner";
@@ -13,7 +13,7 @@ export default function CreateProductPage() {
     const queryClient = useQueryClient();
 
     const router = useRouter()
-    const createFormData = useFormData<CreateProductDTO>();
+    const createFormData = useFormData<CreateProductFormSchema>();
     const appContext = useUserAppContext();
     const mutation = useMutation({
         mutationFn: createProduct,
@@ -36,7 +36,7 @@ export default function CreateProductPage() {
             })
         }
     })
-    const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO) => {
+    const submitHandler: SubmitHandler<CreateProductFormSchema> = async (values: CreateProductFormSchema) => {
         console.log(values);
         // values.status = '1';
         // const formData = createFormData({...values, businessUuid: appContext.user()?.business.businessUuid});
