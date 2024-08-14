@@ -1,3 +1,5 @@
+'use client'
+
 import React from "react";
 import {Form} from "@/components/ui/form";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";

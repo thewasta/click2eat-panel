@@ -1,3 +1,5 @@
+'use client'
+
 import React from "react";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
 import {SubmitHandler, useForm} from "react-hook-form";
@@ -44,7 +46,7 @@ const RegisterOwnerForm = () => {
             })
             router.push('/');
         },
-        onError: (error, variables, context) => {
+        onError: (error) => {
             ownerForm.setError('username', {
                 message: error.message
             });
