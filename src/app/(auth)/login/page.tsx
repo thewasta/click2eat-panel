@@ -6,7 +6,6 @@ import {Button} from "@/components/ui/button";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Form} from "@/components/ui/form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
@@ -54,7 +53,7 @@ export default function LoginPage() {
     });
     const onSubmit: SubmitHandler<LoginFormSchema> = async (values: LoginFormSchema) => {
         setIsSubmitting(true);
-        const loginDto: LoginAccountDto = {
+        const loginDto: LoginFormSchema = {
             username: values.username,
             password: values.password
         };
