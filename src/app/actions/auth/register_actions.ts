@@ -123,17 +123,10 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
         throw new Error('No business found');
     }
 
-    if (businessUserPivot.length > 1) {
-        Sentry.captureException('This user has more than 1 business', {
-            user: user,
-            level: 'error',
-        });
-        throw new Error('This user has more than 1 business');
-    }
     const businessPivot = businessUserPivot[0];
     const image = formData.get('image');
-
     const infoFromBusiness = formData.get('businessInfo');
+
     let businessLocalInformation: {
         name?: string;
         address?: string;
