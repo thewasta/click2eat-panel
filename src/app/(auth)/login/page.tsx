@@ -61,58 +61,7 @@ export default function LoginPage() {
                         Iniciar Sesión
                     </h3>
                 </div>
-                <Form {...form}>
-                    <form className={"flex flex-col gap-5"}>
-                        <FormField
-                            name={"email"}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className={"flex flex-col justify-center items-center"}>
-                                    <FormLabel>
-                                        Correo Electrónico
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type={'email'} className={"w-1/2"}
-                                               onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                                   if (event.key === 'Enter') {
-                                                       form.handleSubmit(onSubmit)()
-                                                   }
-                                               }}
-                                               placeholder={"info@click2eat.es"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage className={"text-xs text-red-500 font-light"}/>
-                                </FormItem>
-                            )}/>
-                        <FormField name={"password"} control={form.control} render={({field}) => (
-                            <FormItem className={"flex flex-col justify-center items-center"}>
-                                <FormLabel>
-                                    Contraseña
-                                </FormLabel>
-                                <FormControl>
-                                    <Input type={"password"} className={"w-1/2"}
-                                           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                               if (event.key === 'Enter') {
-                                                   form.handleSubmit(onSubmit)()
-                                               }
-                                           }}
-                                           placeholder={"************"} {...field}/>
-                                </FormControl>
-                                <FormMessage className={"text-xs text-red-500 font-light"}/>
-                            </FormItem>
-                        )}/>
-                    </form>
-                    <p className={"text-center text-xs text-red-500 font-light"}>
-                        {form.formState.errors && form.formState.errors.root?.server.message}
-                    </p>
-                </Form>
-                <div className="flex items-center justify-center">
-                    <Button
-                        type="button"
-                        disabled={isSubmitting}
-                        onClick={form.handleSubmit(onSubmit)}>
-                        Acceder
-                    </Button>
-                </div>
+                <LoginForm/>
             </div>
         </>
     );
