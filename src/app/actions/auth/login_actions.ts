@@ -28,3 +28,10 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
     revalidatePath('/', 'layout');
     redirect('/')
 }
+
+export async function logout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    revalidatePath('/', 'layout')
+    redirect('/')
+}
