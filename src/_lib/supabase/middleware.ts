@@ -62,9 +62,7 @@ export async function updateSession(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        if (req.nextUrl.pathname.startsWith('/register') ||
-            req.nextUrl.pathname.startsWith('/login')
-        ) {
+        if (req.nextUrl.pathname.startsWith('/login')) {
             url.pathname = '/';
             return NextResponse.redirect(url);
         }
