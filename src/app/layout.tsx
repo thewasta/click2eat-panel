@@ -10,7 +10,10 @@ import {Toaster} from "@/components/ui/sonner";
 const inter = Roboto({weight: ['100', '300', '400','500','700','900'],subsets:['latin']});
 
 export const metadata: Metadata = {
-    title: "Click2Eat - Gestiona tu restaurante de forma sencilla",
+    title: {
+        default: 'Click2Eat - Gestiona tu restaurante de forma sencilla',
+        template: 'Click2Eat - %s'
+    },
     description: "Gestiona tu restaurante de forma sencilla",
     manifest: '/manifest.json',
     icons: {

@@ -1,55 +1,12 @@
-"use client"
+import React from "react";
+import LoginForm from "@/components/auth/LoginForm";
+import {Metadata} from "next";
 
-import React, {useState} from "react";
-import {Button} from "@/components/ui/button";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/components/ui/input";
-import {useMutation} from "@tanstack/react-query";
-import {login} from "@/app/actions/auth/login_actions";
-import useFormData from "@/_lib/_hooks/useFormData";
+export const metadata: Metadata = {
+    title: 'Acceso'
+};
 
-const loginSchema = z.object({
-    email: z.string({
-        required_error: 'Rellena los campos obligatorios'
-    }).min(1, {
-        message: 'Rellena los campos obligatorios'
-    }),
-    password: z.string({
-        required_error: 'Rellena los campos obligatorios'
-    }).min(1, {
-        message: 'Rellena los campos obligatorios'
-    })
-});
 export default function LoginPage() {
-
-    const createFormData = useFormData();
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-    const form = useForm<z.infer<typeof loginSchema>>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: '',
-            password: ''
-        }
-    });
-    const loginMutation = useMutation({
-        mutationFn: login,
-        onError: (error) => {
-            form.setError('root.server', {
-                message: error.message
-            });
-        },
-        onSettled: () => {
-            setIsSubmitting(false);
-        }
-    });
-    const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
-        setIsSubmitting(true);
-        const loginDto = createFormData(values);
-        loginMutation.mutate(loginDto);
-    }
     return (
         <>
             <div className="w-full flex flex-col justify-center gap-4">

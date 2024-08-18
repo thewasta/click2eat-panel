@@ -6,9 +6,9 @@ import {DashboardHeader} from "@/components/navbar/DashboardHeader";
 import {ScrollArea} from "@/components/ui/scroll-area";
 
 export const metadata: Metadata = {
-    title: "Click2Eat | Panel",
-    description: "Gestiona tu restaurante de forma sencilla",
+    title: 'Panel Administración',
 };
+
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     //const responsiveBreakpoint: string = "sm:bg-indigo-500 md:bg-red-600 lg:bg-green-300 xl:bg-blue-600 2xl:bg-gray-800";
     return (
