@@ -13,6 +13,13 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
         password: formData.get('password') as string
     });
 
+    //@info ONLY FOR DEVELOPMENT REMOVE WHEN GO PROD
+    await supabase.auth.updateUser({
+        data: {
+            hasBusiness: false
+        }
+    })
+
     if (error) {
         throw new Error(error.message);
     }
