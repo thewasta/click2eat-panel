@@ -168,6 +168,10 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
     }).select('*');
 
     if (error && !data) {
+        Sentry.captureException(error, {
+            user: user,
+            level: 'error'
+        })
         throw new Error('Error al guardar local');
     }
 

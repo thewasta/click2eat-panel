@@ -14,12 +14,12 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
     });
 
     //@info ONLY FOR DEVELOPMENT REMOVE WHEN GO PROD
-    await supabase.auth.updateUser({
-        data: {
-            hasBusiness: false,
-            hasBusinessLocal: false
-        }
-    })
+    // await supabase.auth.updateUser({
+    //     data: {
+    //         hasBusiness: false,
+    //         hasBusinessLocal: false
+    //     }
+    // })
 
     if (error) {
         throw new Error(error.message);
