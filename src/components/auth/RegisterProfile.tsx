@@ -105,9 +105,6 @@ export default function RegisterProfile() {
                     </FormItem>
                 )}
             />
-            {
-                JSON.stringify(registerForm.formState.errors,null,2)
-            }
             <Button type={'submit'}>
                 Crear perfil
             </Button>
