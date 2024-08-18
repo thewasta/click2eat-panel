@@ -16,7 +16,8 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
     //@info ONLY FOR DEVELOPMENT REMOVE WHEN GO PROD
     await supabase.auth.updateUser({
         data: {
-            hasBusiness: false
+            hasBusiness: false,
+            hasBusinessLocal: false
         }
     })
 
