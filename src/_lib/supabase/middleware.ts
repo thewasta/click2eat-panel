@@ -21,11 +21,11 @@ export async function updateSession(req: NextRequest) {
                     return req.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => req.cookies.set(name, value))
+                    cookiesToSet.forEach(({name, value, options}) => req.cookies.set(name, value))
                     response = NextResponse.next({
                         request: req,
                     })
-                    cookiesToSet.forEach(({ name, value, options }) =>
+                    cookiesToSet.forEach(({name, value, options}) =>
                         response.cookies.set(name, value, options)
                     )
                 },
@@ -72,6 +72,12 @@ export async function updateSession(req: NextRequest) {
 
 function userRequireMetadata(user: User, req: NextRequest) {
     const currentPath = req.nextUrl.pathname;
+
+    if ((user?.user_metadata.current_session === null ||
+            user.user_metadata.current_session == undefined) &&
+        currentPath !== '/mybusiness') {
+        return '/mybusiness';
+    }
 
     if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null) &&
         currentPath !== '/register/profile'
