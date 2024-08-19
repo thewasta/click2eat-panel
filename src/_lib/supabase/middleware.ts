@@ -73,12 +73,6 @@ export async function updateSession(req: NextRequest) {
 function userRequireMetadata(user: User, req: NextRequest) {
     const currentPath = req.nextUrl.pathname;
 
-    if ((user?.user_metadata.current_session === null ||
-            user.user_metadata.current_session == undefined) &&
-        currentPath !== '/mybusiness') {
-        return '/mybusiness';
-    }
-
     if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null) &&
         currentPath !== '/register/profile'
     ) {
@@ -99,5 +93,11 @@ function userRequireMetadata(user: User, req: NextRequest) {
         return '/register/local';
     }
 
+    if ((user.user_metadata.hasBusiness && user.user_metadata.hasBusinessLocal) &&
+        (user?.user_metadata.current_session === null ||
+            user.user_metadata.current_session == undefined) &&
+        currentPath !== '/mybusiness') {
+        return '/mybusiness';
+    }
     return null;
 }
