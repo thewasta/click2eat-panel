@@ -117,6 +117,14 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
         throw new Error('Business Local Pivot Error');
     }
 
+    if (businessUserPivot?.length > 1) {
+        Sentry.captureException('User with more than 1 business', {
+            user: user,
+            level: 'error',
+        });
+        throw new Error('No es posible crear el local. Por favor, contáctanos')
+    }
+
     if (!businessUserPivot) {
         Sentry.captureException(businessUserPivotError, {
             level: 'error',
