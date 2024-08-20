@@ -83,7 +83,7 @@ export async function registerBusiness(formData: TypedFormData<RegisterFormDTO>)
         role: role.id
     }).eq('user_id', user.id);
 
-    const {data: _, error} = await supabase.from('business_user_pivot').insert({
+    const {data: _, error} = await supabase.from('business_local_user_pivot').insert({
         business_id: business[0].business_id,
         user_id: user.id
     }).select('*');
@@ -107,7 +107,7 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
     const {
         data: businessUserPivot,
         error: businessUserPivotError
-    } = await supabase.from('business_user_pivot').select('*').eq('user_id', user.id);
+    } = await supabase.from('business_local_user_pivot').select('*');
 
     if (businessUserPivotError) {
         Sentry.captureException(businessUserPivotError, {
