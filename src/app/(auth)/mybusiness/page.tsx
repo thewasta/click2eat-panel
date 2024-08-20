@@ -8,22 +8,13 @@ export default async function SelectBusinessPAge() {
     const client = createClient();
     const {data: {user}} = await client.auth.getUser();
 
-    const {data} = await client
-        .from('business')
+    const { data, error } = await client
+        .from('business_local_user_pivot')
         .select(`
-      *,
-      business_local (
-        *,
-        business_local_user_pivot (
-          user_id
-        )
-      ),
-      business_user_pivot (
-        user_id
-      )
+      business_id,
+      business:business_id (*),
+      business_local:business_local_id (*)
     `)
-        .eq('business_user_pivot.user_id', user?.id)
-        .eq('business_local.business_local_user_pivot.user_id', user?.id);
 
     return (
         <div className="w-full flex flex-col justify-center gap-4">
@@ -40,12 +31,10 @@ export default async function SelectBusinessPAge() {
                     data?.map(business => (
                         <React.Fragment key={business.business_id}>
                             {
-                                business.business_local.map((businessLocal: any) => (
-                                    <SelectBusinessCard
-                                        key={businessLocal.business_local_id}
-                                        business={business}
-                                        businessLocal={businessLocal}/>
-                                ))
+                                <SelectBusinessCard
+                                    key={business.business_local.business_local_id}
+                                    business={business.business}
+                                    businessLocal={business.business_local}/>
                             }
                         </React.Fragment>
                     ))
