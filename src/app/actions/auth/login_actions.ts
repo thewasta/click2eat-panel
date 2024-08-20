@@ -44,7 +44,7 @@ export async function logout() {
         }
     });
 
-    const {data: _, error} = await supabase.from('user_session').insert({
+    const {data: _, error} = await supabase.from('users_session').insert({
         user_id: user?.id,
         local_id: user?.user_metadata.current_session,
         logout_at: new Date()
@@ -74,7 +74,7 @@ export async function selectBusiness(businessLocalId: string) {
         }
     });
 
-    const {data: _, error} = await supabase.from('user_session').insert({
+    const {data: _, error} = await supabase.from('users_session').insert({
         user_id: user?.id,
         local_id: businessLocalId
     });
