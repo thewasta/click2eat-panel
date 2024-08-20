@@ -77,8 +77,10 @@ export async function registerBusiness(formData: TypedFormData<RegisterFormDTO>)
         },
     });
 
+    const {data: role} = await supabase.from('roles').select().eq('name', 'OWNER').single();
+
     await supabase.from('user').update({
-        role: 2
+        role: role.id
     }).eq('user_id', user.id);
 
     const {data: _, error} = await supabase.from('business_user_pivot').insert({
