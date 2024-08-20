@@ -130,7 +130,7 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
             level: 'error',
             user: user
         });
-        throw new Error('No business found');
+        throw new Error('No es posible crear el local. Por favor, contáctanos');
     }
 
     const businessPivot = businessUserPivot[0];
@@ -188,10 +188,12 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
     const {
         data: _,
         error: businessLocalPivotError
-    } = await supabase.from('business_local_user_pivot').insert({
-        business_local_id: data[0].business_local_id,
-        user_id: user?.id
-    });
+    } = await supabase.from('business_local_user_pivot').update({
+        business_local_id: data[0].business_local_id
+    })
+        .eq('user_id', user?.id)
+        .eq('business_id', businessPivot.business_id);
+
     if (businessLocalPivotError) {
         Sentry.captureException(businessLocalPivotError, {
             user: user,
