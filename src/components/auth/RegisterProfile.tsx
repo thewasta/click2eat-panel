@@ -92,7 +92,6 @@ export default function RegisterProfile() {
                                     const filesArray = event.target.files?.[0];
                                     if (filesArray) {
                                         onChange(filesArray)
-                                        console.log(registerForm.getValues())
                                     }
                                 }}
                                 ref={ref}
