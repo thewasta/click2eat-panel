@@ -21,6 +21,10 @@ const registerSchema = z.object({
         .min(5, {
             message: 'Rellena los campos obligatorios'
         }),
+    phone: z.string()
+        .min(6, {
+            message: 'Rellena los campos obligatorios'
+        }),
     address: z.string({required_error: 'Rellena los campos obligatorios'})
         .min(5, {
             message: 'Rellena los campos obligatorios'
@@ -76,31 +80,46 @@ export default function RegisterBusinessForm() {
         <div className={"space-y-4"}>
             <Form {...businessForm} >
                 <form onSubmit={businessForm.handleSubmit(onSubmit)} className={"space-y-3"}>
+                    <FormField
+                        name={"businessName"}
+                        control={businessForm.control}
+                        render={({field}) => (
+                            <FormItem className={"w-full"}>
+                                <FormLabel>
+                                    Nombre empresa
+                                </FormLabel>
+                                <FormControl>
+                                    <Input required placeholder={"Tagliatella, 100Montaditos..."} {...field}/>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
                     <div className={"flex flex-col xl:flex-row gap-3"}>
-                        <FormField
-                            name={"businessName"}
-                            control={businessForm.control}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Nombre empresa
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input required placeholder={"Tagliatella, 100Montaditos..."} {...field}/>
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
                         <FormField
                             name={"document"}
                             control={businessForm.control}
                             render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
+                                <FormItem className={"w-full xl:w-1/3"}>
                                     <FormLabel>
                                         NIF
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder={"12345678D"} {...field}/>
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                        <FormField
+                            name={"phone"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        Contacto
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"+34612345678"} {...field}/>
                                     </FormControl>
                                 </FormItem>
                             )}
@@ -156,21 +175,6 @@ export default function RegisterBusinessForm() {
                     </div>
                     <div className={"flex flex-col xl:flex-row gap-3"}>
                         <FormField
-                            name={"timeZone"}
-                            control={businessForm.control}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/3"}>
-                                    <FormLabel>
-                                        Zona Horaria
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={"-2,-1,0,+1,+2,"} {...field}/>
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        >
-                        </FormField>
-                        <FormField
                             name={"town"}
                             control={businessForm.control}
                             render={({field}) => (
@@ -195,6 +199,21 @@ export default function RegisterBusinessForm() {
                                     </FormLabel>
                                     <FormControl>
                                         <Input placeholder={"España"} {...field}/>
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        >
+                        </FormField>
+                        <FormField
+                            name={"timeZone"}
+                            control={businessForm.control}
+                            render={({field}) => (
+                                <FormItem className={"w-full xl:w-1/3"}>
+                                    <FormLabel>
+                                        Zona Horaria
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={"-2,-1,0,+1,+2,"} {...field}/>
                                     </FormControl>
                                 </FormItem>
                             )}
