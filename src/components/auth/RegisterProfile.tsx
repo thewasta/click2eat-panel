@@ -22,7 +22,7 @@ const profileSchema = z.object({
         message: 'Name is required'
     }),
     // image: z.array(z.instanceof(File)),
-    avatar: z.instanceof(File),
+    avatar: z.instanceof(File).optional(),
 })
 
 export type RegisterProfileDTO = z.infer<typeof profileSchema>;
@@ -41,7 +41,6 @@ export default function RegisterProfile() {
     })
 
     const onSubmit: SubmitHandler<RegisterProfileDTO> = (values: RegisterProfileDTO) => {
-        console.log('handle submit');
         const formData = createFormData(values);
         mutation.mutate(formData);
     }
