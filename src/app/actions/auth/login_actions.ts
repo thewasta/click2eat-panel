@@ -38,6 +38,10 @@ export async function logout() {
         throw new Error('Not valid session');
     }
 
+    if (!user) {
+        throw new Error('Invalid session')
+    }
+
     await supabase.auth.updateUser({
         data: {
             current_session: null
@@ -45,7 +49,7 @@ export async function logout() {
     });
 
     const {data: _, error} = await supabase.from('users_session').insert({
-        user_id: user?.id,
+        user_id: user.id,
         business_establishment_id: user?.user_metadata.current_session,
         action: 'LOGOUT'
     });
