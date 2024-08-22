@@ -62,7 +62,9 @@ export async function registerBusiness(formData: TypedFormData<RegisterFormDTO>)
         town: formData.get('town'),
         document_type: 'NIF',
         document_number: formData.get('document'),
-    }).select('*');
+        contact_number: formData.get('phone'),
+        user_id: user.id
+    });
 
     if (businessError && business === null) {
         Sentry.captureException(businessError, {
@@ -76,24 +78,6 @@ export async function registerBusiness(formData: TypedFormData<RegisterFormDTO>)
             hasBusiness: true,
         },
     });
-
-    const {data: role} = await supabase.from('roles').select().eq('name', 'OWNER').single();
-
-    await supabase.from('user').update({
-        role: role.id
-    }).eq('user_id', user.id);
-
-    const {data: _, error} = await supabase.from('business_local_user_pivot').insert({
-        business_id: business[0].business_id,
-        user_id: user.id
-    }).select('*');
-
-    if (error) {
-        Sentry.captureException(error, {
-            user: user
-        });
-        throw new Error('error en la tabla pivote');
-    }
     revalidatePath('/register/business', 'layout');
     redirect('/register/local');
 }
@@ -105,19 +89,18 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
     if (!user) throw new Error('Not valid session');
 
     const {
-        data: businessUserPivot,
-        error: businessUserPivotError
-    } = await supabase.from('business_local_user_pivot').select('*');
+        data: businessByUser,
+        error: businessError
+    } = await supabase.from('business').select().eq('user_id', user.id);
 
-    if (businessUserPivotError) {
-        Sentry.captureException(businessUserPivotError, {
-            user: user,
-            level: 'error',
+    if (businessError) {
+        Sentry.captureException(businessError, {
+            user: user
         });
-        throw new Error('Business Local Pivot Error');
+        throw new Error('No es posible crear el local. Por favor, contáctanos')
     }
 
-    if (businessUserPivot?.length > 1) {
+    if (businessByUser?.length > 1) {
         Sentry.captureException('User with more than 1 business', {
             user: user,
             level: 'error',
@@ -125,15 +108,7 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
         throw new Error('No es posible crear el local. Por favor, contáctanos')
     }
 
-    if (!businessUserPivot) {
-        Sentry.captureException(businessUserPivotError, {
-            level: 'error',
-            user: user
-        });
-        throw new Error('No es posible crear el local. Por favor, contáctanos');
-    }
-
-    const businessPivot = businessUserPivot[0];
+    const business = businessByUser[0];
     const image = formData.get('image');
     const infoFromBusiness = formData.get('businessInfo');
 
@@ -144,19 +119,9 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
         town?: string;
         province?: string;
         country?: string;
+        contact_phone?: string;
     } = {}
     if (infoFromBusiness) {
-        const {
-            data: business,
-            error: businessError
-        } = await supabase.from('business').select('*').eq('business_id', businessPivot.business_id).single();
-        if (businessError) {
-            Sentry.captureException(businessError, {
-                user: user,
-                level: 'error',
-            });
-        }
-
         businessLocalInformation = {
             name: business.name,
             address: business.address,
@@ -164,48 +129,58 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
             town: business.town,
             province: business.province,
             country: business.country,
+            contact_phone: business.contact_number
         }
     }
-    const {data, error} = await supabase.from('business_local').insert({
-        business_id: businessPivot.business_id,
+
+    const {data: businessLocal, error} = await supabase.from('business_establishments').insert({
+        business_id: business.id,
         address: businessLocalInformation.address ?? formData.get('address'),
         postal_code: businessLocalInformation.postal_code ?? formData.get('postalCode'),
         town: businessLocalInformation.town ?? formData.get('town'),
         province: businessLocalInformation.province ?? formData.get('province'),
         country: businessLocalInformation.country ?? formData.get('country'),
-        time_zone: formData.get('timeZone'),
-        abbreviation: formData.get('abbreviation')
+        contact_phone: businessLocalInformation.contact_phone ?? formData.get('phone'),
+        gmt: formData.get('timeZone'),
+        name_abbreviation: formData.get('abbreviation')
     }).select('*');
 
-    if (error && !data) {
+    if (error) {
         Sentry.captureException(error, {
             user: user,
             level: 'error'
         })
-        throw new Error('Error al guardar local');
+        throw new Error('No es posible crear el local. Por favor, contáctanos');
     }
 
+    if (!businessLocal?.length) {
+        Sentry.captureException('Local not found', {
+            user: user
+        });
+        throw new Error('No es posible crear el local. Por favor, contáctanos');
+    }
     const {
         data: _,
-        error: businessLocalPivotError
-    } = await supabase.from('business_local_user_pivot').update({
-        business_local_id: data[0].business_local_id
-    })
-        .eq('user_id', user?.id)
-        .eq('business_id', businessPivot.business_id);
+        error: businessAssignmentsError
+    } = await supabase.from('business_user_assignments').insert({
+        user_id: user.id,
+        business_establishments_id: businessLocal[0].id,
+        role: 'OWNER'
+    });
 
-    if (businessLocalPivotError) {
-        Sentry.captureException(businessLocalPivotError, {
-            user: user,
-            level: 'error',
-        })
-        throw new Error('Ha ocurrido un error');
+    if (businessAssignmentsError) {
+        Sentry.captureException(businessAssignmentsError, {
+            user
+        });
+        throw new Error('No es posible crear el local. Por favor, contáctanos');
     }
+
     await supabase.auth.updateUser({
         data: {
             hasBusinessLocal: true
         }
     });
+
     revalidatePath('/register/local', 'layout');
     redirect('/');
 }

@@ -15,6 +15,7 @@ import useFormData from "@/_lib/_hooks/useFormData";
 const registerLocalSchema = z.object({
     businessInfo: z.boolean(),
     abbreviation: z.string().optional(),
+    phone: z.string().optional(),
     // image: z.instanceof(File).optional(),
     timeZone: z.number()
 }).and(
@@ -42,6 +43,7 @@ export function RegisterBusinessLocalForm() {
         defaultValues: {
             businessName: '',
             abbreviation: '',
+            phone: '',
             address: '',
             postalCode: '',
             province: '',
@@ -158,19 +160,21 @@ export function RegisterBusinessLocalForm() {
                         >
                         </FormField>
                         <FormField
-                            name={"timeZone"}
+                            name={"phone"}
                             control={businessForm.control}
                             render={({field}) => (
                                 <FormItem className={"w-full xl:w-1/3"}>
                                     <FormLabel>
-                                        Zona Horaria
+                                        Contacto
                                     </FormLabel>
                                     <FormControl>
-                                        <Input placeholder={"-2,-1,0,+1,+2,"} {...field}/>
+                                        <Input disabled={businessInfoValue}
+                                               placeholder={"+34612345678"} {...field}/>
                                     </FormControl>
                                 </FormItem>
                             )}
-                        />
+                        >
+                        </FormField>
                     </div>
                     <div className={"flex flex-col xl:flex-row gap-3"}>
                         <FormField
@@ -219,6 +223,20 @@ export function RegisterBusinessLocalForm() {
                         >
                         </FormField>
                     </div>
+                    <FormField
+                        name={"timeZone"}
+                        control={businessForm.control}
+                        render={({field}) => (
+                            <FormItem className={"w-full xl:w-1/2"}>
+                                <FormLabel>
+                                    Zona Horaria
+                                </FormLabel>
+                                <FormControl>
+                                    <Input placeholder={"-2,-1,0,+1,+2,"} {...field}/>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
                     {/*<div className={'flex'}>*/}
                     {/*    <FormField*/}
                     {/*        name={"image"}*/}

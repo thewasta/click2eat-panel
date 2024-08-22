@@ -62,6 +62,7 @@ export default function RegisterBusinessForm() {
         defaultValues: {
             businessName: '',
             document: '',
+            phone: '',
             address: '',
             postalCode: undefined,
             province: '',
