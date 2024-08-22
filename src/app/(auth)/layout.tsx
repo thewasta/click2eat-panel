@@ -6,10 +6,6 @@ import Image from "next/image";
 import MiddleLeftSide from "@/components/auth/middleLeftSide";
 import MiddleRightSide from "@/components/auth/middleRigthSide";
 
-export const metadata: Metadata = {
-    title: "Click2Eat | Acceso panel",
-    description: "Gestiona tu restaurante de forma sencilla",
-};
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     return (
         <main className="min-h-screen flex items-center justify-center">

@@ -21,11 +21,11 @@ export async function updateSession(req: NextRequest) {
                     return req.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => req.cookies.set(name, value))
+                    cookiesToSet.forEach(({name, value, options}) => req.cookies.set(name, value))
                     response = NextResponse.next({
                         request: req,
                     })
-                    cookiesToSet.forEach(({ name, value, options }) =>
+                    cookiesToSet.forEach(({name, value, options}) =>
                         response.cookies.set(name, value, options)
                     )
                 },
@@ -62,10 +62,8 @@ export async function updateSession(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        if (!req.nextUrl.pathname.startsWith('/dashboard') &&
-            !req.nextUrl.pathname.startsWith('/register')
-        ) {
-            url.pathname = '/dashboard';
+        if (req.nextUrl.pathname.startsWith('/login')) {
+            url.pathname = '/';
             return NextResponse.redirect(url);
         }
     }
@@ -95,5 +93,11 @@ function userRequireMetadata(user: User, req: NextRequest) {
         return '/register/local';
     }
 
+    if ((user.user_metadata.hasBusiness && user.user_metadata.hasBusinessLocal) &&
+        (user?.user_metadata.current_session === null ||
+            user.user_metadata.current_session == undefined) &&
+        currentPath !== '/mybusiness') {
+        return '/mybusiness';
+    }
     return null;
 }
