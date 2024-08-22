@@ -7,6 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "env:pull:dev": "npx dotenv-vault@latest pull development",
+    "env:push:dev": "npx dotenv-vault@latest push development",
+    "env:pull:prod": "npx dotenv-vault@latest pull production",
+    "env:push:prod": "npx dotenv-vault@latest push production",
+    "env:pull:ci": "npx dotenv-vault@latest pull staging",
+    "env:push:ci": "npx dotenv-vault@latest push staging",
     "test": "npx playwright test",
     "test:report": "npx playwright show-report test-results"
   },
