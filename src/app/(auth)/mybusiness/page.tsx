@@ -8,13 +8,9 @@ export default async function SelectBusinessPAge() {
     const client = createClient();
     const {data: {user}} = await client.auth.getUser();
 
-    const { data, error } = await client
-        .from('business_local_user_pivot')
-        .select(`
-      business_id,
-      business:business_id (*),
-      business_local:business_local_id (*)
-    `)
+    const {data: businessEstablishments, error} = await client
+        .from('business_establishments')
+        .select('*,business(*)');
 
     return (
         <div className="w-full flex flex-col justify-center gap-4">
@@ -28,13 +24,11 @@ export default async function SelectBusinessPAge() {
             </div>
             <div className={'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'}>
                 {
-                    data?.map(business => (
-                        <React.Fragment key={business.business_id}>
+                    businessEstablishments?.map(establishments => (
+                        <React.Fragment key={establishments.id}>
                             {
                                 <SelectBusinessCard
-                                    key={business.business_local.business_local_id}
-                                    business={business.business}
-                                    businessLocal={business.business_local}/>
+                                    businessLocal={establishments}/>
                             }
                         </React.Fragment>
                     ))

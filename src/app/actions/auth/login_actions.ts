@@ -46,8 +46,8 @@ export async function logout() {
 
     const {data: _, error} = await supabase.from('users_session').insert({
         user_id: user?.id,
-        local_id: user?.user_metadata.current_session,
-        logout_at: new Date()
+        business_establishment_id: user?.user_metadata.current_session,
+        action: 'LOGOUT'
     });
 
     if (error) {
@@ -61,22 +61,25 @@ export async function logout() {
 export async function selectBusiness(businessLocalId: string) {
     const supabase = createClient();
     const {data: {user}, error: authError} = await supabase.auth.getUser();
+
     if (authError) {
         throw new Error('Invalid session');
     }
+
     if (!user) {
         throw new Error('Invalid session');
     }
+
+    const {data: _, error} = await supabase.from('users_session').insert({
+        user_id: user?.id,
+        business_establishment_id: businessLocalId,
+        action: 'LOGIN'
+    });
 
     await supabase.auth.updateUser({
         data: {
             current_session: businessLocalId
         }
-    });
-
-    const {data: _, error} = await supabase.from('users_session').insert({
-        user_id: user?.id,
-        local_id: businessLocalId
     });
 
     if (error) {
