@@ -21,7 +21,7 @@ const prices: PricePlan[] = [
             "Reportes de uso"
         ],
         "price": 0,
-        "priceId": "price_1PrO1sFlwSWuWQk7zYE3CpLy",
+        "priceId": "",
     },
     {
         "title": "Principiante",
@@ -60,6 +60,16 @@ async function Page() {
         return <NotActiveAndNotOwner/>
     }
 
+    const {data: pricesDb} = await supabase.from('stripe_prices').select('*,stripe_products(*)').order('unit_amount');
+
+    if (pricesDb && pricesDb.length !== 0) {
+        prices.forEach((pricePlan, index) => {
+            const stripePrice = pricesDb[index];
+            pricePlan.title = stripePrice.stripe_products!.name;
+            pricePlan.price = stripePrice.unit_amount! ; // Convertir de centavos a euros
+            pricePlan.priceId = stripePrice.id;
+        });
+    }
     return (
         <div className="flex flex-col h-screen justify-center items-center w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
             <div className="text-center space-y-4 mb-12">
