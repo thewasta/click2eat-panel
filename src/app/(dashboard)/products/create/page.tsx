@@ -5,16 +5,13 @@ import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createProduct} from "@/_request/product/product.service";
 import {toast} from "sonner";
-import useFormData from "@/_lib/_hooks/useFormData";
-import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useRouter} from "next/navigation";
 
 export default function CreateProductPage() {
     const queryClient = useQueryClient();
 
     const router = useRouter()
-    const createFormData = useFormData<CreateProductDTO>();
-    const appContext = useUserAppContext();
+
     const mutation = useMutation({
         mutationFn: createProduct,
         onSuccess: () => {
