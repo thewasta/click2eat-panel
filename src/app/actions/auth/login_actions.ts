@@ -9,22 +9,28 @@ import * as Sentry from "@sentry/node";
 
 export async function login(formData: TypedFormData<LoginAccountDto>) {
     const supabase = createClient();
-    const {data, error} = await supabase.auth.signInWithPassword({
+    const {error} = await supabase.auth.signInWithPassword({
         email: formData.get("email") as string,
         password: formData.get('password') as string
     });
 
-    //@info ONLY FOR DEVELOPMENT REMOVE WHEN GO PROD
-    // await supabase.auth.updateUser({
-    //     data: {
-    //         hasBusiness: false,
-    //         hasBusinessLocal: false
-    //     }
-    // })
-
     if (error) {
         throw new Error(error.message);
     }
+    const {data: {user}} = await supabase.auth.getUser()
+
+    // @info ONLY FOR DEVELOPMENT REMOVE WHEN GO PROD
+    // await supabase.auth.updateUser({
+    //     data: {
+    //         hasBusiness: true,
+    //         hasBusinessLocal: true
+    //     }
+    // })
+    await supabase.from('users_session').insert({
+        user_id: user?.id as string,
+        business_establishment_id: user?.user_metadata.current_session,
+        action: 'LOGIN'
+    });
 
     revalidatePath('/', 'layout');
     redirect('/')
@@ -38,18 +44,16 @@ export async function logout() {
         throw new Error('Not valid session');
     }
 
+    const {error} = await supabase.from('users_session').insert({
+        user_id: user?.id as string,
+        business_establishment_id: user?.user_metadata.current_session,
+        action: 'LOGOUT'
+    });
     await supabase.auth.updateUser({
         data: {
             current_session: null
         }
     });
-
-    const {data: _, error} = await supabase.from('users_session').insert({
-        user_id: user?.id,
-        business_establishment_id: user?.user_metadata.current_session,
-        action: 'LOGOUT'
-    });
-
     if (error) {
         throw new Error(error.message);
     }
@@ -70,7 +74,7 @@ export async function selectBusiness(businessLocalId: string) {
         throw new Error('Invalid session');
     }
 
-    const {data: _, error} = await supabase.from('users_session').insert({
+    const {error} = await supabase.from('users_session').insert({
         user_id: user?.id,
         business_establishment_id: businessLocalId,
         action: 'LOGIN'

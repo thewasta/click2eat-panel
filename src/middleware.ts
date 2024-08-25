@@ -8,6 +8,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        '/((?!assets/|_next/static|_next/image|favicon.ico|manifest.json|firebase-messaging-sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api/webhooks/stripe|assets/|_next/static|_next/image|favicon.ico|manifest.json|firebase-messaging-sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ]
 }

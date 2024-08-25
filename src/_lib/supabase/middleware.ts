@@ -1,6 +1,7 @@
 import {createServerClient} from '@supabase/ssr'
 import {type NextRequest, NextResponse} from 'next/server'
 import {User} from "@supabase/auth-js";
+import {businessHasActiveSubscription} from "@/_lib/supabase/admin";
 
 const PublicPath: string[] = [
     '/auth/callback',
@@ -62,6 +63,33 @@ export async function updateSession(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
+        const hasActiveSubscription = await businessHasActiveSubscription(user.id);
+
+        if (hasActiveSubscription && req.nextUrl.pathname === '/subscription') {
+            url.pathname = '/';
+            return NextResponse.redirect(url);
+        }
+
+        if (!hasActiveSubscription && req.nextUrl.pathname !== '/subscription') {
+            url.pathname = '/subscription';
+            return NextResponse.redirect(url, 301);
+        } else if (!hasActiveSubscription && req.nextUrl.pathname === '/subscription') {
+            return response;
+        }
+
+        if ((user.user_metadata.hasBusiness && user.user_metadata.hasBusinessLocal) &&
+            (user?.user_metadata.current_session === null ||
+                user.user_metadata.current_session == undefined)) {
+            if (req.nextUrl.pathname !== '/mybusiness') {
+                url.pathname = '/mybusiness';
+                return NextResponse.redirect(url, 301);
+            }
+        }
+
+        if (hasActiveSubscription) {
+            return response
+        }
+
         if (req.nextUrl.pathname.startsWith('/login')) {
             url.pathname = '/';
             return NextResponse.redirect(url);
@@ -73,31 +101,25 @@ export async function updateSession(req: NextRequest) {
 function userRequireMetadata(user: User, req: NextRequest) {
     const currentPath = req.nextUrl.pathname;
 
-    if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null) &&
-        currentPath !== '/register/profile'
-    ) {
-        return '/register/profile';
+    if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null)) {
+        if (currentPath !== '/register/profile') {
+            return '/register/profile';
+        }
+        return null;
     }
 
-    if (!user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal &&
-        user?.user_metadata.full_name !== undefined &&
-        currentPath !== '/register/business'
-    ) {
-        return '/register/business';
+    if (!user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
+        if (currentPath !== '/register/business') {
+            return '/register/business';
+        }
+        return null
     }
 
-    if (user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal &&
-        user?.user_metadata.full_name !== undefined &&
-        currentPath !== '/register/local'
-    ) {
-        return '/register/local';
-    }
-
-    if ((user.user_metadata.hasBusiness && user.user_metadata.hasBusinessLocal) &&
-        (user?.user_metadata.current_session === null ||
-            user.user_metadata.current_session == undefined) &&
-        currentPath !== '/mybusiness') {
-        return '/mybusiness';
+    if (user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
+        if (currentPath !== '/register/local') {
+            return '/register/local';
+        }
+        return null;
     }
     return null;
 }

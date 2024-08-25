@@ -7,6 +7,7 @@ namespace NodeJS {
         TEST_USERNAME: string;
         TEST_PASSWORD: string;
         NEXT_PUBLIC_COOKIE_NAME: string;
+        NEXT_PUBLIC_DOMAIN: string;
         NEXT_PUBLIC_FCM_VAPID_KEY: string;
         NEXT_PUBLIC_FCM_API_KEY: string;
         NEXT_PUBLIC_FCM_AUTH_DOMAIN: string;
@@ -18,5 +19,7 @@ namespace NodeJS {
         SENTRY_DSN: string;
         SENTRY_ENABLE: boolean;
         NEXT_PUBLIC_SENTRY_DSN: string;
+        NEXT_PUBLIC_STRIPE_SECRET: string;
+        STRIPE_SECRET_KEY: string;
     }
 }
