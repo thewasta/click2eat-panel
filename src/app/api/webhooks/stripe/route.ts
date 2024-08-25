@@ -43,7 +43,6 @@ export async function POST(req: Request) {
         });
     }
 
-    console.log(event.type);
     try {
         switch (event.type) {
             case 'product.created':
