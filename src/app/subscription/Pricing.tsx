@@ -39,14 +39,17 @@ export function Pricing({products}: PricingProps) {
         },
         onError: () => {
             toast.error('No ha sido posible inciar el pago.');
+        },
+        onSettled: () => {
+            setButtonClicked(false);
         }
     });
     const logoutMutation = useMutation({
         mutationFn: logout
     })
-    const handleClick = (priceId: string) => {
+    const handleClick = (priceId: string, priceQuantity: number) => {
         setButtonClicked(true);
-        mutation.mutate(priceId);
+        mutation.mutate({priceId, priceQuantity});
     }
     const handleLogout = () => {
         logoutMutation.mutate();
@@ -71,7 +74,7 @@ export function Pricing({products}: PricingProps) {
                                 <CardContent className={'space-y-4'}>
                                     <Button
                                         disabled={buttonClicked}
-                                        className="w-full" onClick={() => handleClick(product.priceId)}
+                                        className="w-full" onClick={() => handleClick(product.priceId, product.price)}
                                     >
                                         Suscribirse
                                     </Button>
