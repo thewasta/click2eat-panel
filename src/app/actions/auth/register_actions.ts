@@ -54,15 +54,15 @@ export async function registerBusiness(formData: TypedFormData<RegisterFormDTO>)
     }
 
     const {data: business, error: businessError} = await supabase.from('business').insert({
-        name: formData.get('businessName'),
-        address: formData.get('address'),
-        postal_code: formData.get('postalCode'),
-        country: formData.get('country'),
-        province: formData.get('province'),
-        town: formData.get('town'),
+        name: formData.get('businessName') as string,
+        address: formData.get('address') as string,
+        postal_code: formData.get('postalCode') as string,
+        country: formData.get('country') as string,
+        province: formData.get('province') as string,
+        town: formData.get('town') as string,
         document_type: 'NIF',
-        document_number: formData.get('document'),
-        contact_number: formData.get('phone'),
+        document_number: formData.get('document') as string,
+        contact_number: formData.get('phone') as string,
         user_id: user.id
     });
 
@@ -135,14 +135,14 @@ export async function registerBusinessLocal(formData: TypedFormData<RegisterBusi
 
     const {data: businessLocal, error} = await supabase.from('business_establishments').insert({
         business_id: business.id,
-        address: businessLocalInformation.address ?? formData.get('address'),
-        postal_code: businessLocalInformation.postal_code ?? formData.get('postalCode'),
-        town: businessLocalInformation.town ?? formData.get('town'),
-        province: businessLocalInformation.province ?? formData.get('province'),
-        country: businessLocalInformation.country ?? formData.get('country'),
-        contact_phone: businessLocalInformation.contact_phone ?? formData.get('phone'),
-        gmt: formData.get('timeZone'),
-        name_abbreviation: formData.get('abbreviation')
+        address: businessLocalInformation.address ?? formData.get('address') as string,
+        postal_code: businessLocalInformation.postal_code ?? formData.get('postalCode') as string,
+        town: businessLocalInformation.town ?? formData.get('town') as string,
+        province: businessLocalInformation.province ?? formData.get('province') as string,
+        country: businessLocalInformation.country ?? formData.get('country') as string,
+        contact_phone: businessLocalInformation.contact_phone ?? formData.get('phone') as string,
+        gmt: formData.get('timeZone') as string,
+        name_abbreviation: formData.get('abbreviation') as string
     }).select('*');
 
     if (error) {
