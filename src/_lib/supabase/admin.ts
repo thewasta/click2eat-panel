@@ -209,11 +209,10 @@ const createOrRetrieveCustomer = async (uid: string, email: string): Promise<str
 const businessHasActiveSubscription = async (userUid: string): Promise<boolean> => {
     const {data: ownerSubscription} = await supabaseAdmin.from('subscriptions')
         .select('status')
-        .eq('user_id', userUid)
-        .single();
+        .eq('user_id', userUid);
 
     if (ownerSubscription) {
-        return ownerSubscription.status === 'active';
+        return !!ownerSubscription.find(subscription => subscription.status === 'active' || subscription.status === 'trialing');
     }
     const {data: userAssignments} = await supabaseAdmin
         .from('business_user_assignments')
