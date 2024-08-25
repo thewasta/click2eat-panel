@@ -67,7 +67,7 @@ export async function updateSession(req: NextRequest) {
 
         if (hasActiveSubscription && req.nextUrl.pathname === '/subscription') {
             url.pathname = '/';
-            return NextResponse.redirect(url);
+            return NextResponse.redirect(url, 301);
         }
 
         if (!hasActiveSubscription && req.nextUrl.pathname !== '/subscription') {
