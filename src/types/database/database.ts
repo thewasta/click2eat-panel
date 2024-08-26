@@ -211,6 +211,54 @@ export type Database = {
           },
         ]
       }
+      stripe_payment_token: {
+        Row: {
+          created_at: string
+          expired_at: string
+          id: number
+          is_pending: boolean
+          price_id: string
+          stripe_session_id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expired_at: string
+          id?: number
+          is_pending?: boolean
+          price_id: string
+          stripe_session_id: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expired_at?: string
+          id?: number
+          is_pending?: boolean
+          price_id?: string
+          stripe_session_id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_payment_token_price_id_fkey"
+            columns: ["price_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_prices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_payment_token_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stripe_prices: {
         Row: {
           active: boolean
@@ -399,21 +447,21 @@ export type Database = {
       users_session: {
         Row: {
           action: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id: string
+          business_establishment_id: string | null
           created_at: string
           id: number
           user_id: string
         }
         Insert: {
           action: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id: string
+          business_establishment_id?: string | null
           created_at?: string
           id?: number
           user_id: string
         }
         Update: {
           action?: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id?: string
+          business_establishment_id?: string | null
           created_at?: string
           id?: number
           user_id?: string

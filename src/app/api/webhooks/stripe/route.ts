@@ -3,6 +3,7 @@ import {
     deletePriceRecord,
     deleteProductRecord,
     manageSubscriptionStatusChange,
+    updatePaymentTokenStatus,
     upsertPriceRecord,
     upsertProductRecord
 } from "@/_lib/supabase/admin";
@@ -73,16 +74,18 @@ export async function POST(req: Request) {
                 const checkoutSession = event.data.object as Stripe.Checkout.Session;
                 if (checkoutSession.mode === 'subscription') {
                     const subscriptionId = checkoutSession.subscription;
-                    // await manageSubscriptionStatusChange(
-                    //     // subscriptionId as string,
-                    // );
+                    await manageSubscriptionStatusChange(
+                        subscriptionId as string,
+                        checkoutSession.customer as string,
+                        true
+                    );
+                    await updatePaymentTokenStatus(checkoutSession.id);
                 }
                 break;
             default:
                 throw new Response(`Unsupported event type: ${event.type}`, {status: 400});
         }
     } catch (error: any) {
-        console.log(error);
         return new Response(
             'Webhook handler failed. View your Next.js function logs.',
             {

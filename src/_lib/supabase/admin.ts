@@ -143,6 +143,19 @@ const manageSubscriptionStatusChange = async (subscriptionId: string, customerId
         throw new Error(`Insert/Update of subscription ${subscriptionId} failed: ${upsertError.message}`);
     }
 }
+const updatePaymentTokenStatus = async (sessionId: string) => {
+    const {
+        error
+    } = await supabaseAdmin.from('stripe_payment_token')
+        .update({is_pending: false})
+        .eq('stripe_session_id', sessionId)
+        .single()
+
+    if (error) {
+        console.error(`Unable to find payment with session: ${sessionId}`);
+        return;
+    }
+}
 const upsertCustomerToSupabase = async (uuid: string, customerId: string) => {
     const {error: upsertError} = await supabaseAdmin
         .from('stripe_customer')
@@ -235,6 +248,31 @@ const businessHasActiveSubscription = async (userUid: string): Promise<boolean> 
     return !!(data && data.length > 0 && data[0].status === 'active');
 }
 
+const createPaymentToken = async (token: string, userId: string, sessionId: string | null, priceId: string): Promise<string> => {
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await supabaseAdmin.from('stripe_payment_token').insert({
+        token: token,
+        user_id: userId,
+        stripe_session_id: sessionId as string,
+        price_id: priceId,
+        expired_at: expiresAt.toUTCString()
+    });
+
+    return token;
+}
+
+const checkPaymentTokenIsPending = async (token: string, userId: string) => {
+    const {data: paymentToken, error} = await supabaseAdmin.from('stripe_payment_token')
+        .select()
+        .eq('user_id', userId)
+        .eq('token', token)
+        .maybeSingle();
+    if (!error && paymentToken) {
+        return paymentToken.is_pending;
+    }
+    throw new Error(`Unable to find payment with token <${token}> and user <${userId}>`);
+}
 export {
     upsertProductRecord,
     deleteProductRecord,
@@ -242,5 +280,8 @@ export {
     deletePriceRecord,
     createOrRetrieveCustomer,
     manageSubscriptionStatusChange,
-    businessHasActiveSubscription
+    updatePaymentTokenStatus,
+    businessHasActiveSubscription,
+    createPaymentToken,
+    checkPaymentTokenIsPending
 }
