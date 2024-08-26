@@ -3,7 +3,6 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import React, {useState} from "react";
-import {Tables} from "@/types/database/database";
 import {useMutation} from "@tanstack/react-query";
 import {checkOut} from "@/app/actions/stripe/stripe_actions";
 import {toast} from "sonner";
