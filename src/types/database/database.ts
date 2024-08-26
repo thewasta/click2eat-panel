@@ -1,10 +1,10 @@
 export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+    | string
+    | number
+    | boolean
+    | null
+    | { [key: string]: Json | undefined }
+    | Json[]
 
 export type Database = {
   graphql_public: {
@@ -188,6 +188,223 @@ export type Database = {
           },
         ]
       }
+      stripe_customer: {
+        Row: {
+          id: string
+          stripe_customer_id: string
+        }
+        Insert: {
+          id: string
+          stripe_customer_id: string
+        }
+        Update: {
+          id?: string
+          stripe_customer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_customer_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_payment_token: {
+        Row: {
+          created_at: string
+          expired_at: string
+          id: number
+          is_pending: boolean
+          price_id: string
+          stripe_session_id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expired_at: string
+          id?: number
+          is_pending?: boolean
+          price_id: string
+          stripe_session_id: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expired_at?: string
+          id?: number
+          is_pending?: boolean
+          price_id?: string
+          stripe_session_id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_payment_token_price_id_fkey"
+            columns: ["price_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_prices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_payment_token_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_prices: {
+        Row: {
+          active: boolean
+          currency: string | null
+          description: string | null
+          id: string
+          interval: Database["public"]["Enums"]["pricing_plan_interval"] | null
+          interval_count: number | null
+          product_id: string | null
+          trial_period_days: number | null
+          type: Database["public"]["Enums"]["pricing_type"]
+          unit_amount: number | null
+        }
+        Insert: {
+          active: boolean
+          currency?: string | null
+          description?: string | null
+          id: string
+          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
+          interval_count?: number | null
+          product_id?: string | null
+          trial_period_days?: number | null
+          type: Database["public"]["Enums"]["pricing_type"]
+          unit_amount?: number | null
+        }
+        Update: {
+          active?: boolean
+          currency?: string | null
+          description?: string | null
+          id?: string
+          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
+          interval_count?: number | null
+          product_id?: string | null
+          trial_period_days?: number | null
+          type?: Database["public"]["Enums"]["pricing_type"]
+          unit_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_prices_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stripe_products: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image: string | null
+          metadata: Json | null
+          name: string
+        }
+        Insert: {
+          active: boolean
+          created_at?: string
+          description?: string | null
+          id: string
+          image?: string | null
+          metadata?: Json | null
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          metadata?: Json | null
+          name?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at: string | null
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string
+          ended_at: string | null
+          id: string
+          metadata: Json | null
+          price_id: string | null
+          quantity: number | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          trial_end: string | null
+          trial_start: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string
+          ended_at?: string | null
+          id: string
+          metadata?: Json | null
+          price_id?: string | null
+          quantity?: number | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          trial_end?: string | null
+          trial_start?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string
+          ended_at?: string | null
+          id?: string
+          metadata?: Json | null
+          price_id?: string | null
+          quantity?: number | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          trial_end?: string | null
+          trial_start?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_price_id_fkey"
+            columns: ["price_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_prices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -230,21 +447,21 @@ export type Database = {
       users_session: {
         Row: {
           action: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id: string
+          business_establishment_id: string | null
           created_at: string
           id: number
           user_id: string
         }
         Insert: {
           action: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id: string
+          business_establishment_id?: string | null
           created_at?: string
           id?: number
           user_id: string
         }
         Update: {
           action?: Database["public"]["Enums"]["user_session_actions"]
-          business_establishment_id?: string
+          business_establishment_id?: string | null
           created_at?: string
           id?: number
           user_id?: string
@@ -275,14 +492,25 @@ export type Database = {
     }
     Enums: {
       category_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"
+      pricing_plan_interval: "day" | "week" | "month" | "year"
+      pricing_type: "one_time" | "recurring"
       product_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"
+      subscription_status:
+          | "trialing"
+          | "active"
+          | "canceled"
+          | "incomplete"
+          | "incomplete_expired"
+          | "past_due"
+          | "unpaid"
+          | "paused"
       user_account_roles:
-        | "ROOT"
-        | "OWNER"
-        | "ADMIN"
-        | "EMPLOYEE"
-        | "TPV"
-        | "CHEF"
+          | "ROOT"
+          | "OWNER"
+          | "ADMIN"
+          | "EMPLOYEE"
+          | "TPV"
+          | "CHEF"
       user_session_actions: "LOGIN" | "LOGOUT" | "SWITCH"
     }
     CompositeTypes: {
@@ -294,82 +522,82 @@ export type Database = {
 type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    PublicTableNameOrOptions extends
+            | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+        | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+        ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+            Database[PublicTableNameOrOptions["schema"]]["Views"])
+        : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+    ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+          Row: infer R
+        }
+        ? R
+        : never
+    : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+            PublicSchema["Views"])
+        ? (PublicSchema["Tables"] &
+            PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+              Row: infer R
+            }
+            ? R
+            : never
+        : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    PublicTableNameOrOptions extends
+            | keyof PublicSchema["Tables"]
+        | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+        ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+        : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+          Insert: infer I
+        }
+        ? I
+        : never
+    : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+        ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+              Insert: infer I
+            }
+            ? I
+            : never
+        : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    PublicTableNameOrOptions extends
+            | keyof PublicSchema["Tables"]
+        | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+        ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+        : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+          Update: infer U
+        }
+        ? U
+        : never
+    : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+        ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+              Update: infer U
+            }
+            ? U
+            : never
+        : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    PublicEnumNameOrOptions extends
+            | keyof PublicSchema["Enums"]
+        | { schema: keyof Database },
+    EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+        ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+        : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+    ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+    : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+        ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+        : never
 
