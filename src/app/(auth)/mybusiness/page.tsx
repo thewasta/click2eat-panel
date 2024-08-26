@@ -1,14 +1,13 @@
 import React from "react";
 import {createClient} from "@/_lib/supabase/server";
-import SelectBusinessCard from "@/app/(auth)/mybusiness/selectBusiness";
+import {SelectBusiness} from "@/app/(auth)/mybusiness/selectBusiness";
 
 export const fetchCache = 'force-no-store';
 
-export default async function SelectBusinessPAge() {
+export default async function SelectBusinessPage() {
     const client = createClient();
-    const {data: {user}} = await client.auth.getUser();
 
-    const {data: businessEstablishments, error} = await client
+    const {data: businessEstablishments} = await client
         .from('business_establishments')
         .select('*,business(*)');
 
@@ -22,18 +21,10 @@ export default async function SelectBusinessPAge() {
                     Selecciona el local que quieres gestionar.
                 </p>
             </div>
-            <div className={'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'}>
-                {
-                    businessEstablishments?.map(establishments => (
-                        <React.Fragment key={establishments.id}>
-                            {
-                                <SelectBusinessCard
-                                    businessLocal={establishments}/>
-                            }
-                        </React.Fragment>
-                    ))
-                }
-            </div>
+            {
+                businessEstablishments &&
+                <SelectBusiness businessEstablishments={businessEstablishments}/>
+            }
         </div>
     );
 }

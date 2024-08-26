@@ -1,35 +1,42 @@
 'use client'
-import {MapPinned} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Card} from "@/components/ui/card";
+
 import React from "react";
+import SelectBusinessCard from "@/app/(auth)/mybusiness/selectBusinessCard";
+import {Tables} from "@/types/database/database";
+import {Button} from "@/components/ui/button";
 import {useMutation} from "@tanstack/react-query";
-import {selectBusiness} from "@/app/actions/auth/login_actions";
+import {logout} from "@/app/actions/auth/login_actions";
 
-type SelectBusinessCardProps = { businessLocal: any };
+type SelectBusinessProps = {
+    businessEstablishments: Tables<'business_establishments'>[]
+}
 
-export default function SelectBusinessCard(props: SelectBusinessCardProps) {
-    const {businessLocal} = props;
+export function SelectBusiness({businessEstablishments}: SelectBusinessProps) {
     const mutation = useMutation({
-        mutationFn: selectBusiness
-    })
-    const handleSelectBusiness = () => {
-        mutation.mutate(businessLocal.id);
+        mutationFn: logout
+    });
+
+    const handleLogout = () => {
+        mutation.mutate();
     }
 
     return (
-        <Card key={businessLocal.id}
-              className={'bg-muted p-4 flex flex-col justify-between'}>
-            <div>
-                <h3 className="text-xl font-semibold">{businessLocal.business.name}</h3>
-                <p className="text-muted-foreground flex items-center">{businessLocal.address}
-                    <MapPinned className={'text-xs'}/>
-                </p>
+        <>
+            <div className={'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'}>
+                {
+                    businessEstablishments?.map(establishments => (
+                        <React.Fragment key={establishments.id}>
+                            {
+                                <SelectBusinessCard
+                                    businessLocal={establishments}/>
+                            }
+                        </React.Fragment>
+                    ))
+                }
             </div>
-            <Button onClick={handleSelectBusiness} variant="outline"
-                    className="mt-4">
-                Select
+            <Button variant={'link'} className={'justify-end self-end'} onClick={handleLogout}>
+                Cerrar sesión
             </Button>
-        </Card>
+        </>
     );
 }
