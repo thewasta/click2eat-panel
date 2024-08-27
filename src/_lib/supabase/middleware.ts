@@ -45,7 +45,7 @@ export async function updateSession(req: NextRequest) {
 
     if (error && (url.pathname !== '/login' && url.pathname !== '/auth/callback')) {
         url.pathname = '/login';
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(url, 401);
     }
     if (PublicPath.includes(req.nextUrl.pathname) && !isAuthenticated) {
         return response;
@@ -53,14 +53,18 @@ export async function updateSession(req: NextRequest) {
 
     if (!isAuthenticated) {
         url.pathname = '/login';
-        return NextResponse.redirect(url);
+        return NextResponse.redirect(url, 401);
     }
 
     if (isAuthenticated && user) {
         const redirectUrl = userRequireMetadata(user, req);
-        if (redirectUrl) {
-            url.pathname = redirectUrl;
-            return NextResponse.redirect(url);
+        if (redirectUrl.redirectUrl) {
+            url.pathname = redirectUrl.redirectUrl;
+            return NextResponse.redirect(url, 301);
+        }
+
+        if (redirectUrl.required) {
+            return response;
         }
 
         const hasActiveSubscription = await businessHasActiveSubscription(user.id);
@@ -92,34 +96,46 @@ export async function updateSession(req: NextRequest) {
 
         if (req.nextUrl.pathname.startsWith('/login')) {
             url.pathname = '/';
-            return NextResponse.redirect(url);
+            return NextResponse.redirect(url, 301);
         }
     }
     return response;
 }
 
-function userRequireMetadata(user: User, req: NextRequest) {
+function userRequireMetadata(user: User, req: NextRequest): { redirectUrl?: string, required?: boolean } {
     const currentPath = req.nextUrl.pathname;
 
     if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null)) {
         if (currentPath !== '/register/profile') {
-            return '/register/profile';
+            return {
+                redirectUrl: '/register/profile',
+            };
         }
-        return null;
+        return {
+            required: true
+        };
     }
 
     if (!user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
         if (currentPath !== '/register/business') {
-            return '/register/business';
+            return {
+                redirectUrl: '/register/business',
+            };
         }
-        return null
+        return {
+            required: true
+        };
     }
 
     if (user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
         if (currentPath !== '/register/local') {
-            return '/register/local';
+            return {
+                redirectUrl: '/register/local',
+            };
         }
-        return null;
-    }
-    return null;
-}
+        return {
+            required: true
+        };    }
+    return {
+        required: false
+    };}
