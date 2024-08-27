@@ -3,6 +3,9 @@ import {updateSession} from "@/_lib/supabase/middleware";
 
 
 export async function middleware(req: NextRequest) {
+    console.log({
+        redirect: req.nextUrl.pathname
+    })
     return await updateSession(req);
 }
 
