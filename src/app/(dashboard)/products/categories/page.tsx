@@ -1,209 +1,88 @@
 'use client'
 
-import {ProductTable} from "@/components/products/product-table";
-import {useMemo} from "react";
-import {getCategoryColumns} from "@/components/ui/colums";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
-import {cn} from "@/lib/utils";
-import {Check, ChevronsUpDown, SaveIcon} from "lucide-react";
-import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createCategory} from "@/_request/product/category.service";
-import {toast} from "sonner";
+import {useQuery} from "@tanstack/react-query";
+import {retrieveCategories} from "@/_request/product/category.service";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {Skeleton} from "@/components/ui/skeleton";
+import {useState} from "react";
+import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";
 
-const categorySchema = z.object({
-    name: z.string().min(3),
-    subCategory: z.string()
-})
+import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
 
-type CategorySchemaDTO = z.infer<typeof categorySchema>;
-
-const subCategories: any[] = [
-    {
-        label: 'Ensalada',
-        value: 'ensalada',
-    },
-    {
-        label: 'Bebida',
-        value: 'bebida'
-    },
-    {
-        label: 'Categoría 1',
-        value: 'categoría_1'
-    }
-];
-const categories: any[] = [
-    {
-        id: 1,
-        name: 'Categoría 1',
-        status: true
-    },
-    {
-        id: 1,
-        name: 'Categoría 2',
-        status: false
-    },
-];
 export default function ProductCategoriesPage() {
-    const queryClient = useQueryClient()
-    const columns = useMemo(() => getCategoryColumns(), []);
-    const form = useForm<CategorySchemaDTO>({
-        resolver: zodResolver(categorySchema),
-        defaultValues: {
-            name: ''
-        }
-    });
-    // const {data: categories} = useQuery({
-    //     queryKey: ["categories"],
-    //     queryFn: retrieveCategories,
-    //     staleTime: Infinity,
-    //     refetchOnMount: false,
-    //     refetchOnReconnect: false,
-    //     refetchInterval: false,
-    //     refetchOnWindowFocus: false
-    // });
 
-    const mutation = useMutation({
-        mutationFn: createCategory,
-        onSuccess: () => {
-            toast.success('Creado correctamente', {
-                description: 'Categoría creada correctamente'
-            })
-        },
-        onError: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            })
-                .then(_ => toast.error('Error al crear', {
-                    description: 'Ha ocurrido un error al crear la categoría.',
-                }))
-        },
+    const {data: categories, isLoading} = useQuery({
+        queryKey: ["categories"],
+        queryFn: async () => retrieveCategories(),
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchOnWindowFocus: false
     });
-    const handleSubmit: SubmitHandler<CategorySchemaDTO> = (values: CategorySchemaDTO) => {
-        mutation.mutate();
-        console.log(values);
+
+    const [sheetContent, setSheetContent] = useState<string | null>(null)
+    const handleSheetContent = (content: string) => {
+        setSheetContent(content);
     }
-
     return (
         <Sheet>
-            <ProductTable
-                columns={columns}
-                data={categories}
-                isLoading={false}
-                entityName={'categoría'}
-                searchBy={'name'}
-                buttonAction={
-                    <SheetTrigger asChild>
-                        <Button>
-                            Crear Categoría
-                        </Button>
-                    </SheetTrigger>
+            <SheetTrigger asChild className={'mb-2'}>
+                <Button onClick={() => handleSheetContent('category')}>
+                    Crear Categoría
+                </Button>
+            </SheetTrigger>
+            <div className={'flex-1 w-full md:w-1/2'}>
+                {
+                    isLoading &&
+                    Array.from({length: 3}).map((_, index) => (
+                        <div key={index} className="space-y-4 mb-3">
+                            <Skeleton className="h-6 w-1/2"/>
+                            <Skeleton className="h-4 w-3/4"/>
+                            <Skeleton className="h-8 w-full"/>
+                        </div>
+                    ))
                 }
-            />
+                {
+                    categories &&
+                    categories.map((category) => (
+                        <CategoryItem key={category.id} category={category} handleSheetContent={setSheetContent}/>
+                    ))
+                }
+            </div>
             <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>
-                        Creación de categoría
-                    </SheetTitle>
-                    <SheetDescription>
-                        Crea una nueva categoría
-                    </SheetDescription>
-                </SheetHeader>
-                <Form {...form}>
-                    <form encType={'multipart/form-data'} className={'space-y-3'}
-                          onSubmit={form.handleSubmit(handleSubmit)}>
-                        <FormField
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Nombre
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder={'Entrantes, Destacados...'}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                            name={'name'}
-                        />
-                        <FormField
-                            name={'subCategory'}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem className={'flex flex-col'}>
-                                    <FormLabel>
-                                        Sub Categoría
-                                    </FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={'outline'}
-                                                    role={'combobox'}
-                                                    className={cn(
-                                                        "w-[200px] justify-between",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value
-                                                        ? subCategories.find(
-                                                            (subCategory) => subCategory.value === field.value
-                                                        )?.label
-                                                        : "Select language"}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className={'w-[200px] p-0'}>
-                                            <Command>
-                                                <CommandInput placeholder={'Sub categoría'}/>
-                                                <CommandList>
-                                                    <CommandEmpty>{field.value}</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {subCategories.map(subCategory => (
-                                                            <CommandItem
-                                                                key={subCategory.value}
-                                                                value={subCategory.value}
-                                                                onSelect={() => {
-                                                                    form.setValue("subCategory", subCategory.value);
-                                                                }}
-                                                            >
-                                                                <Check className={cn(
-                                                                    'mr-2 h-4 w-4',
-                                                                    subCategory.value === field.value ?
-                                                                        'opacity-100' :
-                                                                        'opacity-0'
-                                                                )}
-                                                                />
-                                                                {subCategory.label}
-                                                            </CommandItem>
-                                                        ))
-                                                        }
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <Button type={"submit"}>
-                            <SaveIcon/> Guardar
-                        </Button>
-                    </form>
-                </Form>
+                {
+                    sheetContent === 'category' &&
+                    (
+                        <>
+                            <SheetHeader>
+                                <SheetTitle>
+                                    Creación de Categoría
+                                </SheetTitle>
+                                <SheetDescription>
+                                    Crea una nueva categoría
+                                </SheetDescription>
+                            </SheetHeader>
+                            <CreateCategoryForm/>
+                        </>
+                    )
+                }
+                {
+                    sheetContent === 'subCategory' &&
+                    (
+                        <>
+                            <SheetHeader>
+                                <SheetTitle>
+                                    Creación de sub categoría
+                                </SheetTitle>
+                                <SheetDescription>
+                                    Crea una nueva categoría
+                                </SheetDescription>
+                            </SheetHeader>
+                        </>
+                    )
+                }
             </SheetContent>
         </Sheet>
     );
