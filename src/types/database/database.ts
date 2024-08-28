@@ -188,6 +188,150 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          business_establishment_id: string
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          name: string
+          offer: number | null
+          status: Database["public"]["Enums"]["category_status"]
+        }
+        Insert: {
+          business_establishment_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          name: string
+          offer?: number | null
+          status?: Database["public"]["Enums"]["category_status"]
+        }
+        Update: {
+          business_establishment_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          name?: string
+          offer?: number | null
+          status?: Database["public"]["Enums"]["category_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_business_establishment_id_fkey"
+            columns: ["business_establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      category_subcategories: {
+        Row: {
+          category_id: string
+          created_at: string
+          subcategory_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          subcategory_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          subcategory_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "category_subcategories_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "sub_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          business_establishment_id: string
+          category_id: string
+          created_at: string
+          description: string | null
+          highlight: boolean
+          id: string
+          name: string
+          offer: number | null
+          price: number
+          publish_date: string | null
+          status: Database["public"]["Enums"]["product_status"]
+          sub_category_id: string | null
+          unpublish_at: string | null
+        }
+        Insert: {
+          business_establishment_id: string
+          category_id: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean
+          id?: string
+          name: string
+          offer?: number | null
+          price: number
+          publish_date?: string | null
+          status?: Database["public"]["Enums"]["product_status"]
+          sub_category_id?: string | null
+          unpublish_at?: string | null
+        }
+        Update: {
+          business_establishment_id?: string
+          category_id?: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean
+          id?: string
+          name?: string
+          offer?: number | null
+          price?: number
+          publish_date?: string | null
+          status?: Database["public"]["Enums"]["product_status"]
+          sub_category_id?: string | null
+          unpublish_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_business_establishment_id_fkey"
+            columns: ["business_establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_sub_category_id_fkey"
+            columns: ["sub_category_id"]
+            isOneToOne: false
+            referencedRelation: "sub_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stripe_customer: {
         Row: {
           id: string
@@ -335,6 +479,47 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      sub_categories: {
+        Row: {
+          business_establishment_id: string
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          name: string
+          offer: number | null
+          status: Database["public"]["Enums"]["category_status"]
+        }
+        Insert: {
+          business_establishment_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          name: string
+          offer?: number | null
+          status?: Database["public"]["Enums"]["category_status"]
+        }
+        Update: {
+          business_establishment_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          name?: string
+          offer?: number | null
+          status?: Database["public"]["Enums"]["category_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_categories_business_establishment_id_fkey"
+            columns: ["business_establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
