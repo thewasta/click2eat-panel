@@ -1,19 +1,15 @@
 'use server'
-import {createClient} from "@/_lib/supabase/server";
+
 import {Tables} from "@/types/database/database";
 import {TypedFormData} from "@/_lib/_hooks/useFormData";
 import {CategorySchemaDTO} from "@/app/(dashboard)/products/categories/createCategoryForm";
 import {SubCategoryDTO} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
+import {getUser} from "@/_lib/_hooks/useUser";
 
 type CategoryStatus = "DRAFT" | "PUBLISHED" | "DISCONTINUED";
 
 export async function createCategory(formData: TypedFormData<CategorySchemaDTO>): Promise<void> {
-    const supabase = createClient();
-    const {data: {user}, error: authError} = await supabase.auth.getUser();
-
-    if (authError || !user || !user.user_metadata.current_session) {
-        throw new Error('Invalid session');
-    }
+    const {user, supabase} = await getUser();
 
     const status = formData.get('status') as CategoryStatus;
 
@@ -47,11 +43,7 @@ function processCategories(rawData: RawCategoryData[]): CategoryWithSubCategorie
 }
 
 export async function retrieveCategories(): Promise<CategoryWithSubCategories[]> {
-    const supabase = createClient();
-    const {data: {user}, error: authError} = await supabase.auth.getUser();
-    if (authError || !user) {
-        throw new Error('Invalid Sessión');
-    }
+    const {user, supabase} = await getUser();
 
     const currentBusiness = user.user_metadata.current_session;
     const {
@@ -84,11 +76,8 @@ export async function updateCategoryById() {
 }
 
 export async function deleteCategoryById(categoryId: string): Promise<void> {
-    const supabase = createClient();
-    const {data: {user}, error: authError} = await supabase.auth.getUser();
-    if (authError || !user) {
-        throw new Error('Invalid session');
-    }
+    const {supabase} = await getUser();
+
     const {error: errorRemovePivot} = await supabase.from('category_subcategories')
         .delete()
         .eq('category_id', categoryId);
@@ -109,11 +98,7 @@ export async function deleteSubCategoryById({subCategoryId, categoryId}: {
     subCategoryId: string,
     categoryId: string
 }): Promise<void> {
-    const supabase = createClient();
-    const {data: {user}, error: authError} = await supabase.auth.getUser();
-    if (authError || !user) {
-        throw new Error('Invalid session');
-    }
+    const {supabase} = await getUser();
 
     const {data: subCategoriesPivot, error: subCategoriesError} = await supabase.from('category_subcategories')
         .select()
@@ -137,11 +122,7 @@ export async function deleteSubCategoryById({subCategoryId, categoryId}: {
 }
 
 export async function createSubCategory(formData: TypedFormData<SubCategoryDTO>): Promise<void> {
-    const supabase = createClient();
-    const {data: {user}, error: authError} = await supabase.auth.getUser();
-    if (authError || !user) {
-        throw new Error('Invalid session');
-    }
+    const {user, supabase} = await getUser();
 
     const {data, error} = await supabase.from('sub_categories').insert({
         business_establishment_id: user.user_metadata.current_session,
