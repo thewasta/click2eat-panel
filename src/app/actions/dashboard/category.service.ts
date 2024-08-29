@@ -94,10 +94,11 @@ export async function deleteCategoryById(categoryId: string): Promise<void> {
     }
 }
 
-export async function deleteSubCategoryById({subCategoryId, categoryId}: {
-    subCategoryId: string,
-    categoryId: string
-}): Promise<void> {
+type DeleteSubCategoryById = {
+    subCategoryId: string;
+    categoryId: string;
+}
+export async function deleteSubCategoryById({subCategoryId, categoryId}: DeleteSubCategoryById): Promise<void> {
     const {supabase} = await getUser();
 
     const {data: subCategoriesPivot, error: subCategoriesError} = await supabase.from('category_subcategories')
