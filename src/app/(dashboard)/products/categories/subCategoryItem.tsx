@@ -11,7 +11,7 @@ import {
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {deleteSubCategoryById} from "@/_request/product/category.service";
+import {deleteSubCategoryById} from "@/app/actions/dashboard/category.service";
 import {toast} from "sonner";
 
 type SubCategoryItemProps = {

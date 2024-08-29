@@ -2,7 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import {useQuery} from "@tanstack/react-query";
-import {retrieveCategories} from "@/_request/product/category.service";
+import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
 import {createElement, memo, useState} from "react";
 import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";

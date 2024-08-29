@@ -15,7 +15,7 @@ import {toast} from "sonner";
 import {Tables} from "@/types/database/database";
 import {Dispatch, SetStateAction} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {deleteCategoryById} from "@/_request/product/category.service";
+import {deleteCategoryById} from "@/app/actions/dashboard/category.service";
 import {SubCategoryItem} from "@/app/(dashboard)/products/categories/subCategoryItem";
 
 type CategoryWithSubCategories = Tables<'categories'> & {
