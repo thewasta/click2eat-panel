@@ -5,18 +5,30 @@ import {useQuery} from "@tanstack/react-query";
 import {retrieveCategories} from "@/_request/product/category.service";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {Skeleton} from "@/components/ui/skeleton";
-import {memo, useState} from "react";
+import {createElement, memo, useState} from "react";
 import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";
 import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
 import {CreateSubCategoryForm} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
 import {Tables} from "@/types/database/database";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/categories/loadingSkeleton";
 
+type SheetContentType = 'category' | 'subCategory';
+
 type SheetStateForm = {
-    type: string;
+    type: SheetContentType;
     category?: Tables<'categories'>
     subCategory?: Tables<'sub_categories'>
 }
+
+interface SheetContent {
+    type: SheetContentType;
+    category?: { id: string }; // Asumiendo que category tiene una propiedad id
+}
+
+type SheetContentMap = {
+    [K in SheetContentType]: React.ComponentType<any>;
+};
+
 export default function ProductCategoriesPage() {
 
     const {data: categories, isLoading} = useQuery({
@@ -30,11 +42,15 @@ export default function ProductCategoriesPage() {
     });
 
     const [sheetContent, setSheetContent] = useState<SheetStateForm | null>(null)
-    const handleSheetContent = (content: string) => {
+    const handleSheetContent = (content: SheetContentType) => {
         setSheetContent({
             type: content
         });
     }
+    const sheetContentMap: SheetContentMap = {
+        category: CreateCategoryForm,
+        subCategory: CreateSubCategoryForm,
+    };
     const MemorizedCategoryItem = memo(CategoryItem);
 
     return (
@@ -52,31 +68,15 @@ export default function ProductCategoriesPage() {
                 {
                     categories &&
                     categories.map((category) => (
-                        <MemorizedCategoryItem key={category.id} category={category} handleSheetContent={setSheetContent}/>
+                        <MemorizedCategoryItem key={category.id} category={category}
+                                               handleSheetContent={setSheetContent}/>
                     ))
                 }
             </div>
             <SheetContent>
-                {
-                    sheetContent?.type === 'category' &&
-                    (
-                        <>
-                            <SheetHeader>
-                                <SheetTitle>
-                                    Creación de Categoría
-                                </SheetTitle>
-                                <SheetDescription>
-                                    Crea una nueva categoría
-                                </SheetDescription>
-                            </SheetHeader>
-                            <CreateCategoryForm/>
-                        </>
-                    )
-                }
-                {
-                    sheetContent?.type === 'subCategory' &&
-                    (
-                        <CreateSubCategoryForm categoryId={sheetContent.category?.id!}/>
+                {sheetContent && sheetContentMap[sheetContent.type] &&
+                    createElement(sheetContentMap[sheetContent.type],
+                        sheetContent.type === 'subCategory' ? {categoryId: sheetContent.category?.id} : null
                     )
                 }
             </SheetContent>

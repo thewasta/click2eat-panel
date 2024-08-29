@@ -13,6 +13,7 @@ import {toast} from "sonner";
 import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import useFormData from "@/_lib/_hooks/useFormData";
+import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 
 enum CategoryStatus {
     draft = "DRAFT",
@@ -71,89 +72,100 @@ export function CreateCategoryForm() {
         [CategoryStatus.discontinued, 'Inactivo'],
     ];
     return (
-        <Form {...form}>
-            <form encType={'multipart/form-data'} className={'space-y-3 flex flex-col'}
-                  onSubmit={form.handleSubmit(handleSubmit)}>
-                <FormField
-                    control={form.control}
-                    name={'status'}
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Estado</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <>
+            <SheetHeader>
+                <SheetTitle>
+                    Creación de Categoría
+                </SheetTitle>
+                <SheetDescription>
+                    Crea una nueva categoría
+                </SheetDescription>
+            </SheetHeader>
+            <Form {...form}>
+                <form encType={'multipart/form-data'} className={'space-y-3 flex flex-col'}
+                      onSubmit={form.handleSubmit(handleSubmit)}>
+                    <FormField
+                        control={form.control}
+                        name={'status'}
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Estado</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={'Borrador'}/>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {
+                                            options.map(([value, text], i) => (
+                                                <SelectItem key={i} value={value}
+                                                            className={'capitalize'}>{text}</SelectItem>
+                                            ))
+                                        }
+
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>
+                                    Nombre
+                                </FormLabel>
                                 <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={'Borrador'}/>
-                                    </SelectTrigger>
+                                    <Input
+                                        placeholder={'Entrantes, Destacados...'}
+                                        {...field}
+                                    />
                                 </FormControl>
-                                <SelectContent>
-                                    {
-                                        options.map(([value, text], i) => (
-                                            <SelectItem key={i} value={value}
-                                                        className={'capitalize'}>{text}</SelectItem>
-                                        ))
-                                    }
-
-                                </SelectContent>
-                            </Select>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    render={({field}) => (
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                        name={'name'}
+                    />
+                    <FormField control={form.control} name={'description'} render={({field}) => (
                         <FormItem>
                             <FormLabel>
-                                Nombre
+                                Descripción
                             </FormLabel>
                             <FormControl>
-                                <Input
-                                    placeholder={'Entrantes, Destacados...'}
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                    name={'name'}
-                />
-                <FormField control={form.control} name={'description'} render={({field}) => (
-                    <FormItem>
-                        <FormLabel>
-                            Descripción
-                        </FormLabel>
-                        <FormControl>
-                            <Textarea placeholder={'Disfruta de nuestras bebidas...'} {...field}/>
-                        </FormControl>
-                    </FormItem>
-                )}/>
-                <FormField
-                    name={'offer'}
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>
-                                Oferta
-                            </FormLabel>
-                            <FormDescription>
-                                El valor es calculado en porcentaje
-                            </FormDescription>
-                            <FormControl>
-                                <Input
-                                    type={"number"}
-                                    placeholder={'10, 50'}
-                                    {...field}
-                                />
+                                <Textarea placeholder={'Disfruta de nuestras bebidas...'} {...field}/>
                             </FormControl>
                         </FormItem>
-                    )}
-                />
+                    )}/>
+                    <FormField
+                        name={'offer'}
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>
+                                    Oferta
+                                </FormLabel>
+                                <FormDescription>
+                                    El valor es calculado en porcentaje
+                                </FormDescription>
+                                <FormControl>
+                                    <Input
+                                        type={"number"}
+                                        placeholder={'10, 50'}
+                                        {...field}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
 
-                <Button type={"submit"} className={'space-x-3'}>
-                    <span>Guardar</span>
-                    <SaveIcon/>
-                </Button>
-            </form>
-        </Form>
-    );
+                    <Button type={"submit"} className={'space-x-3'}>
+                        <span>Guardar</span>
+                        <SaveIcon/>
+                    </Button>
+                </form>
+            </Form>
+        </>
+    )
+        ;
 }

@@ -21,8 +21,10 @@ import {SubCategoryItem} from "@/app/(dashboard)/products/categories/subCategory
 type CategoryWithSubCategories = Tables<'categories'> & {
     sub_categories: Tables<'sub_categories'>[]
 }
+type SheetContentType = 'category' | 'subCategory';
+
 type SheetStateForm = {
-    type: string;
+    type: SheetContentType;
     category?: Tables<'categories'>
     subCategory?: Tables<'sub_categories'>
 }
