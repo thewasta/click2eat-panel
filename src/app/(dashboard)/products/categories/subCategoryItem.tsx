@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {FilePenIcon, Trash2Icon, TrashIcon} from "lucide-react";
+import {FilePenIcon, TrashIcon} from "lucide-react";
 import {Tables} from "@/types/database/database";
 import {
     AlertDialog,

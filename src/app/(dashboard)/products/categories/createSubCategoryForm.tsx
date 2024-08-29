@@ -9,7 +9,7 @@ import {SaveIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import useFormData from "@/_lib/_hooks/useFormData";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createSubCategory, deleteSubCategoryById} from "@/_request/product/category.service";
+import {createSubCategory} from "@/_request/product/category.service";
 import {toast} from "sonner";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 

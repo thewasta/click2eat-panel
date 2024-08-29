@@ -3,7 +3,7 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {AccordionHeader} from "@radix-ui/react-accordion";
 import {SheetTrigger} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
-import {FilePenIcon, Trash2Icon, TrashIcon} from "lucide-react";
+import {FilePenIcon, Trash2Icon} from "lucide-react";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
