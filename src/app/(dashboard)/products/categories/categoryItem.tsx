@@ -16,13 +16,19 @@ import {Tables} from "@/types/database/database";
 import {Dispatch, SetStateAction} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {deleteCategoryById} from "@/_request/product/category.service";
+import {SubCategoryItem} from "@/app/(dashboard)/products/categories/subCategoryItem";
 
 type CategoryWithSubCategories = Tables<'categories'> & {
     sub_categories: Tables<'sub_categories'>[]
 }
+type SheetStateForm = {
+    type: string;
+    category?: Tables<'categories'>
+    subCategory?: Tables<'sub_categories'>
+}
 type CategoryItemProps = {
     category: CategoryWithSubCategories,
-    handleSheetContent: Dispatch<SetStateAction<string | null>>
+    handleSheetContent: Dispatch<SetStateAction<SheetStateForm | null>>
 }
 
 export function CategoryItem({category, handleSheetContent}: CategoryItemProps) {
@@ -43,8 +49,8 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
         }
     });
 
-    const handleClickDelete = (categoryId: string) => {
-        mutation.mutate(categoryId);
+    const handleClickDelete = () => {
+        mutation.mutate(category.id);
     }
 
     return (
@@ -57,7 +63,8 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
                         </div>
                         <div className="flex items-center gap-4">
                             <SheetTrigger asChild>
-                                <Button variant={"ghost"} size={"icon"} onClick={() => handleSheetContent('category')}>
+                                <Button variant={"ghost"} size={"icon"}
+                                        onClick={() => handleSheetContent({type: 'category'})}>
                                     <FilePenIcon className="h-4 w-4"/>
                                     <span className="sr-only">Editar</span>
                                 </Button>
@@ -85,7 +92,8 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
                                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                         <AlertDialogAction
                                             asChild>
-                                            <Button variant={"destructive"} onClick={event => handleClickDelete(category.id)}>
+                                            <Button variant={"destructive"}
+                                                    onClick={handleClickDelete}>
                                                 Continuar
                                             </Button>
                                         </AlertDialogAction>
@@ -99,30 +107,13 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
                 <AccordionContent>
                     <div className={'space-y-2'}>
                         {category.sub_categories.map((subcategory) => (
-                            <div key={subcategory.id}
-                                 className="bg-muted/20 rounded-md p-4 flex items-center justify-between">
-                                <div>{subcategory.name}</div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                    >
-                                        <FilePenIcon className="h-5 w-5"/>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                    >
-                                        <TrashIcon className="h-5 w-5"/>
-                                    </Button>
-                                </div>
-                            </div>
+                            <SubCategoryItem key={subcategory.id} subcategory={subcategory} categoryId={category.id}/>
                         ))}
                     </div>
                 </AccordionContent>
                 <SheetTrigger asChild>
                     <Button variant={'outline'} className={'m-2'}
-                            onClick={() => handleSheetContent('subCategory')}>
+                            onClick={() => handleSheetContent({type: 'subCategory', category: category})}>
                         Crear sub categoría
                     </Button>
                 </SheetTrigger>

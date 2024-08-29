@@ -5,11 +5,18 @@ import {useQuery} from "@tanstack/react-query";
 import {retrieveCategories} from "@/_request/product/category.service";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {Skeleton} from "@/components/ui/skeleton";
-import {useState} from "react";
+import {memo, useState} from "react";
 import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";
-
 import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
+import {CreateSubCategoryForm} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
+import {Tables} from "@/types/database/database";
+import {LoadingSkeleton} from "@/app/(dashboard)/products/categories/loadingSkeleton";
 
+type SheetStateForm = {
+    type: string;
+    category?: Tables<'categories'>
+    subCategory?: Tables<'sub_categories'>
+}
 export default function ProductCategoriesPage() {
 
     const {data: categories, isLoading} = useQuery({
@@ -22,10 +29,14 @@ export default function ProductCategoriesPage() {
         refetchOnWindowFocus: false
     });
 
-    const [sheetContent, setSheetContent] = useState<string | null>(null)
+    const [sheetContent, setSheetContent] = useState<SheetStateForm | null>(null)
     const handleSheetContent = (content: string) => {
-        setSheetContent(content);
+        setSheetContent({
+            type: content
+        });
     }
+    const MemorizedCategoryItem = memo(CategoryItem);
+
     return (
         <Sheet>
             <SheetTrigger asChild className={'mb-2'}>
@@ -36,24 +47,18 @@ export default function ProductCategoriesPage() {
             <div className={'flex-1 w-full md:w-1/2'}>
                 {
                     isLoading &&
-                    Array.from({length: 3}).map((_, index) => (
-                        <div key={index} className="space-y-4 mb-3">
-                            <Skeleton className="h-6 w-1/2"/>
-                            <Skeleton className="h-4 w-3/4"/>
-                            <Skeleton className="h-8 w-full"/>
-                        </div>
-                    ))
+                    <LoadingSkeleton/>
                 }
                 {
                     categories &&
                     categories.map((category) => (
-                        <CategoryItem key={category.id} category={category} handleSheetContent={setSheetContent}/>
+                        <MemorizedCategoryItem key={category.id} category={category} handleSheetContent={setSheetContent}/>
                     ))
                 }
             </div>
             <SheetContent>
                 {
-                    sheetContent === 'category' &&
+                    sheetContent?.type === 'category' &&
                     (
                         <>
                             <SheetHeader>
@@ -69,18 +74,9 @@ export default function ProductCategoriesPage() {
                     )
                 }
                 {
-                    sheetContent === 'subCategory' &&
+                    sheetContent?.type === 'subCategory' &&
                     (
-                        <>
-                            <SheetHeader>
-                                <SheetTitle>
-                                    Creación de sub categoría
-                                </SheetTitle>
-                                <SheetDescription>
-                                    Crea una nueva categoría
-                                </SheetDescription>
-                            </SheetHeader>
-                        </>
+                        <CreateSubCategoryForm categoryId={sheetContent.category?.id!}/>
                     )
                 }
             </SheetContent>

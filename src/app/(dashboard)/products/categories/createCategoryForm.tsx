@@ -47,15 +47,17 @@ export function CreateCategoryForm() {
             queryClient.invalidateQueries({
                 queryKey: ["categories"]
             });
+            toast.success('Categoría creada');
             form.reset();
         },
         onError: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            })
-                .then(_ => toast.error('Error al crear', {
-                    description: 'Ha ocurrido un error al crear la categoría.',
-                }))
+            queryClient
+                .invalidateQueries({
+                    queryKey: ["categories"]
+                });
+            toast.error('Categoría no creada', {
+                description: 'Ha ocurrido un error al crear la categoría.',
+            });
         },
     });
 
@@ -134,7 +136,7 @@ export function CreateCategoryForm() {
                                 Oferta
                             </FormLabel>
                             <FormDescription>
-                                El valor es en porcentaje
+                                El valor es calculado en porcentaje
                             </FormDescription>
                             <FormControl>
                                 <Input

@@ -3,6 +3,7 @@ import {createClient} from "@/_lib/supabase/server";
 import {Tables} from "@/types/database/database";
 import {TypedFormData} from "@/_lib/_hooks/useFormData";
 import {CategorySchemaDTO} from "@/app/(dashboard)/products/categories/createCategoryForm";
+import {SubCategoryDTO} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
 
 type CategoryStatus = "DRAFT" | "PUBLISHED" | "DISCONTINUED";
 
@@ -22,7 +23,6 @@ export async function createCategory(formData: TypedFormData<CategorySchemaDTO>)
         name: formData.get('name') as string
     })
     if (error) {
-        console.error(error);
         throw new Error('No ha sido posible crear la categoría');
     }
 }
@@ -45,6 +45,7 @@ function processCategories(rawData: RawCategoryData[]): CategoryWithSubCategorie
         sub_categories: category.sub_categories.map(sc => sc.sub_category)
     }));
 }
+
 export async function retrieveCategories(): Promise<CategoryWithSubCategories[]> {
     const supabase = createClient();
     const {data: {user}, error: authError} = await supabase.auth.getUser();
@@ -67,7 +68,6 @@ export async function retrieveCategories(): Promise<CategoryWithSubCategories[]>
     `)
         .eq('business_establishment_id', currentBusiness);
     if (categoryError) {
-        console.log({categoryError})
         throw new Error(categoryError.message);
     }
 
@@ -89,10 +89,77 @@ export async function deleteCategoryById(categoryId: string): Promise<void> {
     if (authError || !user) {
         throw new Error('Invalid session');
     }
-    const {data, error} = await supabase.from('categories')
+    const {error: errorRemovePivot} = await supabase.from('category_subcategories')
+        .delete()
+        .eq('category_id', categoryId);
+
+    if (errorRemovePivot) {
+        throw new Error('Ha ocurrido un error al eliminar la categoría');
+    }
+
+    const {error} = await supabase.from('categories')
         .delete()
         .eq('id', categoryId);
     if (error) {
-        throw new Error('No ha podido borrar la categoría');
+        throw new Error('Ha ocurrido un error al eliminar la categoría');
     }
+}
+
+export async function deleteSubCategoryById({subCategoryId, categoryId}: {
+    subCategoryId: string,
+    categoryId: string
+}): Promise<void> {
+    const supabase = createClient();
+    const {data: {user}, error: authError} = await supabase.auth.getUser();
+    if (authError || !user) {
+        throw new Error('Invalid session');
+    }
+
+    const {data: subCategoriesPivot, error: subCategoriesError} = await supabase.from('category_subcategories')
+        .select()
+        .eq('subcategory_id', subCategoryId);
+
+    if (subCategoriesError || !subCategoriesPivot) {
+        throw new Error('No ha sido posible borrar la sub categoría');
+    }
+    try {
+        if (subCategoriesPivot.length === 1) {
+            await supabase.from('sub_categories').delete().eq('id', subCategoryId);
+        }
+        await supabase.from('category_subcategories')
+            .delete()
+            .eq('category_id', categoryId)
+            .eq('subcategory_id', subCategoryId);
+
+    } catch (e) {
+        throw new Error('No ha sido posible borrar la sub categoría.')
+    }
+}
+
+export async function createSubCategory(formData: TypedFormData<SubCategoryDTO>): Promise<void> {
+    const supabase = createClient();
+    const {data: {user}, error: authError} = await supabase.auth.getUser();
+    if (authError || !user) {
+        throw new Error('Invalid session');
+    }
+
+    const {data, error} = await supabase.from('sub_categories').insert({
+        business_establishment_id: user.user_metadata.current_session,
+        status: formData.get("status") as CategoryStatus,
+        name: formData.get('name') as string,
+    }).select().single();
+
+    if (error) {
+        throw new Error('No ha sido posible crear la sub categoría')
+    }
+
+    const {error: pivotError} = await supabase.from('category_subcategories').insert({
+        category_id: formData.get('categoryId') as string,
+        subcategory_id: data.id
+    });
+
+    if (pivotError) {
+        throw new Error('No ha sido posible crear la relación')
+    }
+
 }
