@@ -19,11 +19,6 @@ type SheetStateForm = {
     subCategory?: Tables<'sub_categories'>
 }
 
-interface SheetContent {
-    type: SheetContentType;
-    category?: { id: string }; // Asumiendo que category tiene una propiedad id
-}
-
 type SheetContentMap = {
     [K in SheetContentType]: React.ComponentType<any>;
 };
