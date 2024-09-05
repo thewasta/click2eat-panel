@@ -31,13 +31,13 @@ jobs:
       #        run: npx playwright test
       - name: Build
         run: npm run build
-      - name: Build failed
-        uses: rjstone/discord-webhook-notify@v1
-        if: failure()
-        with:
-          severity: error
-          details: ¡Han fallando los tests! Se cancela el despliegue
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+#      - name: Build failed
+#        uses: rjstone/discord-webhook-notify@v1
+#        if: failure()
+#        with:
+#          severity: error
+#          details: ¡Han fallando los tests! Se cancela el despliegue
+#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 #      - uses: actions/upload-artifact@v4
 #        if: always()
 #        with:
