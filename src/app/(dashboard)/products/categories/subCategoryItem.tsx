@@ -13,13 +13,23 @@ import {
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {deleteSubCategoryById} from "@/app/actions/dashboard/category.service";
 import {toast} from "sonner";
+import {Dispatch, SetStateAction} from "react";
+import {SheetTrigger} from "@/components/ui/sheet";
 
+type SheetContentType = 'category' | 'subCategory';
+
+type SheetStateForm = {
+    type: SheetContentType;
+    category?: Tables<'categories'>
+    subCategory?: Tables<'sub_categories'>
+}
 type SubCategoryItemProps = {
     subcategory: Tables<'sub_categories'>,
-    categoryId: string
+    category: Tables<'categories'>
+    handleSheetContent: Dispatch<SetStateAction<SheetStateForm | null>>
 }
 
-export function SubCategoryItem({subcategory, categoryId}: SubCategoryItemProps) {
+export function SubCategoryItem({subcategory, category, handleSheetContent}: SubCategoryItemProps) {
 
     const queryClient = useQueryClient();
     const mutation = useMutation({
@@ -38,7 +48,7 @@ export function SubCategoryItem({subcategory, categoryId}: SubCategoryItemProps)
     const handleDelete = () => {
         const data = {
             subCategoryId: subcategory.id,
-            categoryId: categoryId,
+            categoryId: category.id,
         }
         mutation.mutate(data);
     }
@@ -47,12 +57,17 @@ export function SubCategoryItem({subcategory, categoryId}: SubCategoryItemProps)
             className="bg-muted/20 rounded-md p-4 flex items-center justify-between">
             <div>{subcategory.name}</div>
             <div className="flex items-center gap-2">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                >
-                    <FilePenIcon className="h-5 w-5"/>
-                </Button>
+                <SheetTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                            handleSheetContent({type: "subCategory", subCategory: subcategory, category: category})
+                        }}
+                    >
+                        <FilePenIcon className="h-5 w-5"/>
+                    </Button>
+                </SheetTrigger>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button

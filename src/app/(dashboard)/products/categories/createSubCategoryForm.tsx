@@ -9,9 +9,10 @@ import {SaveIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import useFormData from "@/_lib/_hooks/useFormData";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createSubCategory} from "@/app/actions/dashboard/category.service";
+import {createSubCategory, editSubCategory} from "@/app/actions/dashboard/category.service";
 import {toast} from "sonner";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
+import {Tables} from "@/types/database/database";
 
 enum CategoryStatus {
     draft = "DRAFT",
@@ -20,6 +21,7 @@ enum CategoryStatus {
 }
 
 const subCategorySchema = z.object({
+    id: z.string().optional(),
     name: z.string().min(3, {message: 'El nombre debe contener al menos 3 caracteres'}),
     description: z.string().optional(),
     status: z.nativeEnum(CategoryStatus),
@@ -34,20 +36,24 @@ const options = [
 ];
 
 type CreateSubCategoryFormProps = {
-    categoryId: string;
+    category: Tables<'categories'>;
+    subCategory?: Tables<'sub_categories'>
 }
 
-export function CreateSubCategoryForm({categoryId}: CreateSubCategoryFormProps) {
+export function CreateSubCategoryForm({category, subCategory}: CreateSubCategoryFormProps) {
     const queryClient = useQueryClient();
     const createFormData = useFormData<SubCategoryDTO>();
     const form = useForm<SubCategoryDTO>({
         resolver: zodResolver(subCategorySchema),
         defaultValues: {
-            name: '',
-            description: '',
-            status: CategoryStatus.draft,
-            offer: '',
-            categoryId: categoryId
+            id: subCategory?.id,
+            name: subCategory?.name ?? '',
+            description: subCategory?.description ?? '',
+            //@ts-ignore
+            status: subCategory?.status ?? CategoryStatus.draft,
+            //@ts-ignore
+            offer: subCategory?.offer ?? '',
+            categoryId: category.id
         }
     });
     const mutation = useMutation({
@@ -56,7 +62,7 @@ export function CreateSubCategoryForm({categoryId}: CreateSubCategoryFormProps) 
             queryClient.invalidateQueries({
                 queryKey: ["categories"]
             });
-            toast.success('Categoría creada');
+            toast.success('Sub categoría creada');
             form.reset();
         },
         onError: () => {
@@ -64,15 +70,39 @@ export function CreateSubCategoryForm({categoryId}: CreateSubCategoryFormProps) 
                 .invalidateQueries({
                     queryKey: ["categories"]
                 });
-            toast.error('Categoría no creada', {
+            toast.error('Error al crear', {
                 description: 'Ha ocurrido un error al crear la categoría.',
             });
         },
     })
+    const editMutation = useMutation({
+        mutationFn: editSubCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["categories"]
+            });
+            toast.success('Sub categoría editada');
+            form.reset();
+        },
+        onError: () => {
+            queryClient
+                .invalidateQueries({
+                    queryKey: ["categories"]
+                });
+            toast.error('Error al editar', {
+                description: 'Ha ocurrido un error al editar la sub categoría.',
+            });
+        },
+    })
     const handleSubmit: SubmitHandler<SubCategoryDTO> = (values: SubCategoryDTO) => {
-        form.setValue('categoryId',categoryId);
+        form.setValue('categoryId', category.id);
         const formData = createFormData(values);
-        mutation.mutate(formData);
+        console.log(values);
+        if (values.id) {
+            editMutation.mutate(formData)
+        } else {
+            mutation.mutate(formData);
+        }
     }
     return (
         <>

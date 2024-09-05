@@ -23,6 +23,22 @@ export async function createCategory(formData: TypedFormData<CategorySchemaDTO>)
     }
 }
 
+export async function editCategory(formData: TypedFormData<CategorySchemaDTO>): Promise<void> {
+    const {supabase} = await getUser();
+    const status = formData.get('status') as CategoryStatus;
+
+    const {error} = await supabase.from('categories')
+        .update({
+            status: status,
+            name: formData.get('name') as string
+        })
+        .eq('id', formData.get('id')).select();
+    if (error) {
+        console.error(error);
+        throw new Error('No fue posible actualizar la categoría');
+    }
+}
+
 type SubCategory = Tables<'sub_categories'>
 
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -90,6 +106,7 @@ export async function deleteCategoryById(categoryId: string): Promise<void> {
         .delete()
         .eq('id', categoryId);
     if (error) {
+        console.error(error);
         throw new Error('Ha ocurrido un error al eliminar la categoría');
     }
 }
@@ -98,6 +115,7 @@ type DeleteSubCategoryById = {
     subCategoryId: string;
     categoryId: string;
 }
+
 export async function deleteSubCategoryById({subCategoryId, categoryId}: DeleteSubCategoryById): Promise<void> {
     const {supabase} = await getUser();
 
@@ -144,4 +162,20 @@ export async function createSubCategory(formData: TypedFormData<SubCategoryDTO>)
         throw new Error('No ha sido posible crear la relación')
     }
 
+}
+
+export async function editSubCategory(formData: TypedFormData<SubCategoryDTO>): Promise<void> {
+    const {supabase} = await getUser();
+
+    const {error} = await supabase.from('sub_categories')
+        .update({
+            status: formData.get("status") as CategoryStatus,
+            name: formData.get('name') as string,
+        })
+        .eq('id', formData.get('id'))
+
+    if (error) {
+        console.error(error);
+        throw new Error('No ha sido posible editar la sub categoría');
+    }
 }

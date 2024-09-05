@@ -66,7 +66,7 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
                         <div className="flex items-center gap-4">
                             <SheetTrigger asChild>
                                 <Button variant={"ghost"} size={"icon"}
-                                        onClick={() => handleSheetContent({type: 'category'})}>
+                                        onClick={() => handleSheetContent({type: 'category',category})}>
                                     <FilePenIcon className="h-4 w-4"/>
                                     <span className="sr-only">Editar</span>
                                 </Button>
@@ -109,7 +109,7 @@ export function CategoryItem({category, handleSheetContent}: CategoryItemProps) 
                 <AccordionContent>
                     <div className={'space-y-2'}>
                         {category.sub_categories.map((subcategory) => (
-                            <SubCategoryItem key={subcategory.id} subcategory={subcategory} categoryId={category.id}/>
+                            <SubCategoryItem key={subcategory.id} subcategory={subcategory} category={category} handleSheetContent={handleSheetContent}/>
                         ))}
                     </div>
                 </AccordionContent>

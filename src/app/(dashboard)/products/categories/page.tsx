@@ -70,7 +70,7 @@ export default function ProductCategoriesPage() {
             <SheetContent>
                 {sheetContent && sheetContentMap[sheetContent.type] &&
                     createElement(sheetContentMap[sheetContent.type],
-                        sheetContent.type === 'subCategory' ? {categoryId: sheetContent.category?.id} : null
+                        sheetContent
                     )
                 }
             </SheetContent>
