@@ -18,6 +18,8 @@ services:
       - ./docker/nginx/conf/:/etc/nginx/conf.d/:ro
     depends_on:
       - app
+    networks:
+      - supabase_network_supabase-seeding
   app:
     container_name: dev-nextjs-restaurant
     image: local-nextjs-restaurant:dev
@@ -33,6 +35,8 @@ services:
       - WATCHPACK_POLLING=true
     command: npm run dev
     restart: on-failure
+    networks:
+      - supabase_network_supabase-seeding
     deploy:
       resources:
         limits:
@@ -44,3 +48,6 @@ services:
       - /app/.next
 volumes:
   mockserver:
+networks:
+  supabase_network_supabase-seeding:
+    external: true

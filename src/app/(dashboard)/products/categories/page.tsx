@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button";
 import {useQuery} from "@tanstack/react-query";
 import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
-import {createElement, memo, useState} from "react";
+import {createElement, memo, useMemo, useState} from "react";
 import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";
 import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
 import {CreateSubCategoryForm} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
@@ -41,6 +41,20 @@ export default function ProductCategoriesPage() {
             type: content
         });
     }
+    const allSubcategories = useMemo(() => {
+        if (!categories) return [];
+        const subcategorySet = new Set<Tables<'sub_categories'>>();
+        categories.forEach(category => {
+            (category.sub_categories || []).forEach(subCategory => {
+                const existingSubCategory = Array.from(subcategorySet).find(s => s.id === subCategory.id);
+                if (!existingSubCategory) {
+                    subcategorySet.add(subCategory);
+                }
+            });
+        });
+        return Array.from(subcategorySet);
+    }, [categories]);
+
     const sheetContentMap: SheetContentMap = {
         category: CreateCategoryForm,
         subCategory: CreateSubCategoryForm,
@@ -54,7 +68,7 @@ export default function ProductCategoriesPage() {
                     Crear Categoría
                 </Button>
             </SheetTrigger>
-            <div className={'flex-1 w-full md:w-1/2'}>
+            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'}>
                 {
                     isLoading &&
                     <LoadingSkeleton/>
@@ -63,7 +77,7 @@ export default function ProductCategoriesPage() {
                     categories &&
                     categories.map((category) => (
                         <MemorizedCategoryItem key={category.id} category={category}
-                                               handleSheetContent={setSheetContent}/>
+                                               handleSheetContent={setSheetContent} allSubcategories={allSubcategories}/>
                     ))
                 }
             </div>

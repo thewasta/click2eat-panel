@@ -13,7 +13,7 @@ export async function createCategory(formData: TypedFormData<CategorySchemaDTO>)
 
     const status = formData.get('status') as CategoryStatus;
 
-    const {data, error} = await supabase.from('categories').insert({
+    const {error} = await supabase.from('categories').insert({
         business_establishment_id: user.user_metadata.current_session,
         status: status,
         name: formData.get('name') as string
@@ -108,6 +108,23 @@ export async function deleteCategoryById(categoryId: string): Promise<void> {
     if (error) {
         console.error(error);
         throw new Error('Ha ocurrido un error al eliminar la categoría');
+    }
+}
+
+export async function addSubCategoryToCategory({
+                                                   subCategoryId, categoryId
+                                               }: {
+    subCategoryId: string;
+    categoryId: string
+}): Promise<void> {
+    const {supabase} = await getUser();
+    const {error} = await supabase.from('category_subcategories').insert({
+        subcategory_id: subCategoryId,
+        category_id: categoryId
+    });
+    if (error) {
+        console.error(error);
+        throw new Error('No ha sido posible añadir la sub categoría');
     }
 }
 

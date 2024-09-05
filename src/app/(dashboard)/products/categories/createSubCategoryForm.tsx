@@ -97,7 +97,6 @@ export function CreateSubCategoryForm({category, subCategory}: CreateSubCategory
     const handleSubmit: SubmitHandler<SubCategoryDTO> = (values: SubCategoryDTO) => {
         form.setValue('categoryId', category.id);
         const formData = createFormData(values);
-        console.log(values);
         if (values.id) {
             editMutation.mutate(formData)
         } else {
