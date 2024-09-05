@@ -45,7 +45,7 @@ export async function updateSession(req: NextRequest) {
 
     if (error && (url.pathname !== '/login' && url.pathname !== '/auth/callback')) {
         url.pathname = '/login';
-        return NextResponse.redirect(url, 401);
+        return NextResponse.redirect(url, 301);
     }
     if (PublicPath.includes(req.nextUrl.pathname) && !isAuthenticated) {
         return response;
@@ -53,7 +53,7 @@ export async function updateSession(req: NextRequest) {
 
     if (!isAuthenticated) {
         url.pathname = '/login';
-        return NextResponse.redirect(url, 401);
+        return NextResponse.redirect(url, 301);
     }
 
     if (isAuthenticated && user) {
