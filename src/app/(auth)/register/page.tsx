@@ -1,18 +1,8 @@
-'use client'
 import React from "react";
-import RegisterBusiness from "@/components/auth/RegisterBusiness";
-import RegisterOwner from "@/components/auth/RegisterOwner";
 import Link from "next/link";
-import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
+import RegisterFormSteps from "@/components/auth/RegisterFormSteps";
 
 export default function RegisterPage() {
-    const {step} = useRegisterAccountContext();
-
-    const formElements = [
-        <RegisterBusiness key={1}/>,
-        <RegisterOwner key={2}/>
-    ];
-
     return (
         <>
             <div className="flex flex-col w-full mb-2">
@@ -24,11 +14,7 @@ export default function RegisterPage() {
                 </p>
             </div>
             <div className="w-full flex flex-col gap-3 items-start">
-                <div className="form-control w-full">
-                    {
-                        formElements[step]
-                    }
-                </div>
+                {<RegisterFormSteps/>}
             </div>
             <div className="w-full flex items-center justify-center mt-4">
                 <p className="text-sm font-normal">¿Ya tienes cuenta?

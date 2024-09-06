@@ -3,16 +3,16 @@
 import {handleRequest} from "@/_request/request";
 import {cookies} from "next/headers";
 import * as jose from 'jose';
-import {LoginAccountDto} from "@/types/auth/LoginAccount.types";
 import {RegisterAccount} from "@/lib/models/Account/RegisterAccount";
 import {LoginResponse} from "@/_request/auth/types/LoginResponse";
 import {setCookie} from "cookies-next";
+import {LoginFormSchema} from "@/types/validation/loginFormValidation";
 
 const base64Secret = process.env.JWT_SECRET as string;
 const secret = Buffer.from(base64Secret, 'base64');
 const cookieStore = cookies();
 
-export async function login(login: LoginAccountDto): Promise<any> {
+export async function login(login: LoginFormSchema): Promise<any> {
     const ENDPOINT = 'auth/login';
     try {
         const tokenExpiration = new Date(0);

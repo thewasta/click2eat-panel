@@ -12,18 +12,11 @@ import {cn} from "@/lib/utils";
 import {Check, ChevronsUpDown, SaveIcon} from "lucide-react";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createCategory} from "@/_request/product/category.service";
 import {toast} from "sonner";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
-
-const categorySchema = z.object({
-    name: z.string().min(3),
-    subCategory: z.string()
-})
-
-type CategorySchemaDTO = z.infer<typeof categorySchema>;
+import {CategoryFormSchema, categorySchema} from "@/types/validation/categoryFormValidation";
 
 const subCategories: any[] = [
     {
@@ -54,7 +47,7 @@ const categories: any[] = [
 export default function ProductCategoriesPage() {
     const queryClient = useQueryClient()
     const columns = useMemo(() => getCategoryColumns(), []);
-    const form = useForm<CategorySchemaDTO>({
+    const form = useForm<CategoryFormSchema>({
         resolver: zodResolver(categorySchema),
         defaultValues: {
             name: ''
@@ -86,7 +79,7 @@ export default function ProductCategoriesPage() {
                 }))
         },
     });
-    const handleSubmit: SubmitHandler<CategorySchemaDTO> = (values: CategorySchemaDTO) => {
+    const handleSubmit: SubmitHandler<CategoryFormSchema> = (values: CategoryFormSchema) => {
         mutation.mutate();
         console.log(values);
     }

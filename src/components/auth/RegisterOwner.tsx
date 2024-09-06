@@ -1,10 +1,10 @@
+'use client'
+
 import React from "react";
 import {useRegisterAccountContext} from "@/lib/context/auth/register-account-context";
-import {z} from "zod";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
+import {Form} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import {register} from "@/_request/auth/auth";
 import * as localforage from "localforage";
@@ -12,35 +12,14 @@ import {useRouter} from "next/navigation";
 import {useUserAppContext} from "@/lib/context/auth/user-context";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
+import {RegisterOwnerFormSchema, registerOwnerSchema} from "@/types/validation/registerOwnerFormValidation";
+import {AppFormField} from "@/components/products/app-form-field";
 
 const RegisterOwnerForm = () => {
     const formContext = useRegisterAccountContext();
-    const registerOwner = z.object({
-        name: z.string({
-            required_error: 'name is required'
-        }).min(1),
-        lastName: z.string({
-            required_error: 'lastName is required'
-        }).min(1),
-        username: z.string({
-            required_error: 'username is required'
-        }).min(1),
-        email: z.string({
-            required_error: 'email is required'
-        }).email(),
-        password: z.string({
-            required_error: 'password is required'
-        }).min(8),
-        confirmPassword: z.string({
-            required_error: 'confirmPassword is required'
-        }).min(8),
-    }).refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords don't match",
-        path: ["confirm"],
-    });
 
-    const ownerForm = useForm<z.infer<typeof registerOwner>>({
-        resolver: zodResolver(registerOwner),
+    const ownerForm = useForm<RegisterOwnerFormSchema>({
+        resolver: zodResolver(registerOwnerSchema),
         defaultValues: {
             name: formContext.propertyForm?.name,
             lastName: formContext.propertyForm?.lastName,
@@ -67,7 +46,7 @@ const RegisterOwnerForm = () => {
             })
             router.push('/');
         },
-        onError: (error, variables, context) => {
+        onError: (error) => {
             ownerForm.setError('username', {
                 message: error.message
             });
@@ -76,7 +55,7 @@ const RegisterOwnerForm = () => {
             })
         }
     })
-    const onSubmit: SubmitHandler<z.infer<typeof registerOwner>> = async (values: z.infer<typeof registerOwner>) => {
+    const onSubmit: SubmitHandler<RegisterOwnerFormSchema> = async (values: RegisterOwnerFormSchema) => {
         const fcmToken = await localforage.getItem('fcmToken');
         formContext.updatePropertyForm({...values, fcmToken: fcmToken as string});
         if (formContext.propertyForm) {
@@ -88,93 +67,47 @@ const RegisterOwnerForm = () => {
             <Form {...ownerForm}>
                 <form className={"space-y-3"}>
                     <div className="flex md:flex-row flex-col gap-3">
-                        <FormField
-                            name={"name"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Nombre
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={"Nombre"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                        <AppFormField
+                            name={'name'}
+                            label={'Nombre'}
+                            placeholder={'José María'}
+                            formItemStyles={'w-full xl:w-1/2'}
                         />
-                        <FormField
-                            name={"lastName"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Apellido
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={"Apellido"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                        <AppFormField
+                            name={'lastName'}
+                            label={'Apellido'}
+                            placeholder={'Apellido'}
+                            formItemStyles={'w-full xl:w-1/2'}
                         />
                     </div>
                     <div className="flex md:flex-row flex-col gap-3">
-                        <FormField
+                        <AppFormField
                             name={"username"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Nombre usuario
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={"Nombre usuario"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                            label={'Nombre de usuario'}
+                            placeholder={'Nombre usuario'}
+                            formItemStyles={'w-full xl:w-1/2'}
                         />
-                        <FormField
-                            name={"email"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Correo Electrónico
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={"Correo electrónico"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
+                       <AppFormField
+                           name={'email'}
+                           label={'Correo Electrónico'}
+                           placeholder={'mimail@gmail.com'}
+                           formItemStyles={'w-full xl:w-1/2'}
+                       />
                     </div>
                     <div className="flex md:flex-row flex-col gap-3">
-                        <FormField
-                            name={"password"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Contraseña
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type={"password"} placeholder={"Contraseña"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                        <AppFormField
+                            name={'password'}
+                            type={'password'}
+                            label={'Contraseña'}
+                            placeholder={'**********'}
+                            formItemStyles={'w-ful xl:w-1/2'}
                         />
-                        <FormField
-                            name={"confirmPassword"}
-                            render={({field}) => (
-                                <FormItem className={"w-full xl:w-1/2"}>
-                                    <FormLabel>
-                                        Confirmar contraseña
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type={"password"} placeholder={"Confirmar contraseña"} {...field}/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+                        <AppFormField
+                            name={'confirmPassword'}
+                            type={'password'}
+                            label={'Confirmar contraseña'}
+                            placeholder={'**********'}
+                            formItemStyles={'w-ful xl:w-1/2'}
                         />
                     </div>
                     <p className={"text-center text-xs text-red-500 font-light"}>

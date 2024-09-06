@@ -2,7 +2,7 @@
 
 import {SubmitHandler} from "react-hook-form";
 import ProductForm from "@/components/form/productForm";
-import {CreateProductDTO} from "@/_lib/dto/productFormDto";
+import {CreateProductFormSchema} from "@/_lib/dto/productFormDto";
 import axios from "axios";
 import {Product} from "@/_request/product/model/product";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
@@ -32,7 +32,7 @@ export default function EditProductPage({params}: { params: { id: string } }) {
         }
     }, [isLoading, data]);
 
-    const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO) => {
+    const submitHandler: SubmitHandler<CreateProductFormSchema> = async (values: CreateProductFormSchema) => {
         console.log({values});
     };
 
