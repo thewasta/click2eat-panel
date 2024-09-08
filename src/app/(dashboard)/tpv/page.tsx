@@ -3,7 +3,7 @@ import {useMediaQuery} from "@/_lib/_hooks/useMediaQuery";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {useQuery} from "@tanstack/react-query";
 import {Product} from "@/_lib/dto/productDto";
-import {productRetriever} from "@/_request/product/product.service";
+import {productRetriever} from "@/app/actions/dashboard/product.service";
 import Image from "next/image";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
