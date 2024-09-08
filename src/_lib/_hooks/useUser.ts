@@ -3,9 +3,18 @@ import {User} from "@supabase/auth-js";
 import {SupabaseClient} from "@supabase/supabase-js";
 
 type getUserReturnType = {
-    user: User,
+    user: Customer,
     supabase: SupabaseClient
 }
+
+interface CustomerMetadata {
+    current_session: string
+}
+
+type Customer = Omit<User, 'user_metadata'> & {
+    user_metadata: CustomerMetadata;
+}
+
 export async function getUser(): Promise<getUserReturnType> {
     const supabase = createClient();
     const {data: {user}, error: authError} = await supabase.auth.getUser();
@@ -15,7 +24,7 @@ export async function getUser(): Promise<getUserReturnType> {
     }
 
     return {
-        user,
+        user: user as Customer,
         supabase
     };
 }
