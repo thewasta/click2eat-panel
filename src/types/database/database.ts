@@ -270,6 +270,7 @@ export type Database = {
           description: string | null
           highlight: boolean
           id: string
+          images: string[] | null
           name: string
           offer: number | null
           price: number
@@ -285,6 +286,7 @@ export type Database = {
           description?: string | null
           highlight?: boolean
           id?: string
+          images?: string[] | null
           name: string
           offer?: number | null
           price: number
@@ -300,6 +302,7 @@ export type Database = {
           description?: string | null
           highlight?: boolean
           id?: string
+          images?: string[] | null
           name?: string
           offer?: number | null
           price?: number
@@ -673,7 +676,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      user_has_establishment_access: {
+        Args: {
+          establishment_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       category_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"

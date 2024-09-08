@@ -1,18 +1,19 @@
 'use client'
 
 import {SubmitHandler} from "react-hook-form";
-import ProductForm from "@/components/form/productForm";
+import ProductForm from "@/components/form/product/productForm";
 import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 import axios from "axios";
 import {Product} from "@/_request/product/model/product";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
-import {productRetriever} from "@/_request/product/product.service";
+import {productRetriever} from "@/app/actions/dashboard/product.service";
+import {Tables} from "@/types/database/database";
 
 
 export default function EditProductPage({params}: { params: { id: string } }) {
 
-    const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
+    const {data, error, isLoading} = useQuery({
         queryKey: ["products"],
         queryFn: async () => productRetriever(),
         retry: false,
