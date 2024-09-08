@@ -10,6 +10,7 @@ import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
 import {CreateSubCategoryForm} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
 import {Tables} from "@/types/database/database";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/categories/loadingSkeleton";
+import {useAllSubcategories} from "@/_lib/_hooks/useAllSubCategories";
 
 type SheetContentType = 'category' | 'subCategory';
 
@@ -41,19 +42,7 @@ export default function ProductCategoriesPage() {
             type: content
         });
     }
-    const allSubcategories = useMemo(() => {
-        if (!categories) return [];
-        const subcategorySet = new Set<Tables<'sub_categories'>>();
-        categories.forEach(category => {
-            (category.sub_categories || []).forEach(subCategory => {
-                const existingSubCategory = Array.from(subcategorySet).find(s => s.id === subCategory.id);
-                if (!existingSubCategory) {
-                    subcategorySet.add(subCategory);
-                }
-            });
-        });
-        return Array.from(subcategorySet);
-    }, [categories]);
+    const allSubcategories = useAllSubcategories(categories);
 
     const sheetContentMap: SheetContentMap = {
         category: CreateCategoryForm,
