@@ -1,13 +1,14 @@
 import {withSentryConfig} from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // output: 'standalone',
-    logging:{
-        fetches:{
+    logging: {
+        fetches: {
             fullUrl: true
         }
     },
-    images:{
+    images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
             {
@@ -60,7 +61,7 @@ export default withSentryConfig(nextConfig, {
     hideSourceMaps: true,
 
 // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
+    disableLogger: false,
 
 // Enables automatic instrumentation of Vercel Cron Monitors.
 // See the following for more information:
