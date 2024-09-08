@@ -3,34 +3,27 @@ import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
 import {useCallback, useEffect, useMemo} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {productRetriever, removeProduct} from "@/_request/product/product.service";
-import {useRouter} from "next/navigation";
+import {getSignedImageUrl, productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
 import {toast} from "sonner";
 import {Product} from "@/_lib/dto/productDto";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
+import {Tables} from "@/types/database/database";
 
 export default function ProductsPage() {
-    const router = useRouter();
 
     const queryClient = useQueryClient();
 
-    const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
+    const {data, error, isLoading} = useQuery<Tables<'products'>[]>({
         queryKey: ["products"],
         queryFn: async () => productRetriever(),
         retry: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
-        staleTime: Infinity,
+        staleTime: 3000,
         refetchOnMount: false,
         refetchIntervalInBackground: false
     });
-
-    useEffect(() => {
-        if (error) {
-            router.replace('/');
-        }
-    }, [error]);
 
     const deleteMutation = useMutation({
         mutationFn: removeProduct,
@@ -51,21 +44,24 @@ export default function ProductsPage() {
         deleteMutation.mutate(parseInt(product.id));
     }, []);
 
-    const columns = useMemo(() => getProductColumns({onDelete}), [])
+    const columns = useMemo(() => getProductColumns({onDelete}), []);
     return (
-        <>
-            {/*@ts-ignore*/}
-            <ProductTable data={data?.message.response || []}
-                          columns={columns}
-                          isLoading={isLoading}
-                          entityName={'Producto'}
-                          searchBy={'name'}
-                          buttonAction={(<Button asChild>
-                              <Link href={'/products/create'}>
-                                  Crear producto
-                              </Link>
-                          </Button>)}
-            />
-        </>
+        <div className={'p-1'}>
+            {
+                data &&
+                <ProductTable
+                    columns={columns}
+                    data={data}
+                    isLoading={isLoading}
+                    entityName={'Producto'}
+                    searchBy={'name'}
+                    buttonAction={(<Button asChild>
+                        <Link href={'/products/create'}>
+                            Crear producto
+                        </Link>
+                    </Button>)}
+                />
+            }
+        </div>
     );
 }

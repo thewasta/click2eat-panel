@@ -31,13 +31,15 @@ export const getProductColumns = ({onDelete}: ProductsColumnsProps): ColumnDef<T
         }
     },
     {
-        accessorKey: 'image',
+        accessorKey: 'imageUrls',
         header: 'Imagen',
         cell: (cell) => {
             const imageFilePath = cell.getValue();
             return (
-                <img className={"object-cover h-16 w-12"} src={`https://api-dev.click2eat.es/${imageFilePath}`}
-                     alt={"image product"}/>
+                imageFilePath &&
+                    //@ts-ignore
+                <Image width={100} height={100} className={"object-cover h-16 w-12"} src={imageFilePath[0]}
+                     alt={"image product"} unoptimized/>
             );
         }
     },

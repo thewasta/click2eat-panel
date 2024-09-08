@@ -1,27 +1,58 @@
 "use server"
 
-import {handleRequest} from "../request";
-import {TypedFormData} from "@/_lib/_hooks/useFormData";
+import {handleRequest} from "@/_request/request";
+import {getComplexFormDataValue, TypedFormData} from "@/_lib/_hooks/useFormData";
 import {CreateProductDTO} from "@/_lib/dto/productFormDto";
+import {getUser} from "@/_lib/_hooks/useUser";
+import {Tables} from "@/types/database/database";
+import {getSignedImages} from "@/_lib/supabase/admin";
 
-export async function productRetriever(): Promise<any> {
-    const ENDPOINT = 'auth/products';
-    try {
-        const response = await handleRequest('GET', ENDPOINT);
-        return {
-            error: false,
-            errorDescription: null,
-            //todo API DEBE DEVOLVER EL MISMO RESPUESTA QUE EL RESTO, ESTÁ DEVOLVIENDO ARRAY
-            //@ts-ignore
-            message: response
-        }
-    } catch (e) {
-        return {
-            error: true,
-            errorDescription: 'Unhandled error',
-            message: null
-        }
+export async function getSignedImageUrl(imagePath: string[]) {
+    const {supabase} = await getUser();
+    const signedUrls = await Promise.all(
+        imagePath.map(async (path) => {
+            const {data} = await supabase
+                .storage
+                .from('click2eat')
+                .createSignedUrl(path, 60 * 30);
+            return data?.signedUrl;
+        })
+    );
+    return signedUrls.filter(Boolean) as string[];
+}
+
+export async function productRetriever(): Promise<Tables<'products'>[]> {
+    const {supabase} = await getUser();
+    const {data, error} = await supabase.from('products')
+        .select('*,categories(name),sub_categories(name)');
+    if (error) {
+        throw new Error(error.message);
     }
+
+    return await Promise.all(data.map(async (product) => {
+        const imageUrls = await Promise.all(product.images.map(async (imagePath: string) => {
+            const existingUrl = await getSignedImages(imagePath)
+
+            if (existingUrl) {
+                return existingUrl;
+            }
+
+            return null;
+        }));
+
+        return {...product, imageUrls: imageUrls.filter(Boolean)};
+    }));
+}
+
+type ProductStatus = 'DRAFT' | 'PUBLISHED' | 'DISCONTINUED'
+type Variant = {
+    name: string;
+    price: number;
+    isRequired: boolean;
+}
+type VariantGroup = {
+    name: string;
+    variants: Variant[]
 }
 
 export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
