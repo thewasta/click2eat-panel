@@ -27,41 +27,36 @@ export default function ProductsPage() {
 
     const deleteMutation = useMutation({
         mutationFn: removeProduct,
-        onSuccess: async (data) => {
-            await queryClient.invalidateQueries({queryKey: ['products']});
-            if (data.error) {
-                toast.error("No se ha podido eliminar el producto");
-            } else {
-                toast.success("Producto borrado correctamente");
-            }
+        onSuccess: () => {
+            toast.error("Product eliminado correctamente");
         },
         onError: () => {
             toast.error("No se ha podido eliminar el producto");
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({queryKey: ['products']});
         }
     });
 
-    const onDelete = useCallback((product: Product) => {
-        deleteMutation.mutate(parseInt(product.id));
+    const onDelete = useCallback((product: Tables<'products'>) => {
+        deleteMutation.mutate(product.id);
     }, []);
 
     const columns = useMemo(() => getProductColumns({onDelete}), []);
     return (
         <div className={'p-1'}>
-            {
-                data &&
-                <ProductTable
-                    columns={columns}
-                    data={data}
-                    isLoading={isLoading}
-                    entityName={'Producto'}
-                    searchBy={'name'}
-                    buttonAction={(<Button asChild>
-                        <Link href={'/products/create'}>
-                            Crear producto
-                        </Link>
-                    </Button>)}
-                />
-            }
+            <ProductTable
+                columns={columns}
+                data={data || []}
+                isLoading={isLoading}
+                entityName={'Producto'}
+                searchBy={'name'}
+                buttonAction={(<Button asChild>
+                    <Link href={'/products/create'}>
+                        Crear producto
+                    </Link>
+                </Button>)}
+            />
         </div>
     );
 }

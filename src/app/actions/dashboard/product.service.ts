@@ -136,30 +136,19 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
     }
 }
 
-export async function removeProduct(productId: number): Promise<any> {
-    const ENDPOINT = `api/v1/products/${productId}`;
-    const req = await handleRequest('DELETE', ENDPOINT);
-    if (req.error) {
-        return {
-            error: true,
-            errorDescription: "Example",
-            message: null
-        }
-    }
-
-    return {
-        error: false,
-        errorDescription: null,
-        message: null
+export async function removeProduct(productId: string): Promise<void> {
+    const {supabase} = await getUser();
+    const {data, error} = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+        throw new Error(error.message);
     }
 }
 
-export async function editProduct(formData: FormData): Promise<any> {
-
-    console.log(formData.get('name'))
-    console.log(formData.get('price'))
-    console.log(formData.get('description'))
-    console.log(formData.get('category'))
+export async function editProduct(productId: string): Promise<Tables<'products'>> {
+    const {supabase} = await getUser()
+    const {data, error} = await supabase.from('products').select().eq('id', productId).maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
 }
 
 export async function productById(productId: number): Promise<any> {

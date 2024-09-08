@@ -1,10 +1,7 @@
 import {ColumnDef} from "@tanstack/react-table";
 import {FaSort} from "react-icons/fa";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
-import {Product} from "@/_lib/dto/productDto";
 import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
-import {Pencil, Trash2} from "lucide-react";
 import {Tables} from "@/types/database/database";
 import Image from "next/image";
 

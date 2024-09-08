@@ -7,15 +7,15 @@ import axios from "axios";
 import {Product} from "@/_request/product/model/product";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
-import {productRetriever} from "@/app/actions/dashboard/product.service";
+import {editProduct, productRetriever} from "@/app/actions/dashboard/product.service";
 import {Tables} from "@/types/database/database";
 
 
 export default function EditProductPage({params}: { params: { id: string } }) {
 
-    const {data, error, isLoading} = useQuery({
+    const {data, error, isLoading} = useQuery<Tables<'products'>>({
         queryKey: ["products"],
-        queryFn: async () => productRetriever(),
+        queryFn: async () => editProduct(params.id),
         retry: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
