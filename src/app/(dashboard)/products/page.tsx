@@ -1,11 +1,10 @@
 "use client"
 import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
-import {useCallback, useEffect, useMemo} from "react";
+import {useCallback, useMemo} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {getSignedImageUrl, productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
+import {productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
 import {toast} from "sonner";
-import {Product} from "@/_lib/dto/productDto";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Tables} from "@/types/database/database";
