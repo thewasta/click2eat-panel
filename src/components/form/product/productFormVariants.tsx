@@ -11,7 +11,7 @@ import {Label} from "@/components/ui/label";
 
 type Variant = {
     name: string;
-    price: number;
+    price: number|undefined;
     isRequired: boolean;
 }
 type VariantGroup = {
@@ -27,7 +27,7 @@ type ProductFormVariantsProps = {
 export function ProductFormVariants({variantGroups, setVariantGroups}: ProductFormVariantsProps) {
     const addVariantGroup = () => {
         setVariantGroups(
-            [...variantGroups, {name: '', variants: [{name: '', price: 0, isRequired: false}]}]);
+            [...variantGroups, {name: '', variants: [{name: '', price: undefined, isRequired: false}]}]);
     };
 
     const removeVariantGroup = (groupIndex: number) => {
@@ -89,8 +89,10 @@ export function ProductFormVariants({variantGroups, setVariantGroups}: ProductFo
                     {variantGroups.map((group, groupIndex) => (
                         <Card key={groupIndex}>
                             <CardHeader>
-                                <CardTitle>
+                                <CardTitle className={'space-y-1.5'}>
+                                    <Label htmlFor={`group-${groupIndex}`}>Nombre grupo</Label>
                                     <Input
+                                        id={`group-${groupIndex}`}
                                         value={group.name}
                                         onChange={event => handleGroupChange(groupIndex, event)}
                                         placeholder="Masa, Cocción..."
@@ -99,7 +101,7 @@ export function ProductFormVariants({variantGroups, setVariantGroups}: ProductFo
                             </CardHeader>
                             <CardContent>
                                 {group.variants.map((variant, variantIndex) => (
-                                    <div key={variantIndex} className="flex space-x-2 mb-2">
+                                    <div key={variantIndex} className="flex flex-col space-y-2 mb-2">
                                         <Input
                                             name="name"
                                             value={variant.name}
@@ -118,11 +120,11 @@ export function ProductFormVariants({variantGroups, setVariantGroups}: ProductFo
                                                 checked={variant.isRequired}
                                                 onCheckedChange={(checked) => handleVariantChange(groupIndex, variantIndex, 'isRequired', checked)}/>
                                             <Label htmlFor="airplane-mode">Requerido</Label>
+                                            <Button type="button" variant="ghost"
+                                                    onClick={() => removeVariant(groupIndex, variantIndex)}>
+                                                <Trash2 className="h-4 w-4"/>
+                                            </Button>
                                         </div>
-                                        <Button type="button" variant="ghost"
-                                                onClick={() => removeVariant(groupIndex, variantIndex)}>
-                                            <Trash2 className="h-4 w-4"/>
-                                        </Button>
                                     </div>
                                 ))}
                                 <Button type="button" onClick={() => addVariant(groupIndex)} className="mt-2">
