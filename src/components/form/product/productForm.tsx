@@ -30,7 +30,6 @@ type CategoryWithSubCategories = Tables<'categories'> & {
 interface IEditProductForm<T> {
     product: Tables<'products'> | null,
     categories: CategoryWithSubCategories[],
-    subcategories: Tables<'sub_categories'>[],
     isLoading: boolean
 }
 
@@ -50,7 +49,7 @@ type VariantGroup = {
     variants: Variant[]
 }
 
-export default function ProductForm<T>({product, categories, subcategories, isLoading}: IEditProductForm<T>) {
+export default function ProductForm<T>({product, categories, isLoading}: IEditProductForm<T>) {
     const createFormData = useFormData<CreateProductDTO>();
     const queryClient = useQueryClient();
 
