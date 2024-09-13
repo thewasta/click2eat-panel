@@ -42,7 +42,7 @@ enum ProductStatus {
 
 type Variant = {
     name: string;
-    price: number;
+    price: number | undefined;
     isRequired: boolean;
 }
 type VariantGroup = {
@@ -57,7 +57,7 @@ export default function ProductForm<T>({product, categories, subcategories, isLo
     const mutation = useMutation({
         mutationFn: createProduct,
         onSuccess: () => {
-            toast.success('Producto creado correctamente')
+            toast.success('Se ha creado correctamente');
         },
         onError: (error) => {
             toast.error('No se ha podido crear', {
@@ -68,7 +68,8 @@ export default function ProductForm<T>({product, categories, subcategories, isLo
             form.reset();
             setVariantGroups([]);
             queryClient.invalidateQueries({
-                queryKey: ["products"]
+                queryKey: ["products"],
+                refetchType: 'all'
             });
         }
     })
