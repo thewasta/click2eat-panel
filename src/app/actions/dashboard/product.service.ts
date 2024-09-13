@@ -1,35 +1,48 @@
 "use server"
 
-import {handleRequest} from "@/_request/request";
 import {getComplexFormDataValue, TypedFormData} from "@/_lib/_hooks/useFormData";
 import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 import {getUser} from "@/_lib/_hooks/useUser";
 import {Tables} from "@/types/database/database";
 import {getSignedImages} from "@/_lib/supabase/admin";
+type SortOrder = 'asc' | 'desc';
 
-export async function getSignedImageUrl(imagePath: string[]) {
-    const {supabase} = await getUser();
-    const signedUrls = await Promise.all(
-        imagePath.map(async (path) => {
-            const {data} = await supabase
-                .storage
-                .from('click2eat')
-                .createSignedUrl(path, 60 * 30);
-            return data?.signedUrl;
-        })
-    );
-    return signedUrls.filter(Boolean) as string[];
+type ProductRetrieverProps = {
+    page: number;
+    pageSize: number;
+    sortBy?: string;
+    searchTerm?: string;
+    sortOrder?: SortOrder;
 }
 
-export async function productRetriever(): Promise<Tables<'products'>[]> {
+export async function productRetriever({
+                                           page,
+                                           pageSize,
+                                           sortBy = 'created_at',
+                                           sortOrder = 'desc',
+    searchTerm
+                                       }: ProductRetrieverProps): Promise<{
+    products: Tables<'products'>[];
+    totalCount: number
+}> {
     const {supabase} = await getUser();
-    const {data, error} = await supabase.from('products')
-        .select('*,categories(name),sub_categories(name)');
+    const offset = (page - 1) * pageSize;
+    const query = supabase.from('products')
+        .select('*,categories(name),sub_categories(name)', {count: 'exact'})
+        .order(sortBy, {ascending: sortOrder === 'asc'})
+        .range(offset, offset + pageSize - 1);
+
+    if (searchTerm) {
+        query.ilike('name',`%${searchTerm}%`);
+    }
+
+    const {data, error, count} = await query;
+
     if (error) {
         throw new Error(error.message);
     }
 
-    return await Promise.all(data.map(async (product) => {
+    const processImages = await Promise.all(data.map(async (product) => {
         const imageUrls = await Promise.all(product.images.map(async (imagePath: string) => {
             const existingUrl = await getSignedImages(imagePath)
 
@@ -42,6 +55,11 @@ export async function productRetriever(): Promise<Tables<'products'>[]> {
 
         return {...product, imageUrls: imageUrls.filter(Boolean)};
     }));
+
+    return {
+        products: processImages,
+        totalCount: count || 0
+    }
 }
 
 type ProductStatus = 'DRAFT' | 'PUBLISHED' | 'DISCONTINUED'
@@ -79,6 +97,7 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
     }).select();
 
     if (error || !product) {
+        console.error(error);
         throw new Error('No se ha sido posible crear el producto');
     }
     const formVariantGroups = getComplexFormDataValue<VariantGroup[]>(formData, 'variantGroups');
@@ -134,6 +153,7 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
     if (updateProductImageError) {
         console.error(updateProductImageError);
     }
+    console.log('PRODUCTO CREADO');
 }
 
 export async function removeProduct(productId: string): Promise<void> {

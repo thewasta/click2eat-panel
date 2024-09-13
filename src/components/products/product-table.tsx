@@ -9,7 +9,7 @@ import {
     SortingState
 } from "@tanstack/table-core";
 import {flexRender, useReactTable} from "@tanstack/react-table";
-import {ReactNode, useState} from "react";
+import {ChangeEvent, ReactNode, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
@@ -21,7 +21,18 @@ interface DataTableProps<TData, TValue> {
     isLoading: boolean
     entityName: string;
     searchBy: string;
-    buttonAction: ReactNode
+    buttonAction: ReactNode,
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        onPageChange: (page: number) => void
+    },
+    sorting: {
+        sortBy: string;
+        sortOrder: string;
+        onSort: (column: string) => void
+    }
+    onSearch: (searchTerm: string) => void
 }
 
 export function ProductTable<TData, TValue>({
@@ -29,26 +40,28 @@ export function ProductTable<TData, TValue>({
                                                 data,
                                                 isLoading,
                                                 entityName,
-                                                searchBy,
-                                                buttonAction
+                                                onSearch,
+                                                buttonAction,
+                                                pagination,
                                             }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
+        manualSorting: true,
+        manualPagination: true,
+        manualFiltering: true,
         onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
         state: {
-            sorting,
             columnFilters
         }
     });
 
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = event.target.value;
+        onSearch(searchTerm);
+    }
     return (
         <>
             <div className="flex gap-1 items-center py-4 join">
@@ -57,10 +70,7 @@ export function ProductTable<TData, TValue>({
                     type={"text"}
                     name={"filter"}
                     placeholder={`Nombre ${entityName}...`}
-                    value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
-                    }
+                    onChange={handleSearch}
                 />
                 {buttonAction}
             </div>
@@ -124,13 +134,13 @@ export function ProductTable<TData, TValue>({
             <div className={"w-full flex justify-end mt-4"}>
                 <div className={"space-x-2"}>
                     <Button
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
+                        disabled={pagination.currentPage === 1}
                     >Atrás
                     </Button>
                     <Button
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
+                        disabled={pagination.currentPage === pagination.totalPages}
                     >Siguiente
                     </Button>
                 </div>
