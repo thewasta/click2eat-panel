@@ -1,13 +1,8 @@
 'use client'
 
-import {SubmitHandler} from "react-hook-form";
 import ProductForm from "@/components/form/product/productForm";
-import {CreateProductDTO} from "@/_lib/dto/productFormDto";
-import axios from "axios";
-import {Product} from "@/_request/product/model/product";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {useEffect, useState} from "react";
-import {editProduct, productRetriever} from "@/app/actions/dashboard/product.service";
+import {useQuery} from "@tanstack/react-query";
+import {editProduct} from "@/app/actions/dashboard/product.service";
 import {Tables} from "@/types/database/database";
 
 
@@ -23,25 +18,21 @@ export default function EditProductPage({params}: { params: { id: string } }) {
         refetchOnMount: false,
         refetchIntervalInBackground: false
     });
-    const [product, setProduct] = useState<Product|null>();
-
-    useEffect(() => {
-        if (!isLoading && data) {
-            // @ts-ignore
-            const productFound = data.message.response.find(product => product.id.toString() === params.id.toString());
-            setProduct(productFound)
-        }
-    }, [isLoading, data]);
-
-    const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO) => {
-        console.log({values});
-    };
+    const {data: categories, isLoading: categoriesLoading} = useQuery<CategoryWithSubCategories[]>({
+        queryKey: ["categories"],
+        queryFn: async () => retrieveCategories(),
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchOnWindowFocus: false
+    });
 
     return (
         <>
             {
-                product &&
-                <ProductForm product={product} submitHandler={submitHandler} categories={[]}/>
+                data &&
+                <ProductForm product={data} categories={categories || []} isLoading={isLoading}/>
             }
         </>
 
