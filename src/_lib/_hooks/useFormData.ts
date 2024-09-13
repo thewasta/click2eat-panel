@@ -79,8 +79,6 @@ export default function useFormData<T extends DTO>() {
         Object.entries(values).forEach(([key, value]) => {
             appendToFormData(formData, key, value);
         });
-        console.log(formData.get('images'));
-        console.log(formData.getAll('images'));
         return formData;
     }, []);
 }
