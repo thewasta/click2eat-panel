@@ -3,7 +3,6 @@ import ProductForm from "@/components/form/product/productForm";
 import {useQuery} from "@tanstack/react-query";
 import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {Tables} from "@/types/database/database";
-import {useAllSubcategories} from "@/_lib/_hooks/useAllSubCategories";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -19,10 +18,9 @@ export default function CreateProductPage() {
         refetchInterval: false,
         refetchOnWindowFocus: false
     });
-    const allSubcategories = useAllSubcategories(categories);
 
     return (
-        <ProductForm product={null} categories={categories || []} subcategories={allSubcategories}
+        <ProductForm product={null} categories={categories || []}
                      isLoading={isLoading}/>
     );
 }
