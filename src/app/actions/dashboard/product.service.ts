@@ -5,6 +5,8 @@ import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 import {getUser} from "@/_lib/_hooks/useUser";
 import {Tables} from "@/types/database/database";
 import {getSignedImages} from "@/_lib/supabase/admin";
+import {SupabaseClient} from "@supabase/supabase-js";
+
 type SortOrder = 'asc' | 'desc';
 
 type ProductRetrieverProps = {
@@ -73,7 +75,7 @@ type VariantGroup = {
     variants: Variant[]
 }
 
-export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
+export async function createProduct(formData: TypedFormData<CreateProductDTO>): Promise<Tables<'products'>> {
     const {user, supabase} = await getUser();
     const formPublishDate = formData.get('publishDate') as string;
     let publishDate;
@@ -130,47 +132,91 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>) {
             }
         }
     }
+export async function editProduct(formData: TypedFormData<CreateProductDTO>): Promise<Tables<'products'>> {
+    const {user, supabase} = await getUser();
+    const productId = formData.get('productId') as string; // Asumimos que se pasa el ID del producto a editar
+
+    if (!productId) {
+        throw new Error('No se proporcionó el ID del producto a editar');
+    }
+    const formPublishDate = formData.get('publishDate') as string;
+    let publishDate;
+    if (formPublishDate) {
+        publishDate = new Date(formPublishDate);
+    }
+    const status = formData.get('status') as ProductStatus;
+    const {data: updatedProduct, error: updateError} = await supabase
+        .from('products')
+        .update({
+            name: formData.get('productName') as string,
+            description: formData.get('description') as string,
+            publish_date: publishDate,
+            price: formData.get('price') as string,
+            offer: formData.get('offerPrice') as string,
+            highlight: formData.get('highlight'),
+            status: status,
+            category_id: formData.get('category'),
+            sub_category_id: formData.get('subCategory'),
+        })
+        .eq('id', productId)
+        .select();
+
+    if (updateError || !updatedProduct) {
+        console.error(updateError);
+        throw new Error('No ha sido posible actualizar el producto');
+    }
+    const formVariantGroups = getComplexFormDataValue<VariantGroup[]>(formData, 'variantGroups');
+    if (Array.isArray(formVariantGroups)) {
+        await supabase.from('product_variants_group').delete().eq('product_id', productId);
+        for (const group of formVariantGroups) {
+            await createVariants(supabase, user, group, productId);
+        }
+    }
+    const images = formData.getAll('images');
     const imagesUid = [];
-    if (images) {
+    if (images && images.length > 0) {
+        // Eliminar imágenes antiguas
+        const { data: oldProduct } = await supabase
+            .from('products')
+            .select('images')
+            .eq('id', productId)
+            .single();
+
+        if (oldProduct && oldProduct.images) {
+            for (const oldImage of oldProduct.images) {
+                await supabase.storage.from('click2eat').remove([oldImage]);
+            }
+        }
+
+        // Subir nuevas imágenes
         for (const image of images) {
             const uid = crypto.randomUUID()
             const imagePath = `${user.user_metadata.current_session}/products/${uid}`;
-            const {
-                data, error
-            } = await supabase.storage.from('click2eat').upload(imagePath, image);
+            const { data, error } = await supabase.storage.from('click2eat').upload(imagePath, image);
             if (error) {
                 console.error(error);
                 continue;
             }
             imagesUid.push(imagePath);
         }
-    }
-    const {error: updateProductImageError} = await supabase.from('products')
-        .update({
-            images: imagesUid
-        }).eq('id', product[0].id)
 
-    if (updateProductImageError) {
-        console.error(updateProductImageError);
+        // Actualizar las imágenes del producto
+        const { error: updateProductImageError } = await supabase
+            .from('products')
+            .update({ images: imagesUid })
+            .eq('id', productId);
+
+        if (updateProductImageError) {
+            console.error(updateProductImageError);
+        }
     }
-    console.log('PRODUCTO CREADO');
+
+    return updatedProduct[0];
 }
 
-export async function removeProduct(productId: string): Promise<void> {
-    const {supabase} = await getUser();
-    const {data, error} = await supabase.from('products').delete().eq('id', productId);
-    if (error) {
-        throw new Error(error.message);
-    }
-}
-
-export async function editProduct(productId: string): Promise<Tables<'products'>> {
+export async function productById(productId: string): Promise<any> {
     const {supabase} = await getUser()
     const {data, error} = await supabase.from('products').select().eq('id', productId).maybeSingle();
     if (error) throw new Error(error.message);
     return data;
-}
-
-export async function productById(productId: number): Promise<any> {
-
 }
