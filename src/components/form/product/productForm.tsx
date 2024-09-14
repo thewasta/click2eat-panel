@@ -21,6 +21,7 @@ import {ProductFormCategories} from "@/components/form/product/productFormCatego
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createProduct, editProduct} from "@/app/actions/dashboard/product.service";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
+import {useFormattedDate} from "@/_lib/_hooks/useFormattedDate";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -73,6 +74,9 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
         mutationFn: isEdit ? editProduct : createProduct,
         onSuccess: (data) => {
             if (isEdit) {
+                const localPublishDate = data.publish_date
+                    ? useFormattedDate(data.publish_date)
+                    : undefined;
                 form.reset({
                     subCategory: data.sub_category_id || undefined,
                     category: data.category_id,
@@ -85,7 +89,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
                     productId: data.id,
                     offerPrice: data.offer as number,
                     status: data.status as ProductStatus,
-                    publishDate: data?.publish_date ? new Date(data?.publish_date) : undefined,
+                    publishDate: localPublishDate ? new Date(localPublishDate) : undefined,
                     variantGroups: []
                 });
                 toast.success('Se ha editado correctamente');

@@ -52,7 +52,6 @@ export const createProductSchema = z.object({
     }).transform(arg => arg === 0 ? undefined : arg).optional(),
     publishDate: z.date().optional()
 }).refine((data) => {
-    console.log(data.offerPrice, data.price, data.offerPrice! >= data.price);
     if (data.offerPrice === undefined) return true;
     return data.offerPrice <= data.price
 },{
