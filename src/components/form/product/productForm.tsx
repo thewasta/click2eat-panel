@@ -19,7 +19,7 @@ import useFormData from "@/_lib/_hooks/useFormData";
 import {ProductFormIngredients} from "@/components/form/product/productFormIngredients";
 import {ProductFormCategories} from "@/components/form/product/productFormCategories";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createProduct} from "@/app/actions/dashboard/product.service";
+import {createProduct, editProduct} from "@/app/actions/dashboard/product.service";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
 
 type SubCategory = Tables<'sub_categories'>
@@ -28,9 +28,10 @@ type CategoryWithSubCategories = Tables<'categories'> & {
 }
 
 interface IEditProductForm<T> {
-    product: Tables<'products'> | null,
-    categories: CategoryWithSubCategories[],
-    isLoading: boolean
+    product: Tables<'products'> | null;
+    categories: CategoryWithSubCategories[];
+    isLoading: boolean;
+    isProductLoading?: boolean;
 }
 
 enum ProductStatus {
@@ -49,14 +50,51 @@ type VariantGroup = {
     variants: Variant[]
 }
 
-export default function ProductForm<T>({product, categories, isLoading}: IEditProductForm<T>) {
+export default function ProductForm<T>({product, categories, isLoading, isProductLoading}: IEditProductForm<T>) {
     const createFormData = useFormData<CreateProductDTO>();
     const queryClient = useQueryClient();
+    const defaultValues = {
+        productName: '',
+        description: '',
+        images: undefined,
+        ingredients: [],
+        price: undefined,
+        category: undefined,
+        subCategory: undefined,
+        offerPrice: undefined,
+        highlight: false,
+        status: ProductStatus.draft,
+        publishDate: undefined,
+    };
+    const isEdit = !!product;
+    const [formKey, setFormKey] = useState(0);
 
     const mutation = useMutation({
-        mutationFn: createProduct,
-        onSuccess: () => {
-            toast.success('Se ha creado correctamente');
+        mutationFn: isEdit ? editProduct : createProduct,
+        onSuccess: (data) => {
+            if (isEdit) {
+                form.reset({
+                    subCategory: data.sub_category_id || undefined,
+                    category: data.category_id,
+                    //images: data?.images ?? undefined,
+                    description: data.description as string,
+                    highlight: data.highlight,
+                    productName: data.name,
+                    ingredients: [],
+                    price: data.price,
+                    productId: data.id,
+                    offerPrice: data.offer as number,
+                    status: data.status as ProductStatus,
+                    publishDate: data?.publish_date ? new Date(data?.publish_date) : undefined,
+                    variantGroups: []
+                });
+                toast.success('Se ha editado correctamente');
+            } else {
+                form.reset(defaultValues);
+
+                toast.success('Se ha creado correctamente');
+            }
+
         },
         onError: (error) => {
             toast.error('No se ha podido crear', {
@@ -64,7 +102,7 @@ export default function ProductForm<T>({product, categories, isLoading}: IEditPr
             })
         },
         onSettled: () => {
-            form.reset();
+            setFormKey(prev => prev + 1);
             setVariantGroups([]);
             queryClient.invalidateQueries({
                 queryKey: ["products"],
@@ -77,15 +115,20 @@ export default function ProductForm<T>({product, categories, isLoading}: IEditPr
         if (values.subCategory === "0") values.subCategory = undefined;
         const formData = createFormData({
             ...values,
-            variantGroups: variantGroups
+            variantGroups: variantGroups,
+            productId: product?.id
         });
 
-        mutation.mutate(formData);
+        if (isEdit && product) {
+            mutation.mutate(formData);
+        } else {
+            mutation.mutate(formData);
+        }
     }
 
     const form = useForm<CreateProductDTO>({
         resolver: zodResolver(createProductSchema),
-        defaultValues: {
+        defaultValues: product ? {
             productName: product?.name || '',
             description: product?.description || '',
             images: undefined,
@@ -98,8 +141,9 @@ export default function ProductForm<T>({product, categories, isLoading}: IEditPr
             highlight: product?.highlight || false,
             status: product?.status ? (product.status as ProductStatus) : ProductStatus.draft,
             publishDate: product?.publish_date ? new Date(product?.publish_date) : undefined,
-        },
+        } : defaultValues,
     });
+
     const ingredients = form.watch('ingredients');
     const subCategoriesInput = form.watch('subCategory');
     const categoriesInput = form.watch('category');
@@ -156,10 +200,13 @@ export default function ProductForm<T>({product, categories, isLoading}: IEditPr
 
     }
 
+    if (isProductLoading) {
+        return <LoadingSkeleton/>
+    }
     return (
         <div className={'w-full'}>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(submitHandler)}
+                <form key={formKey} onSubmit={form.handleSubmit(submitHandler)}
                       encType={"multipart/form-data"}
                       className={"space-y-5 p-1 w-full"}>
                     <section className={'flex justify-end mb-3'}>

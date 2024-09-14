@@ -27,6 +27,7 @@ const variantGroupSchema = z.object({
     variants: z.array(variantSchema)
 })
 export const createProductSchema = z.object({
+    productId: z.string().optional(),
     productName: z.string().min(1, {
         message: 'Product name is too short'
     }),
