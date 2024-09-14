@@ -106,32 +106,93 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>): 
 
     if (Array.isArray(formVariantGroups)) {
         for (const group of formVariantGroups) {
-            const {data: groupData, error: groupError} = await supabase.from('product_variants_group').insert({
-                business_establishment_id: user.user_metadata.current_session,
-                name: group.name,
-                product_id: product[0].id
-            }).select();
-            if (groupError) {
-                console.error(groupError);
+            await createVariants(supabase, user, group, product[0].id);
+        }
+    }
+    const imagesUid = [];
+    if (images) {
+        for (const image of images) {
+            const uid = crypto.randomUUID()
+            const imagePath = `${user.user_metadata.current_session}/products/${uid}`;
+            const {
+                data, error
+            } = await supabase.storage.from('click2eat').upload(imagePath, image);
+            if (error) {
+                console.error(error);
                 continue;
             }
-            const groupId = groupData[0].id;
-            if (Array.isArray(group.variants)) {
-                for (const variant of group.variants) {
-                    const {error: variantError} = await supabase.from('product_variants').insert({
-                        group_id: groupId,
-                        name: variant.name,
-                        extra_price: variant.price,
-                        is_required: variant.isRequired,
-                    });
-                    if (variantError) {
-                        console.error(variantError);
-                        throw new Error(`Ha ocurrido un error al insertar la variante ${variant.name} del grupo ${group.name}`);
-                    }
-                }
+            imagesUid.push(imagePath);
+        }
+    }
+    const {error: updateProductImageError} = await supabase.from('products')
+        .update({
+            images: imagesUid
+        }).eq('id', product[0].id)
+
+    if (updateProductImageError) {
+        console.error(updateProductImageError);
+    }
+    return product[0];
+}
+
+export async function removeProduct(productId: string): Promise<void> {
+    const {supabase} = await getUser();
+    const { data: oldProduct } = await supabase
+        .from('products')
+        .select('images')
+        .eq('id', productId)
+        .single();
+
+    if (oldProduct && oldProduct.images) {
+        for (const oldImage of oldProduct.images) {
+            await supabase.storage.from('click2eat').remove([oldImage]);
+        }
+    }
+    const {error} = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+        throw new Error(error.message);
+    }
+}
+
+async function createVariants(
+    supabase: SupabaseClient,
+    user: { user_metadata: { current_session: string } },
+    group: VariantGroup, productId: string) {
+    const {data: groupData, error: groupError} = await supabase
+        .from('product_variants_group')
+        .insert({
+            business_establishment_id: user.user_metadata.current_session,
+            name: group.name,
+            product_id: productId
+        })
+        .select();
+
+    if (groupError) {
+        console.error(groupError);
+        return;
+    }
+
+    const groupId = groupData[0].id;
+
+    if (Array.isArray(group.variants)) {
+        for (const variant of group.variants) {
+            const {error: variantError} = await supabase
+                .from('product_variants')
+                .insert({
+                    group_id: groupId,
+                    name: variant.name,
+                    extra_price: variant.price,
+                    is_required: variant.isRequired,
+                });
+
+            if (variantError) {
+                console.error(variantError);
+                throw new Error(`Ha ocurrido un error al insertar la variante ${variant.name} del grupo ${group.name}`);
             }
         }
     }
+}
+
 export async function editProduct(formData: TypedFormData<CreateProductDTO>): Promise<Tables<'products'>> {
     const {user, supabase} = await getUser();
     const productId = formData.get('productId') as string; // Asumimos que se pasa el ID del producto a editar
