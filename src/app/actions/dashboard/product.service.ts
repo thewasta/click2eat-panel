@@ -31,14 +31,17 @@ export async function productRetriever({
     const offset = (page - 1) * pageSize;
     const query = supabase.from('products')
         .select('*,categories(name),sub_categories(name)', {count: 'exact'})
-        .order(sortBy, {ascending: sortOrder === 'asc'})
-        .range(offset, offset + pageSize - 1);
+        .order(sortBy, {ascending: sortOrder === 'asc'});
 
-    if (searchTerm) {
-        query.ilike('name', `%${searchTerm}%`);
+    if (searchTerm && searchTerm.length > 0) {
+        if (searchTerm.length === 36) {
+            query.eq('id', searchTerm)
+        } else {
+            query.ilike('name', `%${searchTerm}%`);
+        }
     }
 
-    const {data, error, count} = await query;
+    const {data, error, count} = await query.range(offset, offset + pageSize - 1);
 
     if (error) {
         throw new Error(error.message);
