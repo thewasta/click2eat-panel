@@ -262,6 +262,104 @@ export type Database = {
           },
         ]
       }
+      image_urls: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: number
+          image_path: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: number
+          image_path: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: number
+          image_path?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      product_variants: {
+        Row: {
+          created_at: string
+          extra_price: number | null
+          group_id: number
+          id: number
+          is_required: boolean
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          extra_price?: number | null
+          group_id: number
+          id?: number
+          is_required?: boolean
+          name: string
+        }
+        Update: {
+          created_at?: string
+          extra_price?: number | null
+          group_id?: number
+          id?: number
+          is_required?: boolean
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants_group"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants_group: {
+        Row: {
+          business_establishment_id: string
+          created_at: string
+          id: number
+          name: string
+          product_id: string
+        }
+        Insert: {
+          business_establishment_id: string
+          created_at?: string
+          id?: number
+          name: string
+          product_id: string
+        }
+        Update: {
+          business_establishment_id?: string
+          created_at?: string
+          id?: number
+          name?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_group_business_establishment_id_fkey"
+            columns: ["business_establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_variants_group_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           business_establishment_id: string
@@ -270,6 +368,7 @@ export type Database = {
           description: string | null
           highlight: boolean
           id: string
+          images: string[] | null
           name: string
           offer: number | null
           price: number
@@ -285,6 +384,7 @@ export type Database = {
           description?: string | null
           highlight?: boolean
           id?: string
+          images?: string[] | null
           name: string
           offer?: number | null
           price: number
@@ -300,6 +400,7 @@ export type Database = {
           description?: string | null
           highlight?: boolean
           id?: string
+          images?: string[] | null
           name?: string
           offer?: number | null
           price?: number
@@ -673,7 +774,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      user_has_establishment_access: {
+        Args: {
+          establishment_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       category_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"

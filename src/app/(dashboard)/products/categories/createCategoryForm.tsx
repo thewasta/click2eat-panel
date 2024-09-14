@@ -44,8 +44,7 @@ export function CreateCategoryForm(props: CategoryFormProps) {
             id: props.category?.id,
             name: props.category?.name,
             description: props.category?.description || '',
-            //@ts-ignore
-            status: props.category?.status ?? CategoryStatus.draft,
+            status: props.category ? (props.category.status as CategoryStatus) : CategoryStatus.draft,
             //@ts-ignore
             offer: props.category?.offer ?? ""
         }

@@ -273,6 +273,39 @@ const checkPaymentTokenIsPending = async (token: string, userId: string) => {
     }
     throw new Error(`Unable to find payment with token <${token}> and user <${userId}>`);
 }
+function replaceUrlDomain(url: string): string {
+    const storageIndex = url.indexOf('/storage');
+    if (storageIndex === -1) return url; // Si no contiene '/storage', devolver la URL original
+    return `http://127.0.0.1:54321${url.slice(storageIndex)}`;
+}
+const getSignedImages = async (imagePath: string): Promise<string | null> => {
+    const {data: signed} = await supabaseAdmin.from('image_urls')
+        .select('url')
+        .eq('image_path', imagePath)
+        .single();
+
+    if (signed) {
+        return signed.url;
+    }
+
+    const {
+        data: newSignedUrl,
+        error: newSignedUrlError
+    } = await supabaseAdmin.storage.from('click2eat').createSignedUrl(imagePath, 60 * 60 * 24);
+    if (newSignedUrlError) {
+        throw new Error(newSignedUrlError.message);
+    }
+    if (newSignedUrl) {
+        const {data: insertImage, error} = await supabaseAdmin.from('image_urls').insert({
+            image_path: imagePath,
+            url: process.env.NODE_ENV === "production" ? newSignedUrl.signedUrl : replaceUrlDomain(newSignedUrl.signedUrl),
+            expires_at: new Date(Date.now() + 60 * 60 * 24 * 1000).toISOString()
+        }).select().maybeSingle();
+        if (error) throw new Error(error.message);
+        if (insertImage) return insertImage.url
+    }
+    return null;
+}
 export {
     upsertProductRecord,
     deleteProductRecord,
@@ -283,5 +316,6 @@ export {
     updatePaymentTokenStatus,
     businessHasActiveSubscription,
     createPaymentToken,
-    checkPaymentTokenIsPending
+    checkPaymentTokenIsPending,
+    getSignedImages
 }
