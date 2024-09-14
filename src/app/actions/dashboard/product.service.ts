@@ -22,7 +22,7 @@ export async function productRetriever({
                                            pageSize,
                                            sortBy = 'created_at',
                                            sortOrder = 'desc',
-    searchTerm
+                                           searchTerm
                                        }: ProductRetrieverProps): Promise<{
     products: Tables<'products'>[];
     totalCount: number
@@ -35,7 +35,7 @@ export async function productRetriever({
         .range(offset, offset + pageSize - 1);
 
     if (searchTerm) {
-        query.ilike('name',`%${searchTerm}%`);
+        query.ilike('name', `%${searchTerm}%`);
     }
 
     const {data, error, count} = await query;
