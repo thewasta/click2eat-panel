@@ -21,7 +21,7 @@ import {ProductFormCategories} from "@/components/form/product/productFormCatego
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createProduct, editProduct} from "@/app/actions/dashboard/product.service";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
-import {useFormattedDate} from "@/_lib/_hooks/useFormattedDate";
+import {formDateFromUtc} from "@/_lib/_hooks/formDateFromUtc";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -75,7 +75,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
         onSuccess: (data) => {
             if (isEdit) {
                 const localPublishDate = data.publish_date
-                    ? useFormattedDate(data.publish_date)
+                    ? formDateFromUtc(data.publish_date)
                     : undefined;
                 form.reset({
                     subCategory: data.sub_category_id || undefined,
