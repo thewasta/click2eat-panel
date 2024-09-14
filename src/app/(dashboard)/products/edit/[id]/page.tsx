@@ -5,7 +5,9 @@ import {useQuery} from "@tanstack/react-query";
 import {productById} from "@/app/actions/dashboard/product.service";
 import {Tables} from "@/types/database/database";
 import {retrieveCategories} from "@/app/actions/dashboard/category.service";
-
+import {useEffect} from "react";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {useRouter} from "next/navigation";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -13,7 +15,7 @@ type CategoryWithSubCategories = Tables<'categories'> & {
 }
 export default function EditProductPage({params}: { params: { id: string } }) {
 
-    const {data, isLoading,} = useQuery<Tables<'products'>>({
+    const {data, error, isLoading,} = useQuery<Tables<'products'>>({
         queryKey: ["products", params.id],
         queryFn: async () => productById(params.id),
         retry: false,
@@ -33,6 +35,25 @@ export default function EditProductPage({params}: { params: { id: string } }) {
         refetchOnWindowFocus: false
     });
 
+    const router = useRouter();
+
+    useEffect(() => {
+        if (error) {
+            setTimeout(() => {
+                router.back();
+            }, 3000);
+        }
+    }, [error, router]);
+    if (error) {
+        return (
+            <Alert variant="destructive" className={'w-full md:w-1/3'}>
+                <AlertDescription>
+                    El producto no existe o ha sido eliminado.
+                    Redirigiendo en 3 segundos...
+                </AlertDescription>
+            </Alert>
+        );
+    }
     return (
         <>
             {

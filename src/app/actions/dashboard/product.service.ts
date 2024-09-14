@@ -279,5 +279,6 @@ export async function productById(productId: string): Promise<any> {
     const {supabase} = await getUser()
     const {data, error} = await supabase.from('products').select().eq('id', productId).maybeSingle();
     if (error) throw new Error(error.message);
+    if (!data) throw new Error('Product not found');
     return data;
 }
