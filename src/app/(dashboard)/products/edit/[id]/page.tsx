@@ -5,7 +5,6 @@ import {useQuery} from "@tanstack/react-query";
 import {productById} from "@/app/actions/dashboard/product.service";
 import {Tables} from "@/types/database/database";
 import {retrieveCategories} from "@/app/actions/dashboard/category.service";
-import {LoadingSkeleton} from "@/app/(dashboard)/products/edit/[id]/loadingSkeleton";
 
 
 type SubCategory = Tables<'sub_categories'>
@@ -14,7 +13,7 @@ type CategoryWithSubCategories = Tables<'categories'> & {
 }
 export default function EditProductPage({params}: { params: { id: string } }) {
 
-    const {data, error, isLoading,} = useQuery<Tables<'products'>>({
+    const {data, isLoading,} = useQuery<Tables<'products'>>({
         queryKey: ["products", params.id],
         queryFn: async () => productById(params.id),
         retry: false,

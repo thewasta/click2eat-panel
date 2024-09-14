@@ -9,7 +9,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {CreateProductDTO, createProductSchema} from "@/_lib/dto/productFormDto";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {Switch} from "@/components/ui/switch";
 import {toast} from "sonner";
 import {Tables} from "@/types/database/database";
