@@ -51,6 +51,13 @@ export const createProductSchema = z.object({
         invalid_type_error: 'Price must be a number',
     }).transform(arg => arg === 0 ? undefined : arg).optional(),
     publishDate: z.date().optional()
+}).refine((data) => {
+    console.log(data.offerPrice, data.price, data.offerPrice! >= data.price);
+    if (data.offerPrice === undefined) return true;
+    return data.offerPrice <= data.price
+},{
+    message: 'Offer must be less than price',
+    path: ['offerPrice']
 });
 
 export type CreateProductDTO = z.infer<typeof createProductSchema>;
