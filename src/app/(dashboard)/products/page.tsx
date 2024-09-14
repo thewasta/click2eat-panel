@@ -1,7 +1,7 @@
 "use client"
 import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
 import {toast} from "sonner";
@@ -36,16 +36,13 @@ export default function ProductsPage() {
     const deleteMutation = useMutation({
         mutationFn: removeProduct,
         onMutate: async (deletedProductId) => {
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
             await queryClient.cancelQueries({ queryKey: ['products'] });
 
-            // Snapshot the previous value
             const previousProducts = queryClient.getQueryData<{
                 products: Tables<'products'>[],
                 totalCount: number
             }>(['products']);
 
-            // Optimistically update to the new value
             queryClient.setQueryData<{
                 products: Tables<'products'>[],
                 totalCount: number
@@ -57,7 +54,6 @@ export default function ProductsPage() {
                 };
             });
 
-            // Return a context object with the snapshotted value
             return { previousProducts };
         },
         onSuccess: () => {
