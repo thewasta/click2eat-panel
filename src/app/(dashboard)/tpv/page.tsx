@@ -29,9 +29,9 @@ type ProductCart = Product & {
 export default function TPVPage() {
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const appContext = useUserAppContext();
-    const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
+    const {data, error, isLoading} = useQuery({
         queryKey: ["products"],
-        queryFn: async () => productRetriever(),
+        queryFn: async () => productRetriever({page: 1, pageSize: 1}),
         retry: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
