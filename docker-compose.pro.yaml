@@ -34,9 +34,17 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+      update_config:
+        parallelism: 1
     volumes:
       - /app
     environment:
       - NODE_ENV=production
+      - DOTENV_KEY=${DOTENV_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 volumes:
   letsencrypt:
