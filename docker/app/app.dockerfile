@@ -38,7 +38,7 @@ EXPOSE 3000
 
 ENV PORT 3000
 COPY --chown=nextjs:nodejs .env.vault ./.env.vault
-RUN npm ci --only=production
+#RUN npm ci --only=production
 
 USER nextjs
 
