@@ -5,18 +5,31 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=schnierlopez@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
     ports:
       - "80:80"
+      - "443:443"
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
   app:
     build:
       dockerfile: docker/app/app.dockerfile
       context: .
       target: runner
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`app.phrodise.com`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
     deploy:
       mode: replicated
       replicas: 3
@@ -24,3 +37,5 @@ services:
       - /app
     environment:
       - NODE_ENV=production
+volumes:
+  letsencrypt:
