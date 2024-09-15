@@ -20,7 +20,6 @@ services:
     deploy:
       mode: replicated
       replicas: 3
-    container_name: prod-nextjs-restaurant
     volumes:
       - /app
     environment:
