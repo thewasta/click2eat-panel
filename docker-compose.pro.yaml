@@ -21,7 +21,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - letsencrypt:/letsencrypt
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}
+    image: ghcr.io/thewasta/click2eat:prod
     build:
       dockerfile: docker/app/app.dockerfile
       context: .

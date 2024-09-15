@@ -74,13 +74,17 @@ jobs:
 
       - name: Update docker-compose.yaml
         run: |
-          sed -i 's|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|' docker compose.pro.yaml
+          sed -i 's|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|' docker-compose.pro.yaml
 
       - name: Deploy with docker-compose
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
         run: |
           docker compose -f docker-compose.pro.yaml pull
+          if [ $? -ne 0 ]; then
+            echo "Failed to pull the image. Attempting to build locally."
+            docker compose -f docker-compose.pro.yaml build
+          fi
           docker compose -f docker-compose.pro.yaml up -d --remove-orphans
 
       - name: Cleanup old images
