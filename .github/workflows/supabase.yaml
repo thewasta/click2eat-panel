@@ -72,7 +72,7 @@ jobs:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
         run: |
           # Pull the new image
-          docker-compose -f docker-compose.pro.yaml pull
+          docker compose -f docker-compose.pro.yaml pull
           
           # Get the number of running containers
           CONTAINER_COUNT=$(docker-compose -f docker-compose.pro.yaml ps -q | wc -l)
@@ -81,16 +81,16 @@ jobs:
           for i in $(seq 1 $CONTAINER_COUNT)
           do
             # Scale up by 1
-            docker-compose -f docker-compose.pro.yaml up -d --scale app=$((CONTAINER_COUNT + 1)) --no-recreate
+            docker compose -f docker-compose.pro.yaml up -d --scale app=$((CONTAINER_COUNT + 1)) --no-recreate
           
             # Wait for the new container to be healthy (adjust the timeout as needed)
-            timeout 300s bash -c 'until docker-compose -f docker-compose.pro.yaml ps | grep "app.*Up.*healthy"; do sleep 5; done'
+            timeout 300s bash -c 'until docker compose -f docker-compose.pro.yaml ps | grep "app.*Up.*healthy"; do sleep 5; done'
           
             # Scale down by 1
-            docker-compose -f docker-compose.pro.yaml up -d --scale app=$CONTAINER_COUNT --no-recreate
+            docker compose -f docker-compose.pro.yaml up -d --scale app=$CONTAINER_COUNT --no-recreate
           
             # Remove the old container
-            docker-compose -f docker-compose.pro.yaml rm -fsv $(docker-compose -f docker-compose.pro.yaml ps -q | head -n1)
+            docker compose -f docker-compose.pro.yaml rm -fsv $(docker-compose -f docker-compose.pro.yaml ps -q | head -n1)
           done
 
       - name: Cleanup old images
