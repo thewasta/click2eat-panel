@@ -17,6 +17,9 @@ services:
       target: runner
     labels:
       - "traefik.http.routers.app.rule=Host(`app.phrodise.com`)"
+    deploy:
+      mode: replicated
+      replicas: 3
     container_name: prod-nextjs-restaurant
     volumes:
       - /app
