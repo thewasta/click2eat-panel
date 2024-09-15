@@ -32,13 +32,11 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
+COPY package*.json ./
+RUN npm install --only=production dotenv-vault
 
-EXPOSE 3000
-
-ENV PORT 3000
+# Copia el archivo .env.vault si existe
 COPY --chown=nextjs:nodejs .env.vault ./.env.vault
-#RUN npm ci --only=production
 
 USER nextjs
 
@@ -46,9 +44,5 @@ EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry.
-ENV NEXT_TELEMETRY_DISABLED 1
 
 CMD ["node", "-r", "dotenv-vault/config", "server.js"]
