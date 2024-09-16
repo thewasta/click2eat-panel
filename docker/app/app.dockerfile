@@ -32,12 +32,6 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-COPY package*.json ./
-RUN npm install --only=production dotenv-vault
-
-# Copia el archivo .env.vault si existe
-COPY --chown=nextjs:nodejs .env.vault ./.env.vault
-
 USER nextjs
 
 EXPOSE 3000
