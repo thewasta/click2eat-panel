@@ -8,6 +8,7 @@ RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
+ARG DOTENV_KEY
 ENV DOTENV_KEY=${DOTENV_KEY}
 ENV NEXT_PRIVATE_STANDALONE true
 WORKDIR /app
