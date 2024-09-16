@@ -17,7 +17,6 @@ COPY --from=deps /app/.env.vault ./
 COPY ../.. .
 RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
 RUN node -r dotenv/config ./node_modules/.bin/next build
-RUN ls -la
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
