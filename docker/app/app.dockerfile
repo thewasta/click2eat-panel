@@ -16,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/.env.vault ./
 COPY ../.. .
 RUN ls -la
-RUN npx dotenv-vault local decrypt ${{DOTENV_KEY}} > .env
+RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
 RUN node -r dotenv/config ./node_modules/.bin/next build
 
 # Production image, copy all the files and run next
