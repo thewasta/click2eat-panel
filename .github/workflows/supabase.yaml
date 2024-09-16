@@ -72,10 +72,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update docker-compose.yaml
-        run: |
-          sed -i 's|image: .*|image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|' docker-compose.pro.yaml
-
       - name: Deploy with docker-compose
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY_PROD }}
