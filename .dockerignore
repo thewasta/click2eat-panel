@@ -3,6 +3,6 @@ node_modules
 .next
 README.md
 .flaskenv*
-.env*
+#.env*
 !.env.project
 !.env.vault
