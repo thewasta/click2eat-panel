@@ -15,9 +15,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/.env.vault ./
 COPY ../.. .
-RUN ls -la
 RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
 RUN node -r dotenv/config ./node_modules/.bin/next build
+RUN ls -la
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
@@ -29,15 +29,16 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
 # You only need to copy next.config.js if you are NOT using the default configuration
-COPY --from=builder /app/next.config.mjs ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.mjs ./
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+#COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/.env.vault ./
+#COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+#COPY --from=builder --chown=nextjs:nodejs /app/.env.vault ./
 COPY --from=builder --chown=nextjs:nodejs /app/.env ./
 
 USER nextjs
@@ -47,4 +48,4 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["node_modules/.bin/next", "start"]
