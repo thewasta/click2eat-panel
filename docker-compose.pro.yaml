@@ -25,7 +25,8 @@ services:
     build:
       dockerfile: docker/app/app.dockerfile
       context: .
-      target: runner
+      args:
+        - DOTENV_KEY=${DOTENV_KEY}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`app.phrodise.com`)"
