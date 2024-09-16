@@ -16,7 +16,7 @@ jobs:
 
       - name: Deploy with docker-compose
         env:
-          DOTENV_KEY: ${{ secrets.DOTENV_KEY_PROD }}
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
         run: |
           docker compose -f docker-compose.pro.yaml build --build-arg DOTENV_KEY=${DOTENV_KEY}
           docker compose -f docker-compose.pro.yaml up -d --remove-orphans
