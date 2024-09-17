@@ -4,8 +4,6 @@ services:
     build:
       dockerfile: docker/app/app.dockerfile
       context: .
-      target: runner
-    container_name: prod-nextjs-restaurant
     volumes:
       - /app
     ports:

@@ -3,9 +3,9 @@
   "version": "0.1.14",
   "private": true,
   "scripts": {
-    "dev": "node -r dotenv/config ./node_modules/.bin/next",
-    "build": "node -r dotenv/config ./node_modules/.bin/next build",
-    "start": "node -r dotenv/config ./node_modules/.bin/next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
     "test": "npx playwright test",
     "test:report": "npx playwright show-report test-results"
