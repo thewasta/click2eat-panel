@@ -12,6 +12,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ../.. .
 RUN ls -la
+RUN env
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -44,4 +45,5 @@ ENV PORT 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
+RUN ls -la
 CMD ["node","server.js"]
