@@ -13,7 +13,7 @@ ENV NEXT_PRIVATE_STANDALONE true
 ARG DOTENV_KEY
 ENV DOTENV_KEY=${DOTENV_KEY}
 RUN npm run build
-
+RUN ls -la
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
@@ -25,7 +25,8 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
+COPY --from=builder --chown=nextjs:nodejs /app/.env /.env
+RUN ls -la
 USER nextjs
 
 EXPOSE 3000
