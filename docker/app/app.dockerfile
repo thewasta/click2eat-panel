@@ -12,7 +12,7 @@ ARG DOTENV_KEY
 ENV DOTENV_KEY=${DOTENV_KEY}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY ../.. .
+COPY . .
 RUN ls -la
 RUN env
 RUN npm run build
