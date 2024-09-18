@@ -4,6 +4,8 @@ services:
     build:
       dockerfile: docker/app/app.dockerfile
       context: .
+      args:
+        - DOTENV_KEY=${DOTENV_KEY}
     volumes:
       - /app
     ports:
