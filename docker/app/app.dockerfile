@@ -32,7 +32,6 @@ WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
-USER nextjs
 
 
 COPY --from=builder /app/next.config.mjs ./
@@ -41,6 +40,7 @@ COPY --from=builder /app/.env ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 RUN chown -R nextjs:nodejs /app
+USER nextjs
 
 EXPOSE 3000
 
