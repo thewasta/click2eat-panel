@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, supa]
+    environment: supa
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Load .env.vault variables
+        run: echo "DOTENV_KEY=${{ secrets.DOTENV_KEY }}" >> $GITHUB_ENV
+        # Cargar la clave en el entorno del runner
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push Docker image
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+        run: |
+          docker compose -f docker-compose.pro.yaml pull
+          docker compose -f docker-compose.pro.yaml build --build-arg DOTENV_KEY=${DOTENV_KEY}
+      - name: Deploy containers with rolling update
+        run: |
+          docker compose -f docker-compose.pro.yaml up -d --no-deps --build
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+
+      - name: Prune unused Docker images
+        run: docker image prune -f
