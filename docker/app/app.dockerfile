@@ -16,7 +16,8 @@ ENV DOTENV_KEY=${DOTENV_KEY}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN node -r dotenv/config ./node_modules/.bin/next build
+RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
+RUN npm run build
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
@@ -36,6 +37,7 @@ USER nextjs
 
 COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.env ./
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
