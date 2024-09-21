@@ -24,14 +24,20 @@ jobs:
       - name: Build and push Docker image
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          APP_DNS_DOMAIN: ${{ secrets.APP_DNS_DOMAIN }}
+          APP_TLS_MAIL: ${{ secrets.APP_TLS_MAIL }}
         run: |
           docker compose -f docker-compose.pro.yaml pull
           docker compose -f docker-compose.pro.yaml build --build-arg DOTENV_KEY=${DOTENV_KEY}
       - name: Deploy containers with rolling update
         run: |
-          docker compose -f docker-compose.pro.yaml up -d --no-deps --build
+          docker compose -f docker-compose.pro.yaml up -d --no-deps
         env:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          APP_DNS_DOMAIN: ${{ secrets.APP_DNS_DOMAIN }}
+          APP_TLS_MAIL: ${{ secrets.APP_TLS_MAIL }}
 
       - name: Prune unused Docker images
         run: docker image prune -f
