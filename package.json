@@ -1,6 +1,6 @@
 {
   "name": "restauranteqr-frontend",
-  "version": "0.1.14",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "docker compose up --force-recreate -d",
