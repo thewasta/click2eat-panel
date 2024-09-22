@@ -23,11 +23,10 @@ services:
   app:
     container_name: dev-nextjs-restaurant
     image: local-nextjs-restaurant:dev
-    entrypoint: [ "sh", "-c","npm install && npm run dev:local" ]
     build:
       dockerfile: docker/app/app.dockerfile
       context: .
-      target: builder
+      target: runner
     ports:
       - '3000'
     environment:

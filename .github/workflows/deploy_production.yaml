@@ -1,0 +1,61 @@
+name: Deploy to prod
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: supa
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - name: Setup .env file
+        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+      - name: Build
+        run: npm run build
+
+  build-docker:
+    runs-on: [self-hosted, supa]
+    environment: supa
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          docker compose -f docker-compose.pro.yaml pull
+          docker compose -f docker-compose.pro.yaml build --build-arg DOTENV_KEY=${DOTENV_KEY}
+  deploy:
+    runs-on: [self-hosted, supa]
+    environment: supa
+    if: ${{ github.event.pull_request.merged == true }}
+    needs: [test, build-docker]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Deploy containers
+        run: |
+          docker compose -f docker-compose.pro.yaml up -d --no-deps
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          APP_DNS_DOMAIN: ${{ secrets.APP_DNS_DOMAIN }}
+          APP_TLS_MAIL: ${{ secrets.APP_TLS_MAIL }}
+      - name: Prune unused Docker images
+        run: docker image prune -f
