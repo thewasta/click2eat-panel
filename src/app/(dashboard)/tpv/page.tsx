@@ -3,7 +3,7 @@ import {useMediaQuery} from "@/_lib/_hooks/useMediaQuery";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {useQuery} from "@tanstack/react-query";
 import {Product} from "@/_lib/dto/productDto";
-import {productRetriever} from "@/_request/product/product.service";
+import {productRetriever} from "@/app/actions/dashboard/product.service";
 import Image from "next/image";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
@@ -29,9 +29,9 @@ type ProductCart = Product & {
 export default function TPVPage() {
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const appContext = useUserAppContext();
-    const {data, error, isLoading} = useQuery<{ error: boolean, message: Product[] }>({
+    const {data, error, isLoading} = useQuery({
         queryKey: ["products"],
-        queryFn: async () => productRetriever(),
+        queryFn: async () => productRetriever({page: 1, pageSize: 1}),
         retry: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,

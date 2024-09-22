@@ -1,12 +1,15 @@
 'use client'
-import {ReactNode} from "react";
-import {useUserAppContext} from "@/lib/context/auth/user-context";
 
-export default function DashboardCompanyName(): ReactNode {
-    const appContext = useUserAppContext();
+import {Tables} from "@/types/database/database";
+
+type DashboardCompanyNameProps = {
+    business: Tables<'business'>
+}
+
+export default function DashboardCompanyName({business}: DashboardCompanyNameProps) {
     return (
         <>
-            {appContext.user()?.business.name || 'NOMBRE_EMPRESA'}
+            {business.name}, {business.address}
         </>
     )
 }

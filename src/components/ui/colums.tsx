@@ -1,26 +1,31 @@
 import {ColumnDef} from "@tanstack/react-table";
-import {FaSort} from "react-icons/fa";
+import {FaSort, FaSortDown, FaSortUp} from "react-icons/fa";
 import ProductTableActionsRows from "@/components/products/table-actions-row";
-import {Product} from "@/_lib/dto/productDto";
 import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
-import {Pencil, Trash2} from "lucide-react";
+import {Tables} from "@/types/database/database";
+import Image from "next/image";
 
 interface ProductsColumnsProps {
-    onDelete: (bankAccount: any) => void;
+    onDelete: (product: Tables<'products'>) => void;
+    onSort: (column: string) => void;
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
 }
 
-export const getProductColumns = ({onDelete}: ProductsColumnsProps): ColumnDef<Product>[] => [
+export const getProductColumns = ({
+                                      onDelete,
+                                      onSort,
+                                      sortBy,
+                                      sortOrder
+                                  }: ProductsColumnsProps): ColumnDef<Tables<'products'>>[] => [
     {
         accessorKey: 'id',
-        header: ({column}) => {
+        header: () => {
             return (
                 <button
                     className={"flex items-center gap-1"}
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     <span>Nº</span>
-                    <FaSort/>
                 </button>
             )
         },
@@ -29,111 +34,68 @@ export const getProductColumns = ({onDelete}: ProductsColumnsProps): ColumnDef<P
         }
     },
     {
-        accessorKey: 'image',
+        accessorKey: 'imageUrls',
         header: 'Imagen',
         cell: (cell) => {
             const imageFilePath = cell.getValue();
+            //@ts-ignore
+            if (imageFilePath[0] === undefined) {
+                return <Image width={100} height={100} src={'https://placehold.co/250x250'} alt={'image product'}/>
+            }
             return (
-                <img className={"object-cover h-16 w-12"} src={`https://api-dev.click2eat.es/${imageFilePath}`}
-                     alt={"image product"}/>
+                imageFilePath &&
+                    //@ts-ignore
+                <Image width={100} height={100} className={"object-cover h-16 w-12"} src={imageFilePath[0]}
+                     alt={"image product"} unoptimized/>
             );
         }
     },
     {
         id: 'name',
         accessorKey: 'name',
-        header: 'Nombre',
-    },
-    {
-        accessorKey: 'price',
-        header: ({column}) => {
-            return (
-                <button
-                    className={"flex items-center gap-1"}
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    <span>Precio</span>
-                    <FaSort/>
-                </button>
-            )
-        },
-    },
-    {
-        accessorKey: 'category',
-        header: 'Categoría',
+        header: () => (
+            <button
+                className="flex items-center gap-1"
+                onClick={() => onSort('name')}
+            >
+                <span>Nombre</span>
+                {sortBy === 'name' ? (sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />) : <FaSort />}
+            </button>
+        ),
     },
     {
         accessorKey: 'status',
         header: 'Estado',
         cell: (cell) => {
-            return cell.getValue() === 1 ? 'Activo' : 'Inactivo'
+            type ProductStatus = "DRAFT" | "PUBLISHED" | "DISCONTINUED";
+            const status = cell.getValue() as ProductStatus;
+            if (status === 'DRAFT') {
+                return <Badge variant={'secondary'}>Borrador</Badge>;
+            } else if (status === 'PUBLISHED') {
+                return <Badge>Publicado</Badge>;
+            } else {
+                return <Badge variant={"destructive"}>No activo</Badge>;
+            }
         }
+    },
+    {
+        accessorKey: 'price',
+        header: () => (
+            <button
+                className="flex items-center gap-1"
+                onClick={() => onSort('price')}
+            >
+                <span>Precio</span>
+                {sortBy === 'price' ? (sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />) : <FaSort />}
+            </button>
+        ),
+    },
+    {
+        accessorKey: 'categories.name',
+        header: 'Categoría',
     },
     {
         id: 'actions',
         cell: ({row}) => <ProductTableActionsRows row={row} onDelete={onDelete}/>
     }
 ];
-
-export const getCategoryColumns = (): ColumnDef<any>[] => [
-    {
-        id: 'category_id',
-        header: ({column}) => {
-            return (
-                <button
-                    className={"flex items-center gap-1"}
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    <span>Nº</span>
-                    <FaSort/>
-                </button>
-            )
-        },
-        cell: ({row}) => {
-            return parseInt(row.id) + 1;
-        },
-    },
-    {
-        accessorKey: 'name',
-        header: 'Nombre'
-    },
-    {
-        accessorKey: 'status',
-        header: 'Estado',
-        cell: ({row, cell}) => (
-            cell.getValue() ?
-                <Badge>
-                    Activo
-                </Badge> :
-                <Badge variant={'destructive'}>
-                    Inactivo
-                </Badge>
-        )
-    },
-    {
-        id: 'totalProducts',
-        header: 'Productos',
-    },
-    {
-        id: 'parent',
-        header: 'Cat. Padre'
-    },
-    {
-        header: 'Orden'
-    },
-    {
-        header: 'Acciones',
-        cell: () => {
-            return (
-                <>
-                    <Button variant={"ghost"} size={"icon"}>
-                        <Pencil/>
-                    </Button>
-                    <Button variant={"ghost"} size={"icon"}>
-                        <Trash2/>
-                    </Button>
-                </>
-            )
-        }
-    }
-]
