@@ -3,15 +3,22 @@ import {type NextRequest, NextResponse} from 'next/server'
 import {User} from "@supabase/auth-js";
 import {businessHasActiveSubscription} from "@/_lib/supabase/admin";
 
-const PublicPath: string[] = [
-    '/auth/callback',
-    '/login',
-];
+const PUBLIC_PATHS: string[] = ['/auth/callback'];
+const LOGIN_PATH = '/login';
+const REGISTRATION_PATHS: string[] = ['/register/profile', '/register/business', '/register/local'];
+const SUBSCRIPTION_PATH = '/subscription';
+const MY_BUSINESS_PATH = '/mybusiness';
 
 export async function updateSession(req: NextRequest) {
+    const { pathname } = req.nextUrl;
     let response = NextResponse.next({
         request: req,
     })
+
+    // Allow POST requests (potential server actions) to pass through
+    if (req.method === 'POST') {
+        return response;
+    }
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,116 +33,69 @@ export async function updateSession(req: NextRequest) {
                     response = NextResponse.next({
                         request: req,
                     })
-                    cookiesToSet.forEach(({name, value, options}) =>
-                        response.cookies.set(name, value, options)
-                    )
                 },
             },
         }
     )
 
-    const {data: {user}, error} = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    let isAuthenticated = false;
-    if (user?.id) {
-        isAuthenticated = true;
-    }
-
-    const url = req.nextUrl.clone();
-
-    if (error && (url.pathname !== '/login' && url.pathname !== '/auth/callback')) {
-        url.pathname = '/login';
-        return NextResponse.redirect(url, 301);
-    }
-    if (PublicPath.includes(req.nextUrl.pathname) && !isAuthenticated) {
+    if (pathname === LOGIN_PATH) {
+        if (user) {
+            return NextResponse.redirect(new URL(MY_BUSINESS_PATH, req.url));
+        }
         return response;
     }
 
-    if (!isAuthenticated) {
-        url.pathname = '/login';
-        return NextResponse.redirect(url, 301);
+    if (PUBLIC_PATHS.includes(pathname)) {
+        return response;
     }
 
-    if (isAuthenticated && user) {
-        const redirectUrl = userRequireMetadata(user, req);
-        if (redirectUrl.redirectUrl) {
-            url.pathname = redirectUrl.redirectUrl;
-            return NextResponse.redirect(url, 301);
-        }
+    if (error || !user) {
+        return NextResponse.redirect(new URL(LOGIN_PATH, req.url));
+    }
 
-        if (redirectUrl.required) {
-            return response;
-        }
+    const redirectUrl = checkRegistrationSteps(user);
+    if (redirectUrl && !REGISTRATION_PATHS.includes(pathname)) {
+        return NextResponse.redirect(new URL(redirectUrl, req.url));
+    }
 
+    if (!redirectUrl) {
         const hasActiveSubscription = await businessHasActiveSubscription(user.id);
 
-        if (hasActiveSubscription && req.nextUrl.pathname === '/subscription') {
-            url.pathname = '/';
-            return NextResponse.redirect(url, 301);
+        if (!hasActiveSubscription && pathname !== SUBSCRIPTION_PATH) {
+            return NextResponse.redirect(new URL(SUBSCRIPTION_PATH, req.url));
         }
 
-        if (!hasActiveSubscription && req.nextUrl.pathname !== '/subscription') {
-            url.pathname = '/subscription';
-            return NextResponse.redirect(url, 301);
-        } else if (!hasActiveSubscription && req.nextUrl.pathname === '/subscription') {
-            return response;
-        }
-
-        if ((user.user_metadata.hasBusiness && user.user_metadata.hasBusinessLocal) &&
-            (user?.user_metadata.current_session === null ||
-                user.user_metadata.current_session == undefined)) {
-            if (req.nextUrl.pathname !== '/mybusiness') {
-                url.pathname = '/mybusiness';
-                return NextResponse.redirect(url, 301);
-            }
-        }
-
-        if (hasActiveSubscription) {
-            return response
-        }
-
-        if (req.nextUrl.pathname.startsWith('/login')) {
-            url.pathname = '/';
-            return NextResponse.redirect(url, 301);
+        if (hasActiveSubscription && needsToSelectLocal(user) && pathname !== MY_BUSINESS_PATH) {
+            return NextResponse.redirect(new URL(MY_BUSINESS_PATH, req.url));
         }
     }
+
     return response;
 }
 
-function userRequireMetadata(user: User, req: NextRequest): { redirectUrl?: string, required?: boolean } {
-    const currentPath = req.nextUrl.pathname;
+function checkRegistrationSteps(user: User): string | null {
+    const { user_metadata } = user;
 
-    if ((user?.user_metadata.full_name === undefined || user?.user_metadata.full_name === null)) {
-        if (currentPath !== '/register/profile') {
-            return {
-                redirectUrl: '/register/profile',
-            };
-        }
-        return {
-            required: true
-        };
+    if (!user_metadata.full_name) {
+        return '/register/profile';
     }
 
-    if (!user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
-        if (currentPath !== '/register/business') {
-            return {
-                redirectUrl: '/register/business',
-            };
-        }
-        return {
-            required: true
-        };
+    if (!user_metadata.hasBusiness) {
+        return '/register/business';
     }
 
-    if (user?.user_metadata.hasBusiness && !user?.user_metadata.hasBusinessLocal) {
-        if (currentPath !== '/register/local') {
-            return {
-                redirectUrl: '/register/local',
-            };
-        }
-        return {
-            required: true
-        };    }
-    return {
-        required: false
-    };}
+    if (!user_metadata.hasBusinessLocal) {
+        return '/register/local';
+    }
+
+    return null;
+}
+
+function needsToSelectLocal(user: User): boolean {
+    const { user_metadata } = user;
+    return user_metadata.hasBusiness &&
+        user_metadata.hasBusinessLocal &&
+        (user_metadata.current_session === null || user_metadata.current_session === undefined);
+}
