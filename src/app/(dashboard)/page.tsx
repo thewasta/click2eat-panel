@@ -36,7 +36,6 @@ type retunType = Tables<'business_establishments'> & {
     business_establishments: Tables<'business'>
 }
 export default async function HomeDashboard() {
-    console.log('smaple');
     const client = createClient();
     const {data: {user}} = await client.auth.getUser();
     const {
