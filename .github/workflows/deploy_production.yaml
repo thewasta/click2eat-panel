@@ -60,7 +60,6 @@ jobs:
     runs-on: [self-hosted, supa]
     environment: supa
     if: ${{ github.event.pull_request.merged == true }}
-    needs: [test, build-docker]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
