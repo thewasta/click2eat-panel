@@ -31,15 +31,19 @@ jobs:
         with:
           node-version: ${{ vars.NODE_VERSION }}
           cache: 'npm'
-      - run: npm ci
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - run: pnpm i
 #      - name: Install Playwright Browsers
 #        run: npx playwright install --with-deps
       - name: Setup .env file
-        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+        run: pnpm dlx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       #      - name: Run Playwright tests
       #        run: npx playwright test
       - name: Build
-        run: npm run build
+        run: pnpm run build
 #      - name: Build failed
 #        uses: rjstone/discord-webhook-notify@v1
 #        if: failure()
