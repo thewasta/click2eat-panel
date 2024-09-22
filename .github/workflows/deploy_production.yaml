@@ -17,6 +17,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: supa
+    if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,6 +41,7 @@ jobs:
   build-docker:
     runs-on: [self-hosted, supa]
     environment: supa
+    if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
