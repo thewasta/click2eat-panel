@@ -3,43 +3,45 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci && \
+    npm install sharp
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
 ENV NEXT_PRIVATE_STANDALONE true
+ARG DOTENV_KEY
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV DOTENV_KEY=${DOTENV_KEY}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY ../.. .
+COPY . .
+RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
 RUN npm run build
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
-WORKDIR /app
+ENV PORT=3001
+ENV HOST=0.0.0.0
+ENV NODE_ENV=production
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
 
-ENV NODE_ENV production
+WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
-# You only need to copy next.config.js if you are NOT using the default configuration
+
 COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
+COPY --from=builder /app/.env ./
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+RUN chown -R nextjs:nodejs /app
 USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry.
-ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["node","server.js"]
+CMD ["node", "server.js"]

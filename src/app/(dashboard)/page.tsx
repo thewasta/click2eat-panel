@@ -6,6 +6,8 @@ import {IoPeopleOutline} from "react-icons/io5";
 import DashboardRecentOrders from "@/components/dashboard/recentOrders";
 import DashboardMostSell from "@/components/dashboard/mostSell";
 import {Product} from "@/_request/product/model/product";
+import {createClient} from "@/_lib/supabase/server";
+import {Tables} from "@/types/database/database";
 
 
 const exampleOrders = [
@@ -30,18 +32,36 @@ const exampleProducts: Product[] = [
         subCategory: ''
     }
 ]
-export default function HomeDashboard() {
+type retunType = Tables<'business_establishments'> & {
+    business_establishments: Tables<'business'>
+}
+export default async function HomeDashboard() {
+    const client = createClient();
+    const {data: {user}} = await client.auth.getUser();
+    const {
+        data: businessEstablishment,
+        error
+    } = await client.from('users_session')
+        .select('business_establishments(business(*))')
+        .eq('user_id', user?.id!)
+        .eq('action', 'LOGIN')
+        .order('created_at', {ascending: false}).limit(1).single();
+
     return (
         <>
             <div className="space-y-4">
                 <section>
                     <span className="font-bold text-xl">
-                    Buenos días, {<DashboardUserName/>}
+                    {<DashboardUserName/>}
                     </span>
-                    <p className="text-gray-500 text-sm">
-                        Esto es lo que está sucediendo hoy en <span
-                        className="underline">{<DashboardCompanyName/>}</span>
-                    </p>
+                    {
+                        businessEstablishment && <p className="text-gray-500 text-sm">
+                            Esto es lo que está sucediendo hoy en <span
+                            className="underline">{<DashboardCompanyName
+                            business={businessEstablishment.business_establishments!.business!}/>}</span>
+                        </p>
+                    }
+
                 </section>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <DashboardCardDetail

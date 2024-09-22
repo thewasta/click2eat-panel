@@ -1,4 +1,4 @@
-name: Deployment DEV
+name: Deploy to dev
 on:
   push:
     branches:
@@ -21,9 +21,6 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     environment: dev
-    strategy:
-      matrix:
-        node-version: [ 20.12.2 ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,11 +29,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ vars.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      #      - name: Install Playwright Browsers
-      #        run: npx playwright install --with-deps
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps
       - name: Setup .env file
         run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       #      - name: Run Playwright tests
@@ -56,41 +53,38 @@ jobs:
 #          name: playwright-report
 #          path: test-results/
 #          retention-days: 30
+#  build-docker:
+#    runs-on: [self-hosted, dev]
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v2
+#
+#      - name: Build Docker image
+#        env:
+#          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+#          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#        run: |
+#          docker compose -f docker-compose.pro.yaml pull
+#          docker compose -f docker-compose.pro.yaml build --build-arg DOTENV_KEY=${DOTENV_KEY}
 #  deploy:
-#    name: Deploy to development
-#    needs:
-#      - test
 #    runs-on: [self-hosted, dev]
 #    environment: dev
+#    needs: [test, build-docker]
 #    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#        with:
-#          clean: false
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: 20.12.2
-#          cache: 'npm'
-#      - name: Install dependencies
-#        run: npm ci
-#      - name: Setup .env file
-#        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
-#      - name: Build
-#        run: node -r dotenv/config ./node_modules/.bin/next build
-#      - name: Reload application
-#        run: pm2 reload 0
-#      - name: Deploy Success
-#        uses: rjstone/discord-webhook-notify@v1
-#        if: success()
-#        with:
-#          severity: info
-#          details: Desplegado desarrollo con éxito!
-#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-#      - name: Deploy failed
-#        uses: rjstone/discord-webhook-notify@v1
-#        if: failure()
-#        with:
-#          severity: error
-#          details: Ha fallado el despliegue a desarrollo
-#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Deploy containers with rolling update
+#        run: |
+#          docker compose -f docker-compose.pro.yaml up -d --no-deps
+#        env:
+#          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+#          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#          APP_DNS_DOMAIN: ${{ secrets.APP_DNS_DOMAIN }}
+#          APP_TLS_MAIL: ${{ secrets.APP_TLS_MAIL }}
+#
+#      - name: Prune unused Docker images
+#        run: docker image prune -f

@@ -2,7 +2,7 @@ import {Row} from "@tanstack/table-core";
 import {Button} from "@/components/ui/button";
 import {Pencil, Trash2} from "lucide-react";
 import Link from "next/link";
-import {Product} from "@/_lib/dto/productDto";
+import {Tables} from "@/types/database/database";
 
 interface IProductTableActionProps<TData> {
     row: Row<TData>;
@@ -12,7 +12,7 @@ interface IProductTableActionProps<TData> {
 const ProductTableActionsRows = <TData, >({row, onDelete}: IProductTableActionProps<TData>) => {
     return (
         <>
-            <Link href={`/products/edit/${(row.original as Product).id}`}>
+            <Link href={`/products/edit/${(row.original as Tables<'products'>).id}`}>
                 <Button variant={"ghost"} size={"icon"}>
                     <Pencil />
                 </Button>

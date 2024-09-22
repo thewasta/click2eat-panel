@@ -1,15 +1,22 @@
 import {withSentryConfig} from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // output: 'standalone',
-    logging:{
-        fetches:{
+    logging: {
+        fetches: {
             fullUrl: true
         }
     },
-    images:{
+    images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: '127.0.0.1',
+                port: '54321',
+                pathname: '/storage/v1/object/sign/**',
+            },
             {
                 protocol: 'https',
                 hostname: 'api-dev.click2eat.es'
@@ -54,7 +61,7 @@ export default withSentryConfig(nextConfig, {
     hideSourceMaps: true,
 
 // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
+    disableLogger: false,
 
 // Enables automatic instrumentation of Vercel Cron Monitors.
 // See the following for more information:
