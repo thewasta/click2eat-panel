@@ -2,9 +2,9 @@ FROM node:20-alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci && \
-    npm install sharp
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && \
+    pnpm install
 
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
@@ -16,8 +16,10 @@ ENV DOTENV_KEY=${DOTENV_KEY}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx dotenv-vault local decrypt ${DOTENV_KEY} > .env
-RUN npm run build
+RUN npm install -g pnpm
+RUN pnpm add sharp -E
+RUN pnpm dlx dotenv-vault local decrypt ${DOTENV_KEY} > .env
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
