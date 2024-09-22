@@ -24,15 +24,16 @@ services:
     container_name: dev-nextjs-restaurant
     image: local-nextjs-restaurant:dev
     build:
-      dockerfile: docker/app/app.dockerfile
+      dockerfile: docker/app/app.dev.dockerfile
       context: .
-      target: runner
     ports:
       - '3000'
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
-    command: npm run dev
+    command: npx pnpm run dev:local
     restart: on-failure
     networks:
       - supabase_network_supabase-seeding

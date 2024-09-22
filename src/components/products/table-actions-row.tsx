@@ -1,4 +1,4 @@
-import {Row} from "@tanstack/table-core";
+import {type Row} from "@tanstack/react-table";
 import {Button} from "@/components/ui/button";
 import {Pencil, Trash2} from "lucide-react";
 import Link from "next/link";

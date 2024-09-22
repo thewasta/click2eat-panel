@@ -9,29 +9,39 @@ on:
       - reopened
     branches:
       - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     environment: supa
+    if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           clean: false
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ vars.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
+          cache: 'pnpm'
+      - run: pnpm install
       - name: Setup .env file
-        run: npx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
+        run: pnpm dlx dotenv-vault local decrypt ${{secrets.DOTENV_KEY}} > .env
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
   build-docker:
     runs-on: [self-hosted, supa]
     environment: supa
+    if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
