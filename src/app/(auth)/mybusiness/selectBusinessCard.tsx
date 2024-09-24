@@ -5,13 +5,17 @@ import {Card} from "@/components/ui/card";
 import React from "react";
 import {useMutation} from "@tanstack/react-query";
 import {selectBusiness} from "@/app/actions/auth/login_actions";
+import {toast} from "sonner";
 
 type SelectBusinessCardProps = { businessLocal: any };
 
 export default function SelectBusinessCard(props: SelectBusinessCardProps) {
     const {businessLocal} = props;
     const mutation = useMutation({
-        mutationFn: selectBusiness
+        mutationFn: selectBusiness,
+        onError: () => {
+            toast.error('Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo')
+        }
     })
     const handleSelectBusiness = () => {
         mutation.mutate(businessLocal.id);

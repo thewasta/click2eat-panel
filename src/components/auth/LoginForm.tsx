@@ -10,6 +10,7 @@ import {useMutation} from "@tanstack/react-query";
 import {login} from "@/app/actions/auth/login_actions";
 import useFormData from "@/_lib/_hooks/useFormData";
 import {Button} from "@/components/ui/button";
+import * as Sentry from "@sentry/nextjs";
 
 const loginSchema = z.object({
     email: z.string({
@@ -35,9 +36,20 @@ export default function LoginForm() {
     });
     const loginMutation = useMutation({
         mutationFn: login,
+        onSuccess: (result) => {
+            if (result && !result.success) {
+                form.setError('root.server', {
+                    type: 'manual',
+                    message: result.error
+                });
+            }
+        },
         onError: (error) => {
+            Sentry.captureException(error, {
+                level: 'fatal'
+            });
             form.setError('root.server', {
-                message: error.message
+                message: 'Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo'
             });
         },
         onSettled: () => {
