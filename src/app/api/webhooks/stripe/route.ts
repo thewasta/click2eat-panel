@@ -8,6 +8,8 @@ import {
     upsertProductRecord
 } from "@/_lib/supabase/admin";
 import {stripe} from "@/_lib/stripe/config";
+import {NextResponse} from "next/server";
+import * as Sentry from '@sentry/nextjs';
 
 const stripeEvents = new Set([
     'product.created',
@@ -30,18 +32,17 @@ export async function POST(req: Request) {
     let event: Stripe.Event;
     try {
         if (!sig || !webhookSecret) {
-            throw new Response('Webhook Secret not found.', {status: 400});
+            Sentry.captureException('Webhook Secret not found.');
+            return NextResponse.json({error: `Webhook secret not found`}, {status: 400});
         }
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: any) {
-        return new Response(`Webhook Error: ${err.message}`, {status: 400});
+        return NextResponse.json({error: `Webhook Error: ${err.message}`}, {status: 400});
     }
 
 
     if (!stripeEvents.has(event.type)) {
-        return new Response(`Unsupported event type: ${event.type}`, {
-            status: 400
-        });
+        return NextResponse.json({error: `Event not supported: ${event.type}`}, {status: 400});
     }
 
     try {
@@ -83,17 +84,67 @@ export async function POST(req: Request) {
                 }
                 break;
             default:
-                throw new Response(`Unsupported event type: ${event.type}`, {status: 400});
+                return NextResponse.json({error: `Event not supported: ${event.type}`}, {status: 400});
         }
     } catch (error: any) {
-        return new Response(
-            'Webhook handler failed. View your Next.js function logs.',
-            {
-                status: 400
-            }
-        );
+        Sentry.captureException(error, {
+            level: "fatal"
+        });
+        return NextResponse.json({error: 'Webhook signature verification failed.'}, {status: 400});
     }
 
-    return new Response(JSON.stringify({received: true}));
+    return NextResponse.json({received: true}, {status: 200});
 
+}
+
+export async function GET(request: Request) {
+    return new NextResponse(
+        JSON.stringify({message: `Método ${request.method} no permitido`}),
+        {
+            status: 405,
+            headers: {
+                'Allow': 'POST',
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export async function PUT(request: Request) {
+    return new NextResponse(
+        JSON.stringify({message: `Método ${request.method} no permitido`}),
+        {
+            status: 405,
+            headers: {
+                'Allow': 'POST',
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export async function DELETE(request: Request) {
+    return new NextResponse(
+        JSON.stringify({message: `Método ${request.method} no permitido`}),
+        {
+            status: 405,
+            headers: {
+                'Allow': 'POST',
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
+export async function PATCH(request: Request) {
+    return new NextResponse(
+        JSON.stringify({message: `Método ${request.method} no permitido`}),
+        {
+            status: 405,
+            headers: {
+                'Allow': 'POST',
+                'Content-Type': 'application/json'
+            }
+        }
+    );
 }
