@@ -6,8 +6,9 @@ import {createClient} from "@/_lib/supabase/server";
 import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import * as Sentry from "@sentry/node";
+import {ResponseResult} from "@/lib/types/ResponseResult";
 
-export async function login(formData: TypedFormData<LoginAccountDto>) {
+export async function login(formData: TypedFormData<LoginAccountDto>): Promise<ResponseResult<null> | void> {
     const supabase = createClient();
     const {error} = await supabase.auth.signInWithPassword({
         email: formData.get("email") as string,
@@ -15,7 +16,10 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
     });
 
     if (error) {
-        throw new Error(error.message);
+        return {
+            success: false,
+            error: error.message!
+        }
     }
     const {data: {user}} = await supabase.auth.getUser()
 
@@ -33,15 +37,21 @@ export async function login(formData: TypedFormData<LoginAccountDto>) {
     });
 
     revalidatePath('/', 'layout');
-    redirect('/')
+    redirect('/');
 }
 
-export async function logout() {
+export async function logout(): Promise<ResponseResult<null> | void> {
     const supabase = createClient();
     const {data: {user}, error: authError} = await supabase.auth.getUser();
 
     if (authError) {
-        throw new Error('Not valid session');
+        Sentry.captureException(authError, {
+            level: "warning"
+        });
+        return {
+            success: false,
+            error: 'Invalid session'
+        }
     }
 
     const {error} = await supabase.from('users_session').insert({
@@ -55,14 +65,18 @@ export async function logout() {
         }
     });
     if (error) {
-        throw new Error(error.message);
+        Sentry.captureException(error);
+        return {
+            success: false,
+            error: 'Error on insert user session'
+        };
     }
     await supabase.auth.signOut();
     revalidatePath('/', 'layout')
     redirect('/')
 }
 
-export async function selectBusiness(businessLocalId: string) {
+export async function selectBusiness(businessLocalId: string): Promise<ResponseResult<null> | void> {
     const supabase = createClient();
     const {data: {user}, error: authError} = await supabase.auth.getUser();
 
@@ -88,10 +102,12 @@ export async function selectBusiness(businessLocalId: string) {
 
     if (error) {
         Sentry.captureException(error, {
-            level: 'error',
-            user: user
+            level: "error"
         });
-        throw new Error(error.message);
+        return {
+            success: false,
+            error: 'Error on insert user session'
+        };
     }
     revalidatePath('/mybusiness', 'layout');
     redirect('/');

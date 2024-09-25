@@ -2,6 +2,7 @@ import React from 'react';
 import {createClient} from "@/_lib/supabase/server";
 import {Pricing} from "@/app/subscription/Pricing";
 import {NotActiveAndNotOwner} from "@/app/subscription/notActiveAndNotOwner";
+import {Metadata} from "next";
 
 type PricePlan = {
     title: string;
@@ -47,6 +48,10 @@ const prices: PricePlan[] = [
         "priceId": "price_1Pr3BDFlwSWuWQk7kmLwn6s1",
     }
 ];
+
+export const metadata: Metadata = {
+    title: 'Nuestros Planes y Servicios'
+};
 
 async function Page() {
     const supabase = createClient();

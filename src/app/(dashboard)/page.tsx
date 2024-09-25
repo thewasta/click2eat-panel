@@ -5,7 +5,6 @@ import {Activity, DollarSign} from "lucide-react";
 import {IoPeopleOutline} from "react-icons/io5";
 import DashboardRecentOrders from "@/components/dashboard/recentOrders";
 import DashboardMostSell from "@/components/dashboard/mostSell";
-import {Product} from "@/_request/product/model/product";
 import {createClient} from "@/_lib/supabase/server";
 import {Tables} from "@/types/database/database";
 
@@ -15,7 +14,7 @@ const exampleOrders = [
     {by: 'Olivia Tea', location: '01', time: '9:30am', totalValue: '15'},
     {by: 'Olivia Tea', location: '01', time: '9:30am', totalValue: '15'},
 ]
-const exampleProducts: Product[] = [
+const exampleProducts = [
     {
         description: 'Example description',
         name: 'Hamburguesa',
@@ -31,7 +30,7 @@ const exampleProducts: Product[] = [
         status: 'ACTIVE',
         subCategory: ''
     }
-]
+] as any
 type retunType = Tables<'business_establishments'> & {
     business_establishments: Tables<'business'>
 }
