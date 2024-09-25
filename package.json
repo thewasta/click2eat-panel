@@ -78,7 +78,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@playwright/test": "^1.43.1",
     "@tanstack/react-query-devtools": "5.36.2",
     "@types/node": "^20",
     "@types/react": "^18",

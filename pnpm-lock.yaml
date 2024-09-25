@@ -171,9 +171,6 @@ importers:
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
-      '@playwright/test':
-        specifier: ^1.43.1
-        version: 1.43.1
       '@tanstack/react-query-devtools':
         specifier: 5.36.2
         version: 5.36.2(@tanstack/react-query@5.36.2(react@18.2.0))(react@18.2.0)
@@ -4688,6 +4685,7 @@ snapshots:
   '@playwright/test@1.43.1':
     dependencies:
       playwright: 1.43.1
+    optional: true
 
   '@prisma/instrumentation@5.19.1':
     dependencies:
@@ -7597,13 +7595,15 @@ snapshots:
 
   pirates@4.0.6: {}
 
-  playwright-core@1.43.1: {}
+  playwright-core@1.43.1:
+    optional: true
 
   playwright@1.43.1:
     dependencies:
       playwright-core: 1.43.1
     optionalDependencies:
       fsevents: 2.3.2
+    optional: true
 
   png-js@1.0.0: {}
 
