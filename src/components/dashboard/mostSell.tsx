@@ -1,9 +1,8 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Product} from "@/_request/product/model/product";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 
 type DashboardMostSellProps = {
-    products: Product[]
+    products: any
 }
 export default function DashboardMostSell(props: DashboardMostSellProps) {
     const {products} = props;
@@ -17,7 +16,7 @@ export default function DashboardMostSell(props: DashboardMostSellProps) {
             <CardContent>
                 <div className={'space-y-3'}>
                     {
-                        !!products.length && products.map((product, index) => (
+                        !!products.length && products.map((product: any, index: number) => (
                             <div className={'flex items-center'} key={index}>
                                 <Avatar>
                                     <AvatarFallback>{product.images}</AvatarFallback>
