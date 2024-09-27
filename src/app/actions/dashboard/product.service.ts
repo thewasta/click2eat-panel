@@ -17,6 +17,16 @@ type ProductRetrieverProps = {
     sortOrder?: SortOrder;
 }
 
+type Product = Tables<'products'> & {
+    categories: {
+        name: string
+    };
+    images: string[];
+    sub_categories: {
+        name: string
+    };
+}
+
 export async function productRetriever({
                                            page,
                                            pageSize,
@@ -24,7 +34,7 @@ export async function productRetriever({
                                            sortOrder = 'desc',
                                            searchTerm
                                        }: ProductRetrieverProps): Promise<{
-    products: Tables<'products'>[];
+    products: Product[];
     totalCount: number
 }> {
     const {supabase} = await getUser();
