@@ -37,6 +37,7 @@ next-env.d.ts
 .swc
 .env*
 .flaskenv*
+.pnpm-store
 !.env.project
 !.env.vault
 /test-results/
