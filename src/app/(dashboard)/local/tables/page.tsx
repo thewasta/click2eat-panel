@@ -1,5 +1,14 @@
-export default async function LocalTablesPage() {
+'use client'
+
+import {TablesLocalization} from "@/app/(dashboard)/local/tables/TablesLocalization";
+import {TablesDinnerTable} from "@/app/(dashboard)/local/tables/TablesDinnerTable";
+
+export default function LocalTablesPage() {
     return (
-        <>Hola mesas</>
+        <div className={"container mx-auto space-y-3"}>
+            <TablesLocalization/>
+            <TablesDinnerTable/>
+        </div>
     )
+
 }
