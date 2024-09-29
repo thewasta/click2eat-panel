@@ -262,6 +262,73 @@ export type Database = {
           },
         ]
       }
+      establishment_table_location: {
+        Row: {
+          created_at: string
+          establishment_id: string
+          id: string
+          name: string
+          status: Database["public"]["Enums"]["location_status"]
+        }
+        Insert: {
+          created_at?: string
+          establishment_id: string
+          id?: string
+          name: string
+          status?: Database["public"]["Enums"]["location_status"]
+        }
+        Update: {
+          created_at?: string
+          establishment_id?: string
+          id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["location_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "establishment_table_location_establishment_id_fkey"
+            columns: ["establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      establishment_tables: {
+        Row: {
+          created_at: string
+          establishment_id: string
+          id: string
+          location_id: string
+          name: string
+          status: Database["public"]["Enums"]["table_status"]
+        }
+        Insert: {
+          created_at?: string
+          establishment_id: string
+          id?: string
+          location_id: string
+          name: string
+          status?: Database["public"]["Enums"]["table_status"]
+        }
+        Update: {
+          created_at?: string
+          establishment_id?: string
+          id?: string
+          location_id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["table_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "establishment_tables_establishment_id_fkey"
+            columns: ["establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       image_urls: {
         Row: {
           created_at: string
@@ -783,6 +850,7 @@ export type Database = {
     }
     Enums: {
       category_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"
+      location_status: "RESERVED" | "ACTIVE" | "INACTIVE"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
       product_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"
@@ -795,6 +863,7 @@ export type Database = {
           | "past_due"
           | "unpaid"
           | "paused"
+      table_status: "ACTIVE" | "RESERVED" | "INACTIVE"
       user_account_roles:
           | "ROOT"
           | "OWNER"
