@@ -12,28 +12,6 @@ export const tablesLocalizationColumns = ({
                                        onUpdate
                                    }: TablesLocalizationColumnsProps
 ): ColumnDef<Tables<'establishment_table_location'>>[] => [
-    // {
-    //     id: "select",
-    //     header: ({table}) => (
-    //         <Checkbox
-    //             checked={
-    //                 table.getIsAllPageRowsSelected() ||
-    //                 (table.getIsSomePageRowsSelected() && "indeterminate")
-    //             }
-    //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //             aria-label="Select all"
-    //         />
-    //     ),
-    //     cell: ({row}) => (
-    //         <Checkbox
-    //             checked={row.getIsSelected()}
-    //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //             aria-label="Select row"
-    //         />
-    //     ),
-    //     enableSorting: false,
-    //     enableHiding: false,
-    // },
     {
         accessorKey: 'name',
         header: 'Nombre'
@@ -44,7 +22,7 @@ export const tablesLocalizationColumns = ({
         cell: (cell) => {
             const status = cell.getValue();
             if (status === 'RESERVED') {
-                return <Badge variant={'secondary'} className={"bg-amber-300 hover:bg-amber-200"}>Reservado</Badge>;
+                return <Badge className={"bg-indigo-700 hover:bg-indigo-500"}>Reservado</Badge>;
             } else if (status === 'ACTIVE') {
                 return <Badge>Activo</Badge>;
             } else {

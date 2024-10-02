@@ -160,6 +160,7 @@ export function TablesLocalization() {
                 </section>
                 <LocalTablesDinnerTable
                     data={[]}
+                    totalColumns={3}
                     columns={tablesLocalizationColumns({onDelete, onUpdate})}
                     isLoading={locationStatus}
                     pagination={{
@@ -197,6 +198,7 @@ export function TablesLocalization() {
                 </Select>
             </section>
             <LocalTablesDinnerTable
+                totalColumns={3}
                 data={locations.data.locations}
                 columns={tablesLocalizationColumns({onDelete, onUpdate})}
                 isLoading={locationStatus}

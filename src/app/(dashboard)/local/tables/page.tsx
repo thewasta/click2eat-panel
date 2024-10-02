@@ -1,5 +1,3 @@
-'use client'
-
 import {TablesLocalization} from "@/app/(dashboard)/local/tables/TablesLocalization";
 import {TablesDinnerTable} from "@/app/(dashboard)/local/tables/TablesDinnerTable";
 
