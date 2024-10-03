@@ -167,6 +167,17 @@ export function TablesDinnerTable() {
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Seleccionar localización"/>
                         </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={"all"}>Mostrar todos</SelectItem>
+                            {
+                                locations?.success &&
+                                locations.data.locations.map((location) => (
+                                    <SelectItem key={location.id} value={location.id.toString()}>
+                                        {location.name}
+                                    </SelectItem>
+                                ))
+                            }
+                        </SelectContent>
                     </Select>
                     <Select onValueChange={handleSelectStatus}>
                         <SelectTrigger className="w-[180px]">
