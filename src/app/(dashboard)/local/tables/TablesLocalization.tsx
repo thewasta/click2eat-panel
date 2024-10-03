@@ -149,14 +149,14 @@ export function TablesLocalization() {
                     <Input
                         placeholder={"Busca o crea localización..."}
                     />
-                    <Button>
-                        <Plus/>Añadir localización
-                    </Button>
                     <Select>
                         <SelectTrigger>
                             <SelectValue placeholder={"Estado"}/>
                         </SelectTrigger>
                     </Select>
+                    <Button>
+                        <Plus/>Añadir localización
+                    </Button>
                 </section>
                 <LocalTablesDinnerTable
                     data={[]}
@@ -180,11 +180,6 @@ export function TablesLocalization() {
                     placeholder={"Busca o crea localización..."}
                     onChange={handleSearchTerm}
                 />
-                <Button
-                    onClick={handleClick}
-                    disabled={isDisableCreate}>
-                    <Plus/>Añadir localización
-                </Button>
                 <Select onValueChange={handleSelectStatusChange}>
                     <SelectTrigger>
                         <SelectValue placeholder={"Estado"}/>
@@ -196,6 +191,11 @@ export function TablesLocalization() {
                         <SelectItem value={"inactive"}>Inactivo</SelectItem>
                     </SelectContent>
                 </Select>
+                <Button
+                    onClick={handleClick}
+                    disabled={isDisableCreate}>
+                    <Plus/>Añadir localización
+                </Button>
             </section>
             <LocalTablesDinnerTable
                 totalColumns={3}
