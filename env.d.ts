@@ -21,5 +21,6 @@ namespace NodeJS {
         NEXT_PUBLIC_SENTRY_DSN: string;
         NEXT_PUBLIC_STRIPE_SECRET: string;
         STRIPE_SECRET_KEY: string;
+        NEXT_PUBLIC_HCAPTCHA_TOKEN: string;
     }
 }

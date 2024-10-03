@@ -123,6 +123,7 @@ export default function LoginForm() {
                             <FormItem className={"flex flex-col justify-center items-center"}>
                                 <HCaptcha
                                     sitekey={"60e8b22e-b912-45ee-9dde-589e4f5850be"}
+                                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_TOKEN}
                                     onVerify={(token) => {
                                         setCaptchaToken(token);
                                         field.onChange(token)
