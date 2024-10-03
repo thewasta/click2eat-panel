@@ -20,6 +20,7 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {MenuIcon} from "lucide-react";
+import {IconDeviceLaptop, IconToolsKitchen2} from "@tabler/icons-react";
 
 type SubMenu = Menu & {
     icon: null
@@ -55,19 +56,34 @@ const menuItems = [
         ]
     },
     {
-        name: 'Pedidos',
-        icon: <FaBowlFood className="h-6"/>,
-        path: '/orders',
-    },
-    {
         name: 'TPV',
         icon: <FaReceipt className="h-6"/>,
         path: '/tpv',
     },
     {
-        name: 'Personal',
-        icon: <IoPersonSharp className="h-6"/>,
-        path: '/personal',
+        name: 'Pedidos',
+        icon: <FaBowlFood className="h-6"/>,
+        path: '/orders',
+    },
+    {
+        name: 'Mi local',
+        subMenu: [
+            {
+                name: 'Mesas',
+                icon: <IconToolsKitchen2 className="h-6"/>,
+                path: '/local/tables'
+            },
+            {
+                name: 'Pantallas',
+                icon: <IconDeviceLaptop className="h-6"/>,
+                path: '/local/screens'
+            },
+            {
+                name: 'Personal',
+                icon: <IoPersonSharp className="h-6"/>,
+                path: '/personal',
+            },
+        ]
     },
     {
         name: 'Informes',
