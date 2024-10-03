@@ -2,7 +2,7 @@
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -11,12 +11,18 @@ import {login} from "@/app/actions/auth/login_actions";
 import useFormData from "@/_lib/_hooks/useFormData";
 import {Button} from "@/components/ui/button";
 import * as Sentry from "@sentry/nextjs";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 const loginSchema = z.object({
     email: z.string({
         required_error: 'Rellena los campos obligatorios'
     }).min(1, {
         message: 'Rellena los campos obligatorios'
+    }),
+    captchaToken: z.string({
+        required_error: 'Por favor, asegurate de completar el captcha'
+    }).min(2, {
+        message: "Por favor, rellena el captcha"
     }),
     password: z.string({
         required_error: 'Rellena los campos obligatorios'
@@ -25,6 +31,7 @@ const loginSchema = z.object({
     })
 });
 export default function LoginForm() {
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const createFormData = useFormData();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -58,9 +65,17 @@ export default function LoginForm() {
     });
     const onSubmit: SubmitHandler<z.infer<typeof loginSchema>> = async (values: z.infer<typeof loginSchema>) => {
         setIsSubmitting(true);
+        if (captchaToken) {
+            values.captchaToken = captchaToken;
+        }
         const loginDto = createFormData(values);
         loginMutation.mutate(loginDto);
     }
+    useEffect(() => {
+        return () => {
+            setCaptchaToken(null);
+        }
+    }, []);
     return (
         <>
             <Form {...form}>
@@ -102,6 +117,21 @@ export default function LoginForm() {
                             <FormMessage className={"text-xs text-red-500 font-light"}/>
                         </FormItem>
                     )}/>
+                    <FormField
+                        name={"captchaToken"}
+                        render={({field}) => (
+                            <FormItem className={"flex flex-col justify-center items-center"}>
+                                <HCaptcha
+                                    sitekey={"60e8b22e-b912-45ee-9dde-589e4f5850be"}
+                                    onVerify={(token) => {
+                                        setCaptchaToken(token);
+                                        field.onChange(token)
+                                    }}
+                                />
+                                <FormMessage className={"text-xs text-red-500 font-light"}/>
+                            </FormItem>
+                        )}
+                    />
                 </form>
                 <p className={"text-center text-xs text-red-500 font-light"}>
                     {form.formState.errors && form.formState.errors.root?.server.message}

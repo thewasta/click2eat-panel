@@ -12,7 +12,10 @@ export async function login(formData: TypedFormData<LoginAccountDto>): Promise<R
     const supabase = createClient();
     const {error} = await supabase.auth.signInWithPassword({
         email: formData.get("email") as string,
-        password: formData.get('password') as string
+        password: formData.get('password') as string,
+        options: {
+            captchaToken: formData.get('captchaToken') as string,
+        }
     });
 
     if (error) {
