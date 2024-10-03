@@ -217,7 +217,7 @@ export function TablesDinnerTable() {
             <h2 className={"text-xl font-semibold"}>Mesas</h2>
             <section className={"flex gap-2"}>
                 <Input
-                    placeholder={"Número de mesa"}
+                    placeholder={"Busca o crea una nueva mesa..."}
                     onChange={handleSearchTerm}
                 />
                 <Select onValueChange={handleSelectLocation}>

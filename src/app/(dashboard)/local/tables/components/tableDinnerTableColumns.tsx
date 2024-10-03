@@ -73,5 +73,5 @@ export const tableDinnerTableColumns = ({
             <TableDinnerActionColumn row={row.original} onDelete={onDelete} onUpdate={onUpdate}
                                      allLocation={allLocations}/>
         )
-    }
+    },
 ];
