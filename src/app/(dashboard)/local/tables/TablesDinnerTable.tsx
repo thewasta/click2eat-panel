@@ -6,8 +6,14 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {Plus} from "lucide-react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {deleteTable, retrieveLocations, retrieveTables, updateTable} from "@/app/actions/dashboard/tables.service";
-import {ChangeEvent, useCallback, useState} from "react";
+import {
+    createTable,
+    deleteTable,
+    retrieveLocations,
+    retrieveTables,
+    updateTable
+} from "@/app/actions/dashboard/tables.service";
+import {ChangeEvent, useCallback, useEffect, useState} from "react";
 import useDebounce from "@/_lib/_hooks/useDebounce";
 import {tableDinnerTableColumns} from "@/app/(dashboard)/local/tables/components/tableDinnerTableColumns";
 import {Tables} from "@/types/database/database";
@@ -22,6 +28,7 @@ export function TablesDinnerTable() {
     const [filterSearchTerm, setFilterSearchTerm] = useState<string | null>(null);
     const [filterLocation, setFilterLocation] = useState<string | null>(null);
     const debouncedSearchTerm = useDebounce(filterSearchTerm, 300);
+    const [isDisableToCreate, setIsDisableToCreate] = useState<boolean>(false);
     const {data: tables, isPending: tablesStatus} = useQuery({
         queryKey: ['tables', page, filterStatus, filterLocation, debouncedSearchTerm],
         queryFn: async () => retrieveTables({
@@ -32,6 +39,22 @@ export function TablesDinnerTable() {
             }
         })
     });
+    useEffect(() => {
+        if (tables?.success) {
+            if (tables.data.tables.length > 0) {
+                setIsDisableToCreate(true)
+            } else {
+                if (filterLocation) {
+                    setIsDisableToCreate(false)
+
+                }
+            }
+        } else {
+            if (filterLocation) {
+                setIsDisableToCreate(false)
+            }
+        }
+    }, [filterLocation, tables]);
     const {data: locations} = useQuery({
         queryKey: ['tables_locations'],
         queryFn: async () => retrieveLocations({page, pageSize: 10}),
@@ -62,6 +85,23 @@ export function TablesDinnerTable() {
                 queryKey: ['tables']
             })
             toast.success('Mesa actualizada correctamente');
+        },
+        onError: () => {
+            toast.error('Ha ocurrido un error inesperado')
+        }
+    })
+    const createMutation = useMutation({
+        mutationKey: ["create_table"],
+        mutationFn: createTable,
+        onSuccess: (data) => {
+            if (data.success) {
+                queryClient.invalidateQueries({
+                    queryKey: ['tables']
+                })
+                toast.success('Mesa creada correctamente');
+            } else {
+                toast.warning('No ha sido posible actualizar la mesa');
+            }
         },
         onError: () => {
             toast.error('Ha ocurrido un error inesperado')
@@ -106,6 +146,15 @@ export function TablesDinnerTable() {
         });
     }, [updateMutation])
 
+    const handleOnClickCreate = () => {
+        if (filterSearchTerm && filterLocation) {
+            createMutation.mutate({
+                name: filterSearchTerm,
+                status: filterStatus ?? undefined,
+                locationId: filterLocation
+            })
+        }
+    }
     if (!tables?.success) {
         return (
             <div className={"space-y-2"}>
@@ -127,7 +176,7 @@ export function TablesDinnerTable() {
                             <SelectItem value={"all"}>Mostrar todos</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button>
+                    <Button disabled={true}>
                         <Plus/>Añadir Mesa
                     </Button>
                 </section>
@@ -187,7 +236,7 @@ export function TablesDinnerTable() {
                         <SelectItem value={"inactive"}>Inactivo</SelectItem>
                     </SelectContent>
                 </Select>
-                <Button>
+                <Button onClick={handleOnClickCreate} disabled={isDisableToCreate}>
                     <Plus/>Añadir Mesa
                 </Button>
             </section>

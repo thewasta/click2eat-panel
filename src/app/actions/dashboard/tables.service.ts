@@ -229,3 +229,32 @@ export async function updateTable({tableId, name, status, locationId}: {
         data: null
     }
 }
+
+export async function createTable({name, status, locationId}: {
+    name: string;
+    status?: string;
+    locationId: string
+}): Promise<ResponseResult<null>> {
+    const {supabase, user} = await getUser();
+
+    const {error} = await supabase.from('establishment_tables').insert({
+        name,
+        ...(status ? {status: status.toUpperCase()} : {}),
+        location_id: locationId,
+        establishment_id: user.user_metadata.current_session
+    });
+
+    if (error) {
+        console.error(error);
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+
+    return {
+        success: true,
+        data: null,
+        message: 'Table dinner created successfully'
+    }
+}
