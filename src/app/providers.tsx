@@ -13,8 +13,13 @@ export function Providers({children, initialSession}: { children: ReactNode, ini
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions:{
             queries: {
-                staleTime: 60 * 1000,
-                refetchInterval: 60 * 1000
+                retry: false,
+                staleTime: 60 * 3000, // 3 minutes
+                refetchInterval: 60 * 3000, // 3 minutes
+                refetchOnWindowFocus: 'always',
+                refetchOnReconnect: true,
+                refetchOnMount: false,
+                refetchIntervalInBackground: false
             }
         }
     }));
