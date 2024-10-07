@@ -2,63 +2,33 @@
 import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
 import {useCallback, useEffect, useState} from "react";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {removeProduct} from "@/app/actions/dashboard/product.service";
-import {toast} from "sonner";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Tables} from "@/types/database/database";
 import useDebounce from "@/_lib/_hooks/useDebounce";
-import {useGetProducts} from "@/lib/hooks/query/useProduct";
+import {useDeleteProduct, useGetProducts} from "@/lib/hooks/query/useProduct";
 
 export default function ProductsPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [sortBy, setSortBy] = useState('created_at');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-    const queryClient = useQueryClient();
     const [searchTerm, setSearchTerm] = useState<string>()
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-    const {data, error, isLoading} = useGetProducts({page, pageSize, sortBy, sortOrder, searchTerm: debouncedSearchTerm});
-
-    const deleteMutation = useMutation({
-        mutationFn: removeProduct,
-        onMutate: async (deletedProductId) => {
-            await queryClient.cancelQueries({queryKey: ['products']});
-
-            const previousProducts = queryClient.getQueryData<{
-                products: Tables<'products'>[],
-                totalCount: number
-            }>(['products']);
-
-            queryClient.setQueryData<{
-                products: Tables<'products'>[],
-                totalCount: number
-            }>(['products'], old => {
-                if (!old) return {products: [], totalCount: 0};
-                return {
-                    products: old.products.filter(product => product.id !== deletedProductId),
-                    totalCount: old.totalCount - 1
-                };
-            });
-
-            return {previousProducts};
-        },
-        onSuccess: () => {
-            toast.success("Product eliminado correctamente");
-        },
-        onError: () => {
-            toast.error("No se ha podido eliminar el producto");
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({queryKey: ['products']});
-        }
+    const {data, error, isLoading} = useGetProducts({
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+        searchTerm: debouncedSearchTerm
     });
 
+    const {mutate: deleteProduct} = useDeleteProduct();
+
     const onDelete = useCallback((product: Tables<'products'>) => {
-        deleteMutation.mutate(product.id);
-    }, []);
+        deleteProduct(product.id);
+    }, [deleteProduct]);
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);

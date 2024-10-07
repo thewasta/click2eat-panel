@@ -1,7 +1,8 @@
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {Tables} from "@/types/database/database";
-import {productById, productRetriever} from "@/app/actions/dashboard/product.service";
+import {productById, productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
 import useDebounce from "@/_lib/_hooks/useDebounce";
+import {toast} from "sonner";
 
 interface UseProductsOptions {
     page?: number;
@@ -46,4 +47,44 @@ export function useGetProduct({productId}: UseProductOptions) {
         error,
         isLoading: status === "pending",
     }
+}
+
+export function useDeleteProduct() {
+    const queryClient = useQueryClient();
+
+    const { mutate, mutateAsync, status, data } = useMutation({
+        mutationFn: removeProduct,
+        mutationKey: ['delete-product'],
+        onMutate: async (deletedProductId) => {
+            await queryClient.cancelQueries({ queryKey: ['products'] });
+
+            const previousProducts = queryClient.getQueryData(['products']);
+
+            queryClient.setQueryData<{
+                products: Tables<'products'>[];
+                totalCount: number;
+            }>(['products'], old => {
+                if (!old) return { products: [], totalCount: 0 };
+                return {
+                    products: old.products.filter(product => product.id !== deletedProductId),
+                    totalCount: old.totalCount - 1,
+                };
+            });
+
+            return { previousProducts };
+        },
+        onError: (err, deletedProductId, context) => {
+            queryClient.setQueryData(['products'], context?.previousProducts);
+            toast.error("No se ha podido eliminar el producto");
+        },
+        onSuccess: () => {
+            console.log('ELMINADO CORRECTAMNTE');
+            toast.success("Producto eliminado correctamente");
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+    });
+
+    return { mutate, mutateAsync, status, data };
 }
