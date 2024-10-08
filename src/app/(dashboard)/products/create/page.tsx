@@ -1,26 +1,16 @@
 'use client'
-import ProductForm from "@/components/form/product/productForm";
-import {useQuery} from "@tanstack/react-query";
-import {retrieveCategories} from "@/app/actions/dashboard/category.service";
-import {Tables} from "@/types/database/database";
 
-type SubCategory = Tables<'sub_categories'>
-type CategoryWithSubCategories = Tables<'categories'> & {
-    sub_categories: SubCategory[]
-}
+import ProductForm from "@/components/form/product/productForm";
+import {useGetCategories} from "@/lib/hooks/query/useCategory";
+
 export default function CreateProductPage() {
-    const {data: categories, isLoading} = useQuery<CategoryWithSubCategories[]>({
-        queryKey: ["categories"],
-        queryFn: async () => retrieveCategories(),
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchOnWindowFocus: false
-    });
+    const {data: categories, isLoading} = useGetCategories();
 
     return (
-        <ProductForm product={null} categories={categories || []}
-                     isLoading={isLoading}/>
+        <ProductForm
+            product={null}
+            categories={categories || []}
+            isLoading={isLoading}
+        />
     );
 }

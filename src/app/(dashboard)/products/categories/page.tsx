@@ -1,16 +1,15 @@
 'use client'
 
 import {Button} from "@/components/ui/button";
-import {useQuery} from "@tanstack/react-query";
-import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
-import {createElement, memo, useMemo, useState} from "react";
+import {ComponentType, createElement, memo, useState} from "react";
 import {CreateCategoryForm} from "@/app/(dashboard)/products/categories/createCategoryForm";
 import {CategoryItem} from "@/app/(dashboard)/products/categories/categoryItem";
 import {CreateSubCategoryForm} from "@/app/(dashboard)/products/categories/createSubCategoryForm";
 import {Tables} from "@/types/database/database";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/categories/loadingSkeleton";
 import {useAllSubcategories} from "@/_lib/_hooks/useAllSubCategories";
+import {useGetCategories} from "@/lib/hooks/query/useCategory";
 
 type SheetContentType = 'category' | 'subCategory';
 
@@ -26,15 +25,7 @@ type SheetContentMap = {
 
 export default function ProductCategoriesPage() {
 
-    const {data: categories, isLoading} = useQuery({
-        queryKey: ["categories"],
-        queryFn: async () => retrieveCategories(),
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchOnWindowFocus: false
-    });
+    const {data: categories, isLoading} = useGetCategories();
 
     const [sheetContent, setSheetContent] = useState<SheetStateForm | null>(null)
     const handleSheetContent = (content: SheetContentType) => {
