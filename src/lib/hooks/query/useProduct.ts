@@ -54,7 +54,7 @@ export function useDeleteProduct() {
 
     const { mutate, mutateAsync, status, data } = useMutation({
         mutationFn: removeProduct,
-        mutationKey: ['delete-product'],
+        mutationKey: ['delete_product'],
         onMutate: async (deletedProductId) => {
             await queryClient.cancelQueries({ queryKey: ['products'] });
 
