@@ -78,7 +78,6 @@ export function useDeleteProduct() {
             toast.error("No se ha podido eliminar el producto");
         },
         onSuccess: () => {
-            console.log('ELMINADO CORRECTAMNTE');
             toast.success("Producto eliminado correctamente");
         },
         onSettled: () => {
