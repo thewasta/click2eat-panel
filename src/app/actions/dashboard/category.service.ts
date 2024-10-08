@@ -83,14 +83,6 @@ export async function retrieveCategories(): Promise<CategoryWithSubCategories[]>
 }
 
 
-export async function categoryById() {
-
-}
-
-export async function updateCategoryById() {
-
-}
-
 export async function deleteCategoryById(categoryId: string): Promise<void> {
     const {supabase} = await getUser();
 
