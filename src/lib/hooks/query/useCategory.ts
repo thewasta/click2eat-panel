@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     createCategory,
     deleteCategoryById,
-    editSubCategory,
+    editCategory,
     retrieveCategories
 } from "@/app/actions/dashboard/category.service";
 import {toast} from "sonner";
@@ -70,7 +70,7 @@ export function useCreateCategory({form}: { form: UseFormReturn<any> }) {
     const {mutate, data, error, status} = useMutation({
         mutationFn: createCategory,
         mutationKey: ["create_category"],
-        onMutate: async (newSubCategory) => {
+        onMutate: async (newCategory) => {
             await queryClient.cancelQueries({queryKey: ['categories']});
 
             const previousCategories = queryClient.getQueryData<CategoryWithSubCategories[]>(['categories']);
@@ -78,7 +78,7 @@ export function useCreateCategory({form}: { form: UseFormReturn<any> }) {
             queryClient.setQueryData(['categories'], (old: CategoryWithSubCategories[]) => {
                 if (!old) return [];
 
-                return [...old, newSubCategory];
+                return [...old, newCategory];
             });
 
             return {previousCategories};
@@ -109,23 +109,34 @@ export function useUpdateCategory({form}: { form: UseFormReturn<any> }) {
     const queryClient = useQueryClient();
 
     const {mutate, error, status, data} = useMutation({
-        mutationFn: editSubCategory,
+        mutationFn: editCategory,
+        onMutate: async (newCategory) => {
+            await queryClient.cancelQueries({queryKey: ['categories']});
+
+            const previousCategories = queryClient.getQueryData<CategoryWithSubCategories[]>(['categories']);
+
+            queryClient.setQueryData(['categories'], (old: CategoryWithSubCategories[]) => {
+                if (!old) return [];
+
+                return [...old, newCategory];
+            });
+
+            return {previousCategories};
+
+        },
         onSuccess: () => {
-            queryClient
-                .invalidateQueries({
-                    queryKey: ["categories"]
-                });
-            toast.success('Sub categoría editada');
+            toast.success('Categoría editada correctamente');
             form.reset();
         },
-        onError: () => {
-            queryClient
-                .invalidateQueries({
-                    queryKey: ["categories"]
-                });
-            toast.error('Error al editar', {
-                description: 'Ha ocurrido un error al editar la sub categoría.',
+        onError: (_error, _newCategory, context) => {
+            queryClient.setQueryData(["categories"], context?.previousCategories)
+
+            toast.error("Ha ocurrido un error al editar la categoría", {
+                description: "Si el problema persiste contacta con nosotros.",
             });
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({queryKey: ["categories"]});
         },
     });
     return {
