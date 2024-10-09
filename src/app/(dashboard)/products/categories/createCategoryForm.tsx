@@ -7,14 +7,12 @@ import {SaveIcon} from "lucide-react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createCategory, editCategory} from "@/app/actions/dashboard/category.service";
-import {toast} from "sonner";
 import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import useFormData from "@/_lib/_hooks/useFormData";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {Tables} from "@/types/database/database";
+import {useCreateCategory, useUpdateCategory} from "@/lib/hooks/mutations/useCategoryMutation";
 
 enum CategoryStatus {
     draft = "DRAFT",
@@ -36,7 +34,6 @@ type CategoryFormProps = {
 }
 
 export function CreateCategoryForm(props: CategoryFormProps) {
-    const queryClient = useQueryClient();
     const createFormData = useFormData<CategorySchemaDTO>();
     const form = useForm<CategorySchemaDTO>({
         resolver: zodResolver(categorySchema),
@@ -49,44 +46,9 @@ export function CreateCategoryForm(props: CategoryFormProps) {
             offer: props.category?.offer ?? ""
         }
     });
-    const mutation = useMutation({
-        mutationFn: createCategory,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-            toast.success('Categoría creada');
-            form.reset();
-        },
-        onError: () => {
-            queryClient
-                .invalidateQueries({
-                    queryKey: ["categories"]
-                });
-            toast.error('Categoría no creada', {
-                description: 'Ha ocurrido un error al crear la categoría.',
-            });
-        },
-    });
+    const mutation = useCreateCategory({form});
 
-    const editMutation = useMutation({
-        mutationFn: editCategory,
-        onError: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-            toast.error('Categoría no editada', {
-                description: 'Ha ocurrido un error la editar, si el problema persiste contáctanos.'
-            })
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-            toast.success('Categoría editada correctamente');
-            form.reset();
-        }
-    })
+    const editMutation = useUpdateCategory({form});
 
     const handleSubmit: SubmitHandler<CategorySchemaDTO> = (values: CategorySchemaDTO) => {
         const formData = createFormData(values);

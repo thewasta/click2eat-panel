@@ -1,8 +1,6 @@
 'use client'
 import {useMediaQuery} from "@/_lib/_hooks/useMediaQuery";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {useQuery} from "@tanstack/react-query";
-import {productRetriever} from "@/app/actions/dashboard/product.service";
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {FaReceipt} from "react-icons/fa";
@@ -19,11 +17,12 @@ import {
 import React, {useState} from "react";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Tables} from "@/types/database/database";
-import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {RiSearchLine} from "react-icons/ri";
 import {Input} from "@/components/ui/input";
 import {IconPencil} from "@tabler/icons-react";
 import {ProductListItem} from "@/app/tpv/ProductListItem";
+import {useGetProducts} from "@/lib/hooks/query/useProduct";
+import {useGetCategories} from "@/lib/hooks/query/useCategory";
 
 type Product = Tables<'products'> & {
     categories: {
@@ -41,29 +40,12 @@ export default function TPVPage() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>('');
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const appContext = useUserAppContext();
-    const {data: products, error: productsError, isLoading: productsIsLoading} = useQuery<{
-        products: Product[],
-        totalCount: number
-    }>({
-        queryKey: ["products"],
-        queryFn: async () => productRetriever({page: 1, pageSize: 20}),
-        retry: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchIntervalInBackground: false
+    const {data: products, error: productsError, isLoading: productsIsLoading} = useGetProducts({
+        page: 1,
+        pageSize: 20
     });
 
-    const {data: categories, isLoading: categoriesIsLoading} = useQuery({
-        queryKey: ["categories"],
-        queryFn: async () => retrieveCategories(),
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchOnWindowFocus: false
-    });
+    const {data: categories} = useGetCategories();
 
     const [productsCart, setProductsCart] = useState<ProductCart[]>([]);
 

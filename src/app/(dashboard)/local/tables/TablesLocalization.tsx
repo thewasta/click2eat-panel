@@ -6,20 +6,17 @@ import {Plus} from "lucide-react";
 import {Tables} from "@/types/database/database";
 import {LocalTablesDinnerTable} from "@/app/(dashboard)/local/tables/localeTablesDinnerTable";
 import {ChangeEvent, useCallback, useEffect, useState} from "react";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {
-    createLocation,
-    deleteLocation,
-    retrieveLocations,
-    updateLocation
-} from "@/app/actions/dashboard/tables.service";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import useDebounce from "@/_lib/_hooks/useDebounce";
-import {toast} from "sonner";
 import {tablesLocalizationColumns} from "@/app/(dashboard)/local/tables/components/locationTableColumns";
+import {useGetDinnerLocation} from "@/lib/hooks/query/useDinnerLocation";
+import {
+    useCreateDinnerLocation,
+    useDeleteDinnerLocation,
+    useUpdateDinnerLocation
+} from "@/lib/hooks/mutations/useDinnerLocationMutation";
 
 export function TablesLocalization() {
-    const queryClient = useQueryClient();
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState(5);
     const [filterStatus, setFilterStatus] = useState<string | undefined>(undefined);
@@ -27,71 +24,17 @@ export function TablesLocalization() {
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
     const [isDisableCreate, setIsDisableCreate] = useState<boolean>(false)
 
-    const {data: locations, isPending: locationStatus} = useQuery({
-        queryKey: ['tables_locations', page, pageSize, filterStatus, debouncedSearchTerm],
-        queryFn: async () => retrieveLocations({page, pageSize, filterStatus, searchTerm: debouncedSearchTerm}),
-        retry: false,
-        refetchOnWindowFocus: 'always',
-        refetchOnReconnect: true,
-        staleTime: 60000 * 3,
-        refetchOnMount: false,
-        refetchIntervalInBackground: false
+    const {data: locations, isLoading: locationStatus} = useGetDinnerLocation({
+        page,
+        pageSize,
+        filterStatus,
+        searchTerm: debouncedSearchTerm
     });
 
-    const createMutation = useMutation({
-        mutationFn: createLocation,
-        onSuccess: (data) => {
-            if (data.success) {
-                queryClient.invalidateQueries({
-                    queryKey: ["tables_locations"]
-                });
-                toast.success('Localización creada correctamente');
-            } else {
-                toast.warning('Error al crear localización');
-            }
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado', {
-                description: 'Si el error persiste, por favor, escríbenos'
-            })
-        }
-    });
-    const deleteMutation = useMutation({
-        mutationFn: deleteLocation,
-        onSuccess: (data) => {
-            if (data.success) {
-                queryClient.invalidateQueries({
-                    queryKey: ["tables_locations"]
-                });
-                toast.success('Localización eliminada correctamente');
-            } else {
-                toast.warning(data.error);
-            }
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado', {
-                description: 'Si el error persiste, por favor, escríbenos'
-            })
-        }
-    });
-    const updateMutations = useMutation({
-        mutationFn: updateLocation,
-        onSuccess: (data) => {
-            if (data.success) {
-                queryClient.invalidateQueries({
-                    queryKey: ["tables_locations"]
-                });
-                toast.success('Localización actualizada correctamente');
-            } else {
-                toast.warning(data.error);
-            }
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado', {
-                description: 'Si el error persiste, por favor, escríbenos'
-            })
-        }
-    });
+    const createMutation = useCreateDinnerLocation();
+
+    const deleteMutation = useDeleteDinnerLocation();
+    const updateMutations = useUpdateDinnerLocation();
 
     useEffect(() => {
         if (locations?.success) {

@@ -5,16 +5,16 @@ import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {deleteSubCategoryById} from "@/app/actions/dashboard/category.service";
-import {toast} from "sonner";
 import {Dispatch, SetStateAction} from "react";
 import {SheetTrigger} from "@/components/ui/sheet";
+import {useDeleteSubCategories} from "@/lib/hooks/mutations/useSubCategoryMutation";
 
 type SheetContentType = 'category' | 'subCategory';
 
@@ -30,21 +30,7 @@ type SubCategoryItemProps = {
 }
 
 export function SubCategoryItem({subcategory, category, handleSheetContent}: SubCategoryItemProps) {
-
-    const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: deleteSubCategoryById,
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ["categories"]});
-            toast.success('SubCategoria borrada correctamente')
-        },
-        onError: () => {
-            queryClient.invalidateQueries({queryKey: ["categories"]});
-            toast.error('Ha ocurrido un error al eliminar la sub categoría', {
-                description: 'Por favor, envíanos un ticket.'
-            })
-        }
-    });
+    const mutation = useDeleteSubCategories();
     const handleDelete = () => {
         const data = {
             subCategoryId: subcategory.id,

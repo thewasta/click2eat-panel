@@ -18,10 +18,8 @@ import {ProductFormVariants} from "@/components/form/product/productFormVariants
 import useFormData from "@/_lib/_hooks/useFormData";
 import {ProductFormIngredients} from "@/components/form/product/productFormIngredients";
 import {ProductFormCategories} from "@/components/form/product/productFormCategories";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createProduct, editProduct} from "@/app/actions/dashboard/product.service";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
-import {formDateFromUtc} from "@/_lib/_hooks/formDateFromUtc";
+import {useEditCreateProduct} from "@/lib/hooks/mutations/useProductMutation";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -53,7 +51,8 @@ type VariantGroup = {
 
 export default function ProductForm<T>({product, categories, isLoading, isProductLoading}: IEditProductForm<T>) {
     const createFormData = useFormData<CreateProductDTO>();
-    const queryClient = useQueryClient();
+    const [formKey, setFormKey] = useState(0);
+    const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
     const defaultValues = {
         productName: '',
         description: '',
@@ -68,68 +67,6 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
         publishDate: undefined,
     };
     const isEdit = !!product;
-    const [formKey, setFormKey] = useState(0);
-
-    const mutation = useMutation({
-        mutationFn: isEdit ? editProduct : createProduct,
-        onSuccess: (data) => {
-            if (isEdit) {
-                const localPublishDate = data.publish_date
-                    ? formDateFromUtc(data.publish_date)
-                    : undefined;
-                form.reset({
-                    subCategory: data.sub_category_id || undefined,
-                    category: data.category_id,
-                    //images: data?.images ?? undefined,
-                    description: data.description as string,
-                    highlight: data.highlight,
-                    productName: data.name,
-                    ingredients: [],
-                    price: data.price,
-                    productId: data.id,
-                    offerPrice: data.offer as number,
-                    status: data.status as ProductStatus,
-                    publishDate: localPublishDate ? new Date(localPublishDate) : undefined,
-                    variantGroups: []
-                });
-                toast.success('Se ha editado correctamente');
-            } else {
-                form.reset(defaultValues);
-
-                toast.success('Se ha creado correctamente');
-            }
-
-        },
-        onError: (error) => {
-            toast.error('No se ha podido crear', {
-                description: `Motivo: ${error.message}`
-            })
-        },
-        onSettled: () => {
-            setFormKey(prev => prev + 1);
-            setVariantGroups([]);
-            queryClient.invalidateQueries({
-                queryKey: ["products"],
-                refetchType: 'all'
-            });
-        }
-    })
-
-    const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO, event) => {
-        if (values.subCategory === "0") values.subCategory = undefined;
-        const formData = createFormData({
-            ...values,
-            variantGroups: variantGroups,
-            productId: product?.id
-        });
-
-        if (isEdit && product) {
-            mutation.mutate(formData);
-        } else {
-            mutation.mutate(formData);
-        }
-    }
-
     const form = useForm<CreateProductDTO>({
         resolver: zodResolver(createProductSchema),
         defaultValues: product ? {
@@ -147,9 +84,23 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             publishDate: product?.publish_date ? new Date(product?.publish_date) : undefined,
         } : defaultValues,
     });
+    const {mutate} = useEditCreateProduct(isEdit, form, defaultValues, setFormKey, setVariantGroups);
 
     const ingredients = form.watch('ingredients');
+    const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO, event) => {
+        if (values.subCategory === "0") values.subCategory = undefined;
+        const formData = createFormData({
+            ...values,
+            variantGroups: variantGroups,
+            productId: product?.id
+        });
 
+        if (isEdit && product) {
+            mutate(formData);
+        } else {
+            mutate(formData);
+        }
+    }
     const handleAddIngredient = (newIngredient: string) => {
         if (ingredients === undefined) return;
         if (ingredients.length >= 6) {
@@ -175,7 +126,6 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
         [ProductStatus.draft, 'Borrador'],
     ];
 
-    const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
 
     const productSaveActions = () => {
         return product ?

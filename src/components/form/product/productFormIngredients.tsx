@@ -48,6 +48,7 @@ export function ProductFormIngredients({handleAddIngredient, handleRemoveIngredi
                                 <section className={'w-2/3'}>
                                     <ul className={'list-decimal flex flex-col gap-1'}>
                                         {
+                                            field.value &&
                                             field.value.map((ing: string, index: number) => (
                                                 <Fragment key={index}>
                                                     <li className={'flex items-center justify-between gap-3 capitalize'}
