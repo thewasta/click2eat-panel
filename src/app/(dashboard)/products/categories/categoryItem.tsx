@@ -131,14 +131,18 @@ export function CategoryItem({category, handleSheetContent, allSubcategories}: C
                         <div className={"flex flex-col"}>
                             <ScrollArea className={'flex-grow h-[300px]'}>
                                 <div className="space-y-2">
-                                    {category.sub_categories.map((subcategory) => (
-                                        <SubCategoryItem
-                                            key={subcategory.id}
-                                            subcategory={subcategory}
-                                            category={category}
-                                            handleSheetContent={handleSheetContent}
-                                        />
-                                    ))}
+                                    {
+                                        category.sub_categories &&
+                                        category.sub_categories.map((subcategory) => (
+                                                <SubCategoryItem
+                                                    key={subcategory.id}
+                                                    subcategory={subcategory}
+                                                    category={category}
+                                                    handleSheetContent={handleSheetContent}
+                                                />
+                                            )
+                                        )
+                                    }
                                 </div>
                             </ScrollArea>
                         </div>
