@@ -147,6 +147,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             publishDate: product?.publish_date ? new Date(product?.publish_date) : undefined,
         } : defaultValues,
     });
+    const {mutate} = useProductMutation(isEdit, form, defaultValues, setFormKey, setVariantGroups);
 
     const ingredients = form.watch('ingredients');
 

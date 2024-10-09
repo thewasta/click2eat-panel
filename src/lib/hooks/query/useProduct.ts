@@ -1,8 +1,17 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {Tables} from "@/types/database/database";
-import {productById, productRetriever, removeProduct} from "@/app/actions/dashboard/product.service";
+import {
+    createProduct,
+    editProduct,
+    productById,
+    productRetriever,
+    removeProduct
+} from "@/app/actions/dashboard/product.service";
 import useDebounce from "@/_lib/_hooks/useDebounce";
 import {toast} from "sonner";
+import {UseFormReturn} from "react-hook-form";
+import {formDateFromUtc} from "@/_lib/_hooks/formDateFromUtc";
+import {Dispatch, SetStateAction} from "react";
 
 interface UseProductsOptions {
     page?: number;
@@ -86,4 +95,50 @@ export function useDeleteProduct() {
     });
 
     return { mutate, mutateAsync, status, data };
+}
+
+export function useProductMutation(
+    isEdit: boolean, form: UseFormReturn<any>, defaultValues: any, setFormKey: Dispatch<SetStateAction<number>>, setVariantGroups: Dispatch<SetStateAction<any[]>>) {
+    const queryClient = useQueryClient();
+
+    const {mutate, mutateAsync, status, data} = useMutation({
+        mutationFn: isEdit ? editProduct : createProduct,
+        mutationKey: [isEdit ? 'edit_product' : 'create_product'],
+        onSuccess: (data) => {
+            if (isEdit) {
+                const localPublishDate = data.publish_date
+                    ? formDateFromUtc(data.publish_date)
+                    : undefined;
+                form.reset({
+                    subCategory: data.sub_category_id || undefined,
+                    category: data.category_id,
+                    description: data.description as string,
+                    highlight: data.highlight,
+                    productName: data.name,
+                    price: data.price,
+                    productId: data.id,
+                    offerPrice: data.offer as number,
+                    status: data.status,
+                    publishDate: localPublishDate ? new Date(localPublishDate) : undefined,
+                    variantGroups: []
+                });
+                toast.success('Producto editado correctamente');
+            } else {
+                form.reset(defaultValues);
+                toast.success('Producto creado correctamente');
+            }
+        },
+        onError: (error) => {
+            toast.error('No se ha podido procesar el producto', {
+                description: `Motivo: ${error.message}`
+            });
+        },
+        onSettled: () => {
+            setFormKey(prev => prev + 1);
+            setVariantGroups([]);
+            queryClient.invalidateQueries({queryKey: ['products'], refetchType: 'all'});
+        }
+    });
+
+    return {mutate, mutateAsync, status, data};
 }
