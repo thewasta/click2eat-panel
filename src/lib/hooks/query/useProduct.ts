@@ -61,11 +61,11 @@ export function useGetProduct({productId}: UseProductOptions) {
 export function useDeleteProduct() {
     const queryClient = useQueryClient();
 
-    const { mutate, mutateAsync, status, data } = useMutation({
+    const {mutate, mutateAsync, status, data} = useMutation({
         mutationFn: removeProduct,
         mutationKey: ['delete_product'],
         onMutate: async (deletedProductId) => {
-            await queryClient.cancelQueries({ queryKey: ['products'] });
+            await queryClient.cancelQueries({queryKey: ['products']});
 
             const previousProducts = queryClient.getQueryData(['products']);
 
@@ -73,14 +73,14 @@ export function useDeleteProduct() {
                 products: Tables<'products'>[];
                 totalCount: number;
             }>(['products'], old => {
-                if (!old) return { products: [], totalCount: 0 };
+                if (!old) return {products: [], totalCount: 0};
                 return {
                     products: old.products.filter(product => product.id !== deletedProductId),
                     totalCount: old.totalCount - 1,
                 };
             });
 
-            return { previousProducts };
+            return {previousProducts};
         },
         onError: (err, deletedProductId, context) => {
             queryClient.setQueryData(['products'], context?.previousProducts);
@@ -90,11 +90,11 @@ export function useDeleteProduct() {
             toast.success("Producto eliminado correctamente");
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({queryKey: ['products']});
         },
     });
 
-    return { mutate, mutateAsync, status, data };
+    return {mutate, mutateAsync, status, data};
 }
 
 export function useProductMutation(
