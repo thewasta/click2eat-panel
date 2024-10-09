@@ -20,7 +20,7 @@ type SheetStateForm = {
 }
 
 type SheetContentMap = {
-    [K in SheetContentType]: React.ComponentType<any>;
+    [K in SheetContentType]: ComponentType<any>;
 };
 
 export default function ProductCategoriesPage() {
@@ -57,7 +57,8 @@ export default function ProductCategoriesPage() {
                     categories &&
                     categories.map((category) => (
                         <MemorizedCategoryItem key={category.id} category={category}
-                                               handleSheetContent={setSheetContent} allSubcategories={allSubcategories}/>
+                                               handleSheetContent={setSheetContent}
+                                               allSubcategories={allSubcategories}/>
                     ))
                 }
             </div>

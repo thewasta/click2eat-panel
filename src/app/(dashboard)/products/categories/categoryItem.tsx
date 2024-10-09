@@ -54,7 +54,7 @@ export function CategoryItem({category, handleSheetContent, allSubcategories}: C
     const mutation = useDeleteCategory();
 
     const addSubCategoryMutation = useMutation({
-       mutationFn: addSubCategoryToCategory,
+        mutationFn: addSubCategoryToCategory,
         onSuccess: () => {
             toast.success('Añadida correctamente');
         },
