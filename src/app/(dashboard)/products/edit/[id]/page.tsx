@@ -1,30 +1,16 @@
 'use client'
 
 import ProductForm from "@/components/form/product/productForm";
-import {useQuery} from "@tanstack/react-query";
-import {Tables} from "@/types/database/database";
-import {retrieveCategories} from "@/app/actions/dashboard/category.service";
 import {useEffect} from "react";
 import {Alert, AlertDescription} from "@/components/ui/alert";
 import {useRouter} from "next/navigation";
 import {useGetProduct} from "@/lib/hooks/query/useProduct";
+import {useGetCategories} from "@/lib/hooks/query/useCategory";
 
-type SubCategory = Tables<'sub_categories'>
-type CategoryWithSubCategories = Tables<'categories'> & {
-    sub_categories: SubCategory[]
-}
 export default function EditProductPage({params}: { params: { id: string } }) {
     const {data, error, isLoading} = useGetProduct({productId: params.id});
 
-    const {data: categories, isLoading: categoriesLoading} = useQuery<CategoryWithSubCategories[]>({
-        queryKey: ["categories"],
-        queryFn: async () => retrieveCategories(),
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchOnWindowFocus: false
-    });
+    const {data: categories, isLoading: categoriesLoading} = useGetCategories();
 
     const router = useRouter();
 

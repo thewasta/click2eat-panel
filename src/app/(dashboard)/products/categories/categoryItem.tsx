@@ -14,11 +14,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {toast} from "sonner";
 import {Tables} from "@/types/database/database";
 import {Dispatch, SetStateAction} from "react";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {addSubCategoryToCategory} from "@/app/actions/dashboard/category.service";
 import {SubCategoryItem} from "@/app/(dashboard)/products/categories/subCategoryItem";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {
@@ -31,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useDeleteCategory} from "@/lib/hooks/query/useCategory";
+import {useAddSubCategory} from "@/lib/hooks/query/useSubCategory";
 
 type CategoryWithSubCategories = Tables<'categories'> & {
     sub_categories: Tables<'sub_categories'>[]
@@ -49,24 +47,11 @@ type CategoryItemProps = {
 }
 
 export function CategoryItem({category, handleSheetContent, allSubcategories}: CategoryItemProps) {
-    const queryClient = useQueryClient();
 
     const mutation = useDeleteCategory();
 
-    const addSubCategoryMutation = useMutation({
-        mutationFn: addSubCategoryToCategory,
-        onSuccess: () => {
-            toast.success('Añadida correctamente');
-        },
-        onError: () => {
-            toast.error('No ha sido posible añadir sub categoría');
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-        }
-    });
+    const addSubCategoryMutation = useAddSubCategory();
+
     const handleClickDelete = () => {
         mutation.mutate(category.id);
     }

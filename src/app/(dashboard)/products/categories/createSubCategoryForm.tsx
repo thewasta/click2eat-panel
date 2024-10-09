@@ -8,11 +8,10 @@ import {Textarea} from "@/components/ui/textarea";
 import {SaveIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import useFormData from "@/_lib/_hooks/useFormData";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createSubCategory, editSubCategory} from "@/app/actions/dashboard/category.service";
-import {toast} from "sonner";
+import {useQueryClient} from "@tanstack/react-query";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {Tables} from "@/types/database/database";
+import {useCreateSubCategory, useEditSubCategory} from "@/lib/hooks/query/useSubCategory";
 
 enum CategoryStatus {
     draft = "DRAFT",
@@ -56,44 +55,8 @@ export function CreateSubCategoryForm({category, subCategory}: CreateSubCategory
             categoryId: category.id
         }
     });
-    const mutation = useMutation({
-        mutationFn: createSubCategory,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-            toast.success('Sub categoría creada');
-            form.reset();
-        },
-        onError: () => {
-            queryClient
-                .invalidateQueries({
-                    queryKey: ["categories"]
-                });
-            toast.error('Error al crear', {
-                description: 'Ha ocurrido un error al crear la categoría.',
-            });
-        },
-    })
-    const editMutation = useMutation({
-        mutationFn: editSubCategory,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["categories"]
-            });
-            toast.success('Sub categoría editada');
-            form.reset();
-        },
-        onError: () => {
-            queryClient
-                .invalidateQueries({
-                    queryKey: ["categories"]
-                });
-            toast.error('Error al editar', {
-                description: 'Ha ocurrido un error al editar la sub categoría.',
-            });
-        },
-    })
+    const mutation = useCreateSubCategory({form});
+    const editMutation = useEditSubCategory({form});
     const handleSubmit: SubmitHandler<SubCategoryDTO> = (values: SubCategoryDTO) => {
         form.setValue('categoryId', category.id);
         const formData = createFormData(values);

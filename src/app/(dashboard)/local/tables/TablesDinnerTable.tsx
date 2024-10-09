@@ -5,22 +5,15 @@ import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Plus} from "lucide-react";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {
-    createTable,
-    deleteTable,
-    retrieveLocations,
-    retrieveTables,
-    updateTable
-} from "@/app/actions/dashboard/tables.service";
 import {ChangeEvent, useCallback, useEffect, useState} from "react";
-import useDebounce from "@/_lib/_hooks/useDebounce";
 import {tableDinnerTableColumns} from "@/app/(dashboard)/local/tables/components/tableDinnerTableColumns";
 import {Tables} from "@/types/database/database";
-import {toast} from "sonner";
+import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
+import {useGetDinnerLocation} from "@/lib/hooks/query/useDinnerLocation";
+import {useCreateDinner, useDeleteDinner, useUpdateDinner} from "@/lib/hooks/mutations/useTableDinner";
+import useDebounce from "@/_lib/_hooks/useDebounce";
 
 export function TablesDinnerTable() {
-    const queryClient = useQueryClient();
     const [selectRow, setSelectRow] = useState({});
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState(10);
@@ -29,15 +22,12 @@ export function TablesDinnerTable() {
     const [filterLocation, setFilterLocation] = useState<string | null>(null);
     const debouncedSearchTerm = useDebounce(filterSearchTerm, 300);
     const [isDisableToCreate, setIsDisableToCreate] = useState<boolean>(false);
-    const {data: tables, isPending: tablesStatus} = useQuery({
-        queryKey: ['tables', page, filterStatus, filterLocation, debouncedSearchTerm],
-        queryFn: async () => retrieveTables({
-            page,
-            pageSize,
-            filterBy: {
-                location: filterLocation, status: filterStatus, term: debouncedSearchTerm
-            }
-        })
+    const {data: tables, isLoading: tablesStatus} = useGetTableDinner({
+        page,
+        pageSize,
+        filterStatus,
+        filterLocation,
+        searchTerm: debouncedSearchTerm // Aquí se usa el valor debounced
     });
     useEffect(() => {
         if (tables?.success) {
@@ -55,58 +45,12 @@ export function TablesDinnerTable() {
             }
         }
     }, [filterLocation, tables]);
-    const {data: locations} = useQuery({
-        queryKey: ['tables_locations'],
-        queryFn: async () => retrieveLocations({page, pageSize: 10}),
-        retry: false,
-        refetchOnWindowFocus: 'always',
-        refetchOnReconnect: true,
-        staleTime: 60000 * 3,
-        refetchOnMount: false,
-        refetchIntervalInBackground: false
-    });
-    const deleteMutation = useMutation({
-        mutationFn: deleteTable,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['tables']
-            })
-            toast.success('Mesa eliminada correctamente');
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado')
-        }
-    });
-    const updateMutation = useMutation({
-        mutationKey: ['update_table'],
-        mutationFn: updateTable,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['tables']
-            })
-            toast.success('Mesa actualizada correctamente');
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado')
-        }
-    })
-    const createMutation = useMutation({
-        mutationKey: ["create_table"],
-        mutationFn: createTable,
-        onSuccess: (data) => {
-            if (data.success) {
-                queryClient.invalidateQueries({
-                    queryKey: ['tables']
-                })
-                toast.success('Mesa creada correctamente');
-            } else {
-                toast.warning('No ha sido posible actualizar la mesa');
-            }
-        },
-        onError: () => {
-            toast.error('Ha ocurrido un error inesperado')
-        }
-    })
+    const {data: locations} = useGetDinnerLocation({page, pageSize});
+
+    const deleteMutation = useDeleteDinner();
+    const updateMutation = useUpdateDinner();
+    const createMutation = useCreateDinner();
+
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
     }
