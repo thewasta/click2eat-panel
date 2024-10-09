@@ -75,8 +75,8 @@ importers:
         specifier: ^8.30.0
         version: 8.30.0
       '@stripe/stripe-js':
-        specifier: 4.3.0
-        version: 4.3.0
+        specifier: 4.8.0
+        version: 4.8.0
       '@supabase/auth-helpers-react':
         specifier: ^0.5.0
         version: 0.5.0(@supabase/supabase-js@2.45.1)
@@ -1683,8 +1683,8 @@ packages:
     resolution: {integrity: sha512-x0PYIMWcsTauqxgl7vWUY6sANl+XGKtx7DCVnnY7aOIIlIna0jChTAPANTfA2QrK+VK+4I/4JxatCEZBnXh3Og==}
     engines: {node: '>= 8'}
 
-  '@stripe/stripe-js@4.3.0':
-    resolution: {integrity: sha512-bf8MxzzgD3dybtyIJUQSDMqxjEkJfsmj9IdRqDv609Zw08R41O7eoIy0f8KY41u8MbaFOYsn+XGJZtg1xwR2wQ==}
+  '@stripe/stripe-js@4.8.0':
+    resolution: {integrity: sha512-+4Cb0bVHlV4BJXxkJ3cCLSLuWxm3pXKtgcRacox146EuugjCzRRII5T5gUMgL4HpzrBLVwVxjKaZqntNWAXawQ==}
     engines: {node: '>=12.16'}
 
   '@supabase/auth-helpers-react@0.5.0':
@@ -5754,7 +5754,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@stripe/stripe-js@4.3.0': {}
+  '@stripe/stripe-js@4.8.0': {}
 
   '@supabase/auth-helpers-react@0.5.0(@supabase/supabase-js@2.45.1)':
     dependencies:
