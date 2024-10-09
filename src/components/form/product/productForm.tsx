@@ -19,7 +19,7 @@ import useFormData from "@/_lib/_hooks/useFormData";
 import {ProductFormIngredients} from "@/components/form/product/productFormIngredients";
 import {ProductFormCategories} from "@/components/form/product/productFormCategories";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
-import {useProductMutation} from "@/lib/hooks/query/useProduct";
+import {useEditCreateProduct} from "@/lib/hooks/mutations/useProductMutation";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -84,7 +84,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             publishDate: product?.publish_date ? new Date(product?.publish_date) : undefined,
         } : defaultValues,
     });
-    const {mutate} = useProductMutation(isEdit, form, defaultValues, setFormKey, setVariantGroups);
+    const {mutate} = useEditCreateProduct(isEdit, form, defaultValues, setFormKey, setVariantGroups);
 
     const ingredients = form.watch('ingredients');
     const submitHandler: SubmitHandler<CreateProductDTO> = async (values: CreateProductDTO, event) => {

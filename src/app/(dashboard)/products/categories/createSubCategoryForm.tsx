@@ -11,7 +11,7 @@ import useFormData from "@/_lib/_hooks/useFormData";
 import {useQueryClient} from "@tanstack/react-query";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {Tables} from "@/types/database/database";
-import {useCreateSubCategory, useEditSubCategory} from "@/lib/hooks/query/useSubCategory";
+import {useCreateSubCategory, useEditSubCategory} from "@/lib/hooks/mutations/useSubCategoryMutation";
 
 enum CategoryStatus {
     draft = "DRAFT",

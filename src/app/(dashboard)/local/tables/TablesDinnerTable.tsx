@@ -10,7 +10,7 @@ import {tableDinnerTableColumns} from "@/app/(dashboard)/local/tables/components
 import {Tables} from "@/types/database/database";
 import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
 import {useGetDinnerLocation} from "@/lib/hooks/query/useDinnerLocation";
-import {useCreateDinner, useDeleteDinner, useUpdateDinner} from "@/lib/hooks/mutations/useTableDinner";
+import {useCreateDinner, useDeleteDinner, useUpdateDinner} from "@/lib/hooks/mutations/useTableDinnerMutation";
 import useDebounce from "@/_lib/_hooks/useDebounce";
 
 export function TablesDinnerTable() {

@@ -27,8 +27,8 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {useDeleteCategory} from "@/lib/hooks/query/useCategory";
-import {useAddSubCategory} from "@/lib/hooks/query/useSubCategory";
+import {useDeleteCategory} from "@/lib/hooks/mutations/useCategoryMutation";
+import {useAddSubCategory} from "@/lib/hooks/mutations/useSubCategoryMutation";
 
 type CategoryWithSubCategories = Tables<'categories'> & {
     sub_categories: Tables<'sub_categories'>[]

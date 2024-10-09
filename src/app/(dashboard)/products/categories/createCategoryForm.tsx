@@ -12,7 +12,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import useFormData from "@/_lib/_hooks/useFormData";
 import {SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {Tables} from "@/types/database/database";
-import {useCreateCategory, useUpdateCategory} from "@/lib/hooks/query/useCategory";
+import {useCreateCategory, useUpdateCategory} from "@/lib/hooks/mutations/useCategoryMutation";
 
 enum CategoryStatus {
     draft = "DRAFT",

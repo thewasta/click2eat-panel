@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {Dispatch, SetStateAction} from "react";
 import {SheetTrigger} from "@/components/ui/sheet";
-import {useDeleteSubCategories} from "@/lib/hooks/query/useSubCategory";
+import {useDeleteSubCategories} from "@/lib/hooks/mutations/useSubCategoryMutation";
 
 type SheetContentType = 'category' | 'subCategory';
 

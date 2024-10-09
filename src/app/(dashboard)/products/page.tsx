@@ -6,7 +6,8 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Tables} from "@/types/database/database";
 import useDebounce from "@/_lib/_hooks/useDebounce";
-import {useDeleteProduct, useGetProducts} from "@/lib/hooks/query/useProduct";
+import {useDeleteProduct} from "@/lib/hooks/mutations/useProductMutation";
+import {useGetProducts} from "@/lib/hooks/query/useProduct";
 
 export default function ProductsPage() {
     const [page, setPage] = useState(1);
