@@ -23,6 +23,9 @@ import {IconPencil} from "@tabler/icons-react";
 import {ProductListItem} from "@/app/tpv/ProductListItem";
 import {useGetProducts} from "@/lib/hooks/query/useProduct";
 import {useGetCategories} from "@/lib/hooks/query/useCategory";
+import {useCartStore} from "@/lib/context/store/cart";
+import {useCreateOrder} from "@/lib/hooks/mutations/useOrderMutation";
+import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
 
 type Product = Tables<'products'> & {
     categories: {
@@ -38,44 +41,40 @@ type ProductCart = Product & {
 }
 export default function TPVPage() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>('');
+    const [selectedTableLocation, setSelectedTableLocation] = useState<string>('');
+    const cartStore = useCartStore();
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const appContext = useUserAppContext();
+    const createOrder = useCreateOrder();
     const {data: products, error: productsError, isLoading: productsIsLoading} = useGetProducts({
         page: 1,
         pageSize: 20
     });
 
+    const {data: tableDinner} = useGetTableDinner({
+        filterStatus: 'active',
+        filterLocation: null,
+        searchTerm: null
+    });
+
     const {data: categories} = useGetCategories();
 
-    const [productsCart, setProductsCart] = useState<ProductCart[]>([]);
-
     const handleAddToCart = (product: Product) => {
-        console.log('add to cart');
-        const index = productsCart.findIndex(productFind => productFind.id === product.id);
-        if (index >= 0) {
-            productsCart[index].quantity++;
-            setProductsCart([...productsCart]);
-        } else {
-            setProductsCart([...productsCart, {...product, quantity: 1}]);
-        }
+        cartStore.addProduct(product);
     }
 
     const handleRemoveToCart = (product: Product) => {
-        const index = productsCart.findIndex(productFind => productFind.id === product.id);
-        if (index >= 0) {
-            if (productsCart[index].quantity === 1) {
-                const productsFilter = productsCart.filter(productFind => productFind.id !== product.id)
-                setProductsCart([...productsFilter]);
-            } else {
-                productsCart[index].quantity--;
-                setProductsCart([...productsCart]);
-            }
-        }
+        cartStore.removeProduct(product.id);
     }
 
-    const total = productsCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    if (products && categories) {
+    const handleCreateOrder = () => {
+        createOrder.mutate({
+            tableDinnerId: selectedTableLocation,
+            products: cartStore.cart,
+        });
+    }
+    const total = cartStore.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    if (products && categories && tableDinner) {
         const filteredProducts = selectedCategory
             ? products.products.filter(p => p.categories.name === selectedCategory)
             : products.products;
@@ -96,20 +95,22 @@ export default function TPVPage() {
                         >
                             Todos
                         </Button>
-                        {categories.map(category => (
-                            <Button
-                                key={category.id}
-                                variant={selectedCategory === category.name ? "default" : "outline"}
-                                onClick={() => setSelectedCategory(category.name)}
-                            >
-                                {category.name}
-                            </Button>
-                        ))}
+                        {
+                            categories.map(category => (
+                                <Button
+                                    key={category.id}
+                                    variant={selectedCategory === category.name ? "default" : "outline"}
+                                    onClick={() => setSelectedCategory(category.name)}
+                                >
+                                    {category.name}
+                                </Button>
+                            ))
+                        }
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-1 md:gap-3">
                         {filteredProducts.map(product => (
                             <ProductListItem product={product} key={product.id} addProduct={handleAddToCart}
-                                             removeProduct={handleRemoveToCart} productsCart={productsCart}/>
+                                             removeProduct={handleRemoveToCart} productsCart={cartStore.cart}/>
                         ))}
                     </div>
                 </div>
@@ -129,24 +130,27 @@ export default function TPVPage() {
                         </Button>
                     </CardHeader>
                     <CardContent className={'grid grid-cols-[1fr,150px space-y-2'}>
-                        <Select>
+                        <Select onValueChange={setSelectedTableLocation}>
                             <SelectTrigger>
                                 <SelectValue placeholder={'Selecciona mesa'}/>
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectLabel>Ubicación</SelectLabel>
-                                    <SelectItem value="apple">Mesa 1</SelectItem>
-                                    <SelectItem value="banana">Mesa 2</SelectItem>
-                                    <SelectItem value="blueberry">Mesa 3</SelectItem>
+                                    {
+                                        tableDinner.success &&
+                                        tableDinner.data.tables.map(table => (
+                                            <SelectItem key={table.id} value={table.id}>{table.name}</SelectItem>
+                                        ))
+                                    }
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
                         <ScrollArea className={'grid grid-rows-[1fr_50px] h-[500px] p-3'}>
                             <div className={'w-full space-y-2 h-[30px]'}>
                                 {
-                                    productsCart.length > 0 && (
-                                        productsCart.map(product => (
+                                    cartStore.cart.length > 0 && (
+                                        cartStore.cart.map(product => (
                                             <div className="flex items-center p-4 border rounded-lg" key={product.id}>
                                                 <div className="flex-shrink-0">
                                                     <Image width={100} height={100}
@@ -192,7 +196,10 @@ export default function TPVPage() {
                         </div>
                     </CardContent>
                     <CardFooter className="p-0">
-                        <Button className={'w-full rounded-none rounded-bl-lg rounded-br-lg uppercase'}>
+                        <Button
+                            className={'w-full rounded-none rounded-bl-lg rounded-br-lg uppercase'}
+                            onClick={handleCreateOrder}
+                        >
                             Realizar pedido
                         </Button>
                     </CardFooter>
