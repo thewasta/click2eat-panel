@@ -20,7 +20,7 @@ import {Tables} from "@/types/database/database";
 import {RiSearchLine} from "react-icons/ri";
 import {Input} from "@/components/ui/input";
 import {IconPencil} from "@tabler/icons-react";
-import {ProductListItem} from "@/app/tpv/ProductListItem";
+import {ProductListItem} from "@/app/(dashboard)/tpv/ProductListItem";
 import {useGetProducts} from "@/lib/hooks/query/useProduct";
 import {useGetCategories} from "@/lib/hooks/query/useCategory";
 
