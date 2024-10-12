@@ -4,15 +4,8 @@ import {getUser} from "@/_lib/_hooks/useUser";
 import {Tables} from "@/types/database/database";
 import {ResponseResult} from "@/lib/types/ResponseResult";
 
-type Product = Tables<'products'> & {
-    categories: {
-        name: string
-    };
-    images: string[];
-    sub_categories: {
-        name: string
-    };
-}
+type Product = Tables<'products'>;
+
 type ProductCart = Product & {
     quantity: number;
     comments?: string[];

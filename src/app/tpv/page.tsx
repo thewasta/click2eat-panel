@@ -21,21 +21,13 @@ import {RiSearchLine} from "react-icons/ri";
 import {Input} from "@/components/ui/input";
 import {IconPencil} from "@tabler/icons-react";
 import {ProductListItem} from "@/app/tpv/ProductListItem";
-import {useGetProducts} from "@/lib/hooks/query/useProduct";
-import {useGetCategories} from "@/lib/hooks/query/useCategory";
+import {useGetCategoriesWithProducts} from "@/lib/hooks/query/useCategory";
 import {useCartStore} from "@/lib/context/store/cart";
 import {useCreateOrder} from "@/lib/hooks/mutations/useOrderMutation";
 import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
 
-type Product = Tables<'products'> & {
-    categories: {
-        name: string
-    };
-    images: string[];
-    sub_categories: {
-        name: string
-    };
-}
+type Product = Tables<'products'>;
+
 type ProductCart = Product & {
     quantity: number;
 }
@@ -46,18 +38,13 @@ export default function TPVPage() {
     const isDesktop = useMediaQuery('(min-width: 768px)');
     const appContext = useUserAppContext();
     const createOrder = useCreateOrder();
-    const {data: products, error: productsError, isLoading: productsIsLoading} = useGetProducts({
-        page: 1,
-        pageSize: 20
-    });
 
+    const {data: categoriesProduct} = useGetCategoriesWithProducts();
     const {data: tableDinner} = useGetTableDinner({
         filterStatus: 'active',
         filterLocation: null,
         searchTerm: null
     });
-
-    const {data: categories} = useGetCategories();
 
     const handleAddToCart = (product: Product) => {
         cartStore.addProduct(product);
@@ -74,10 +61,14 @@ export default function TPVPage() {
         });
     }
     const total = cartStore.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    if (products && categories && tableDinner) {
+
+    if (categoriesProduct && categoriesProduct.success && tableDinner && tableDinner.success) {
         const filteredProducts = selectedCategory
-            ? products.products.filter(p => p.categories.name === selectedCategory)
-            : products.products;
+            ? categoriesProduct.data
+            .find(category => category.id === selectedCategory)
+            ?.products || []
+            : categoriesProduct.data.flatMap(category => category.products);
+        const categoriesWithProducts = categoriesProduct.data.filter(category => category.products.length > 0);
         return (
             <div className={'flex gap-3'}>
                 <div className={'flex-1 space-y-2'}>
@@ -96,11 +87,11 @@ export default function TPVPage() {
                             Todos
                         </Button>
                         {
-                            categories.map(category => (
+                            categoriesWithProducts.map(category => (
                                 <Button
                                     key={category.id}
-                                    variant={selectedCategory === category.name ? "default" : "outline"}
-                                    onClick={() => setSelectedCategory(category.name)}
+                                    variant={selectedCategory === category.id ? "default" : "outline"}
+                                    onClick={() => setSelectedCategory(category.id)}
                                 >
                                     {category.name}
                                 </Button>
@@ -154,7 +145,7 @@ export default function TPVPage() {
                                             <div className="flex items-center p-4 border rounded-lg" key={product.id}>
                                                 <div className="flex-shrink-0">
                                                     <Image width={100} height={100}
-                                                           src={product.images[0] ?? 'https://placehold.co/250x250'}
+                                                           src={product && product.images ? product.images[0] : ''}
                                                            alt={product.name}
                                                            className="w-16 h-16 rounded"/>
                                                 </div>

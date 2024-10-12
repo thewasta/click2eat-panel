@@ -2,15 +2,7 @@ import {create} from "zustand";
 import {Tables} from "@/types/database/database";
 import {persist} from 'zustand/middleware';
 
-type Product = Tables<'products'> & {
-    categories: {
-        name: string
-    };
-    images: string[];
-    sub_categories: {
-        name: string
-    };
-}
+type Product = Tables<'products'>;
 type ProductCart = Product & {
     quantity: number;
     comments?: string[];
