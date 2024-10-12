@@ -6,6 +6,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {SessionContextProvider} from "@supabase/auth-helpers-react";
 import {createClient} from "@/_lib/supabase/client";
+import {NextUIProvider} from "@nextui-org/react";
 
 export function Providers({children, initialSession}: { children: ReactNode, initialSession: any }) {
     const supabase = createClient()
@@ -25,12 +26,14 @@ export function Providers({children, initialSession}: { children: ReactNode, ini
     }));
     return (
         <SessionContextProvider supabaseClient={supabase} initialSession={initialSession}>
-            <ThemeProvider attribute={"class"} defaultTheme={"dark"} enableSystem>
-                <QueryClientProvider client={queryClient}>
-                    {children}
-                    { process.env.NODE_ENV === "development" && <ReactQueryDevtools/>}
-                </QueryClientProvider>
-            </ThemeProvider>
+            <NextUIProvider>
+                <ThemeProvider attribute={"class"} defaultTheme={"dark"} enableSystem>
+                    <QueryClientProvider client={queryClient}>
+                        {children}
+                        {process.env.NODE_ENV === "development" && <ReactQueryDevtools/>}
+                    </QueryClientProvider>
+                </ThemeProvider>
+            </NextUIProvider>
         </SessionContextProvider>
     )
 }
