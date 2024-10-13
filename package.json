@@ -29,6 +29,7 @@
     "@nextui-org/card": "^2.0.34",
     "@nextui-org/dropdown": "^2.1.31",
     "@nextui-org/image": "^2.0.32",
+    "@nextui-org/navbar": "^2.0.37",
     "@nextui-org/system": "2.2.6",
     "@nextui-org/theme": "2.2.11",
     "@radix-ui/react-accordion": "^1.2.0",
