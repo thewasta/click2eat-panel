@@ -1,6 +1,7 @@
 "use client"
 
-import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/dropdown";
+import {Avatar} from "@nextui-org/avatar";
 import {useMutation} from "@tanstack/react-query";
 import {logout} from "@/app/actions/auth/login_actions";
 

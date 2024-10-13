@@ -1,6 +1,7 @@
 "use client"
 
-import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@nextui-org/react";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger} from "@nextui-org/dropdown";
+import {Avatar} from "@nextui-org/avatar";
 import {IconBell, IconBellRinging} from "@tabler/icons-react";
 import {useState} from "react";
 import {motion} from "framer-motion";

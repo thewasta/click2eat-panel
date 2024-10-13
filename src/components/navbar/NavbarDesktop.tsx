@@ -1,15 +1,8 @@
 "use client"
 
-import {
-    Button,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem
-} from "@nextui-org/react";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,} from "@nextui-org/dropdown";
+import {Button} from "@nextui-org/button";
+import {NavbarBrand, NavbarContent, NavbarItem} from "@nextui-org/navbar";
 import MenuItems from "@/types/constants/MenuItems";
 import {ChevronDown} from "lucide-react";
 import Link from "next/link";

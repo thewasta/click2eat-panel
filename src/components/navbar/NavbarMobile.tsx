@@ -1,5 +1,5 @@
 import MenuItems, {type MenuItem} from "@/types/constants/MenuItems";
-import {NavbarMenu} from "@nextui-org/react";
+import {NavbarMenu} from "@nextui-org/navbar";
 import {usePathname} from "next/navigation";
 import {useState} from "react";
 import {ChevronDown} from "lucide-react";

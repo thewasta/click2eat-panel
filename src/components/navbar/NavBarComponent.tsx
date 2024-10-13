@@ -1,6 +1,6 @@
 "use client"
 
-import {Navbar, NavbarBrand, NavbarContent, NavbarMenuToggle} from "@nextui-org/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarMenuToggle} from "@nextui-org/navbar";
 import {NavbarProfile} from "@/components/navbar/NavbarProfile";
 import {NavbarMobile} from "@/components/navbar/NavbarMobile";
 import {NavbarDesktop} from "@/components/navbar/NavbarDesktop";
