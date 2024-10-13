@@ -28,9 +28,9 @@ const MobileMenuItem = ({item}: { item: MenuItem }) => {
                 <>
                     <button
                         onClick={toggleSubMenu}
-                        className={`flex flex-row items-center p-2 rounded-lg hover-bg-zinc-100 w-full justify-between hover:bg-zinc-100 ${
+                        className={`flex flex-row items-center p-2 rounded-lg hover-bg-zinc-100 dark:hover:bg-zinc-600 w-full justify-between hover:bg-zinc-100 ${
                             //@ts-ignore
-                            pathname.includes(item.path) ? 'bg-zinc-100' : ''
+                            pathname.includes(item.path) ? 'bg-zinc-100 dark:hover:bg-zinc-600' : ''
                         }`}
                     >
                         <div className="flex flex-row space-x-4 items-center">
@@ -64,8 +64,8 @@ const MobileMenuItem = ({item}: { item: MenuItem }) => {
             ) : item.path && (
                 <Link
                     href={item.path}
-                    className={`flex flex-row space-x-4 items-center p-2 rounded-lg hover:bg-zinc-100 ${
-                        item.path === pathname ? 'bg-zinc-100' : ''
+                    className={`flex flex-row space-x-4 items-center p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-600 ${
+                        item.path === pathname ? 'bg-zinc-100 dark:bg-zinc-600' : ''
                     }`}
                 >
                     {item.icon}
