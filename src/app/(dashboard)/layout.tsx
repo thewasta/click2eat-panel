@@ -14,7 +14,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
             <NavBarComponent/>
             {/*Dashboard content*/}
             {/*<ScrollArea type={"scroll"} className={"h-[calc(90vh+30px)] w-full"}>*/}
-            <div className={'p-3 md:p-12 max-w-full'}>
+            <div className={'p-3 md:p-12 max-w-full min-h-screen'}>
                 {children}
             </div>
         </Suspense>
