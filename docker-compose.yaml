@@ -33,15 +33,16 @@ services:
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
-    command: npx pnpm run dev:local
+      - PNPM_YES=true
+    command: sh -c "pnpm install && pnpm run dev:local"
     restart: on-failure
     networks:
       - supabase_network_supabase-seeding
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2048M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '1'
+#          memory: 2048M
     volumes:
       - .:/app
       - /app/node_modules
