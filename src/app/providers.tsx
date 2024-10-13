@@ -6,7 +6,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {SessionContextProvider} from "@supabase/auth-helpers-react";
 import {createClient} from "@/_lib/supabase/client";
-import {NextUIProvider} from "@nextui-org/react";
+import {NextUIProvider} from "@nextui-org/system";
 
 export function Providers({children, initialSession}: { children: ReactNode, initialSession: any }) {
     const supabase = createClient()
