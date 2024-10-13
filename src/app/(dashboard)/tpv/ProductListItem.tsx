@@ -1,7 +1,8 @@
 'use client'
 
 import {Tables} from "@/types/database/database";
-import {Card, CardBody, CardFooter, Image} from "@nextui-org/react";
+import {Card, CardBody, CardFooter} from "@nextui-org/card";
+import {Image} from "@nextui-org/image";
 import React from "react";
 import {Button} from "@/components/ui/button";
 import {IconMinus, IconPlus} from "@tabler/icons-react";
