@@ -61,7 +61,8 @@ jobs:
   deploy:
     runs-on: [self-hosted, supa]
     environment: supa
-    if: ${{ github.event.pull_request.merged == true }}
+    if: false
+#    if: ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
