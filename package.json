@@ -31,6 +31,7 @@
     "@nextui-org/dropdown": "^2.1.31",
     "@nextui-org/image": "^2.0.32",
     "@nextui-org/input": "^2.2.5",
+    "@nextui-org/modal": "^2.0.41",
     "@nextui-org/navbar": "^2.0.37",
     "@nextui-org/switch": "^2.0.34",
     "@nextui-org/system": "2.2.6",
