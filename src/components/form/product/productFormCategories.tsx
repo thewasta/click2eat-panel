@@ -42,7 +42,7 @@ export function ProductFormCategories({
                 control={control}
                 render={({field}) => (
                     <FormItem
-                        className={cn('w-full md:w-2/6', className)}
+                        className={cn('col-span-1', className)}
                     >
                         <FormLabel>
                             Categoría
@@ -76,7 +76,7 @@ export function ProductFormCategories({
                 control={control}
                 render={({field}) => (
                     <FormItem
-                        className={cn('w-full md:w-2/6', className)}
+                        className={cn('col-span-1', className)}
                     >
                         <FormLabel>
                             Sub Categoría

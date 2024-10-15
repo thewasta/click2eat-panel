@@ -1,16 +1,13 @@
 'use client'
 
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {SaveIcon} from "lucide-react";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {ChevronDown, SaveIcon} from "lucide-react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {CreateProductDTO, createProductSchema} from "@/_lib/dto/productFormDto";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
-import {ChangeEvent, useState} from "react";
-import {Switch} from "@/components/ui/switch";
+import {useState} from "react";
+import {Switch} from "@nextui-org/switch";
 import {toast} from "sonner";
 import {Tables} from "@/types/database/database";
 import {ProductCalendar} from "@/components/form/product/productCalendar";
@@ -20,6 +17,13 @@ import {ProductFormIngredients} from "@/components/form/product/productFormIngre
 import {ProductFormCategories} from "@/components/form/product/productFormCategories";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
 import {useEditCreateProduct} from "@/lib/hooks/mutations/useProductMutation";
+import {Input as NextUiInput} from "@nextui-org/input";
+import {cn} from "@/lib/utils";
+import {Button, ButtonGroup} from "@nextui-org/button";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/dropdown";
+import {Card, CardBody} from "@nextui-org/card";
+import ImageUploaderWithEditor from "@/components/form/product/FileUploadCropper";
+import {Skeleton} from "@/components/ui/skeleton";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -121,9 +125,9 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
     }
 
     const options = [
-        [ProductStatus.discontinued, 'Inactivo'],
-        [ProductStatus.published, 'Publicado'],
-        [ProductStatus.draft, 'Borrador'],
+        [ProductStatus.published, 'Publicado', 'El producto estará como activo y podrá verse'],
+        [ProductStatus.draft, 'Borrador', 'Si no estás seguro de los cambios. Puedes continuar luego. El producto no se mostrará'],
+        [ProductStatus.discontinued, 'Inactivo',],
     ];
 
 
@@ -132,7 +136,8 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             (
                 <div className={'space-x-2 flex items-center'}>
                     <ProductFormVariants variantGroups={variantGroups} setVariantGroups={setVariantGroups}/>
-                    <Button type={"submit"} disabled={isLoading}>
+                    <Button variant={"flat"} type={"submit"} disabled={isLoading}>
+                        <SaveIcon className={'mr-1'}/>
                         Guardar Cambios
                     </Button>
                 </div>
@@ -140,13 +145,37 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             (
                 <div className={'space-x-2 flex items-center'}>
                     <ProductFormVariants variantGroups={variantGroups} setVariantGroups={setVariantGroups}/>
-                    <Button name={'draft'} variant={'ghost'} type={"submit"} disabled={isLoading}>
-                        <SaveIcon className={'mr-1'}/>
-                        Guardar borrador
-                    </Button>
-                    <Button type={"submit"} name={'publish'} disabled={isLoading}>
-                        Publicar
-                    </Button>
+                    <FormField
+                        name={"status"}
+                        control={form.control}
+                        render={({field}) => (
+                            <ButtonGroup variant={"flat"}>
+                                <Button type={"submit"}>
+                                    <SaveIcon className={'mr-1'}/>
+                                    {options.filter(opt => opt[0] === form.getValues().status)[0][1]}
+                                </Button>
+                                <Dropdown placement={"bottom-end"}>
+                                    <DropdownTrigger>
+                                        <Button isIconOnly>
+                                            <ChevronDown/>
+                                        </Button>
+                                    </DropdownTrigger>
+                                    <DropdownMenu
+                                        disallowEmptySelection
+                                        aria-label="Save options"
+                                        selectionMode="single"
+                                        className="max-w-[300px]"
+                                        onSelectionChange={value => form.setValue('status', options.filter(opt => opt[1] === value.currentKey)[0][0] as ProductStatus)}
+                                    >
+                                        {options.map(option => (
+                                            <DropdownItem key={option[1]} description={option[2]}>
+                                                {option[1]}
+                                            </DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </ButtonGroup>
+                        )}/>
                 </div>
             )
 
@@ -155,133 +184,69 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
     if (isProductLoading) {
         return <LoadingSkeleton/>
     }
+
+    const handleImageChange = (file: File | null, index: number) => {
+        const currentImages = form.getValues('images') || [];
+        if (file) {
+            currentImages[index] = file;
+        } else {
+            currentImages.splice(index, 1);
+        }
+        form.setValue('images', currentImages);
+    };
     return (
-        <div className={'w-full'}>
-            <Form {...form}>
-                <form key={formKey} onSubmit={form.handleSubmit(submitHandler)}
-                      encType={"multipart/form-data"}
-                      className={"space-y-5 p-1 w-full"}>
-                    <section className={'flex justify-end mb-3'}>
-                        {productSaveActions()}
-                    </section>
-                    <FormField
-                        name={'highlight'}
-                        control={form.control}
-                        render={({field}) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Destacado 0/4</FormLabel>
-                                    <FormDescription>
-                                        Este producto se mostrará entre los primeros
-                                    </FormDescription>
-                                </div>
-                                <FormControl>
+        <Card shadow={"sm"} className={'w-full'}>
+            <CardBody>
+                <Form {...form}>
+                    <form key={formKey} onSubmit={form.handleSubmit(submitHandler)}
+                          encType={"multipart/form-data"}
+                          className={"grid grid-cols-2 items-center md:grid-cols-4 space-y-5 p-1 gap-3"}>
+                        <section className={'col-span-2 md:col-span-4 flex justify-end mb-3'}>
+                            {productSaveActions()}
+                        </section>
+                        <FormField
+                            name={"highlight"}
+                            render={({field}) => (
+                                <FormItem className={"col-span-2 md:col-span-1"}>
                                     <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <div className={'flex flex-col xl:flex-row gap-3'}>
+                                        onValueChange={field.onChange}
+                                        classNames={{
+                                            base: cn(
+                                                "inline-flex flex-row-reverse w-full max-w-md bg-content1 hover:bg-content2 items-center",
+                                                "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2",
+                                                "data-[selected=true]:border-primary",
+                                            ),
+                                            wrapper: "p-0 h-4 overflow-visible",
+                                            thumb: cn("w-6 h-6 border-2 shadow-lg",
+                                                "group-data-[hover=true]:border-primary",
+                                                "group-data-[selected=true]:ml-6",
+                                                "group-data-[pressed=true]:w-7",
+                                                "group-data-[selected]:group-data-[pressed]:ml-4",
+                                            ),
+                                        }}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            <p className="text-medium">Destacar producto 0/4</p>
+                                            <p className="text-tiny text-default-400">
+                                                Haz que este producto aparezca entre los 4 primeros.
+                                            </p>
+                                        </div>
+                                    </Switch>
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             name={"productName"}
                             control={form.control}
                             render={({field}) => (
-                                <FormItem
-                                    className={'w-full md:w-2/6'}
-                                >
-                                    <FormLabel>
-                                        Nombre
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder={"Nombre"}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <ProductCalendar form={form}/>
-                        <FormField
-                            name={'price'}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem
-                                >
-                                    <FormLabel>
-                                        Precio
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            autoComplete={"off"}
-                                            type={"number"}
-                                            placeholder={"Precio"}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name={'status'}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem
-                                    className={'w-full md:w-2/6'}
-                                >
-                                    <FormLabel>
-                                        Estado
-                                    </FormLabel>
-                                    <Select required
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={"Seleccionar Estado"}/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {
-                                                options.map(([value, text], i) => (
-                                                    <SelectItem key={i} value={value}
-                                                                className={'capitalize'}>{text}</SelectItem>
-                                                ))
-                                            }
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <div className={'flex flex-col xl:flex-row gap-3'}>
-                        <FormField
-                            name={'offerPrice'}
-                            control={form.control}
-                            render={({field}) => (
-                                <FormItem
-                                    className={'w-full md:w-1/6'}
-                                >
-                                    <FormLabel>
-                                        Oferta
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            required={false}
-                                            autoComplete={"off"}
-                                            type={"number"}
-                                            placeholder={"Precio"}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
+                                <NextUiInput
+                                    isRequired
+                                    isInvalid={!!form.formState.errors.productName}
+                                    errorMessage={form.formState.errors.productName?.message}
+                                    className={"col-span-2 md:col-span-3"}
+                                    label={"Nombre"}
+                                    {...field}
+                                />
                             )}
                         />
                         {
@@ -298,13 +263,43 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
                                 </>
                             )
                         }
-
-                    </div>
-                    <div className={'flex flex-col xl:flex-row gap-3'}>
+                        <FormField
+                            name={'price'}
+                            control={form.control}
+                            render={({field}) => (
+                                //@ts-ignore
+                                <NextUiInput
+                                    isRequired
+                                    type={"number"}
+                                    isInvalid={!!form.formState.errors.price}
+                                    errorMessage={form.formState.errors.price?.message}
+                                    className={"col-span-1"}
+                                    label={"Precio"}
+                                    {...field}
+                                />
+                            )}
+                        />
+                        <FormField
+                            name={'offerPrice'}
+                            control={form.control}
+                            render={({field}) => (
+                                //@ts-ignore
+                                <NextUiInput
+                                    isRequired
+                                    type={"number"}
+                                    isInvalid={!!form.formState.errors.offerPrice}
+                                    errorMessage={form.formState.errors.offerPrice?.message}
+                                    className={"col-span-1"}
+                                    label={"Oferta"}
+                                    {...field}
+                                />
+                            )}
+                        />
+                        <ProductCalendar form={form}/>
                         <FormField
                             name={"description"}
                             render={({field}) => (
-                                <FormItem className={'w-full md:w-1/3'}>
+                                <FormItem className={'col-span-2'}>
                                     <FormLabel>
                                         Descripción
                                     </FormLabel>
@@ -319,45 +314,25 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
                                 </FormItem>
                             )}
                         />
-                        <ProductFormIngredients handleAddIngredient={handleAddIngredient}
-                                                handleRemoveIngredient={handleRemoveIngredient}/>
-                    </div>
-                    <FormField
-                        name={"images"}
-                        render={({field: {ref, name, onChange, onBlur}, fieldState: {error}}) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Imagen
-                                </FormLabel>
-                                <FormDescription>
-                                    El archivo debe ser inferior a 100KB
-                                </FormDescription>
-                                <FormControl>
-                                    <Input
-                                        multiple
-                                        accept={'image/*'}
-                                        type={"file"}
-                                        onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                                            const filesArray = Array.from(event.target.files || []);
-                                            onChange(filesArray)
-                                        }}
-                                        ref={ref}
-                                        name={name}
-                                        onBlur={onBlur}
-                                    />
-                                </FormControl>
-                                {error && Array.isArray(error) ? (
-                                    error.map((err, index) => (
-                                        <p key={index} className={'text-destructive'}>{err.message}</p>
-                                    ))
-                                ) : error ? (
-                                    <p className={'text-destructive'}>{error.message}</p>
-                                ) : null}
-                            </FormItem>
-                        )}
-                    />
-                </form>
-            </Form>
-        </div>
+                        <div className={'col-span-2'} onDragEnter={() => null}>
+                            <ProductFormIngredients handleAddIngredient={handleAddIngredient}
+                                                    handleRemoveIngredient={handleRemoveIngredient}/>
+                        </div>
+                        <Skeleton className={"col-span-2 w-full h-[150px]"}></Skeleton>
+                        {
+                            [...Array(3)].map((_, index) => (
+                                <ImageUploaderWithEditor
+                                    className={{wrapper:"col-span-2 lg:col-span-1"}}
+                                    key={index}
+                                    name={"images"}
+                                    onChange={file => {
+                                        handleImageChange(file, index);
+                                    }}/>
+                            ))
+                        }
+                    </form>
+                </Form>
+            </CardBody>
+        </Card>
     );
 }
