@@ -9,7 +9,6 @@ import {Textarea} from "@/components/ui/textarea";
 import {useState} from "react";
 import {Switch} from "@nextui-org/switch";
 import {toast} from "sonner";
-import {Tables} from "@/types/database/database";
 import {ProductCalendar} from "@/components/form/product/productCalendar";
 import {ProductFormVariants} from "@/components/form/product/productFormVariants";
 import useFormData from "@/_lib/_hooks/useFormData";
@@ -24,18 +23,9 @@ import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org
 import {Card, CardBody} from "@nextui-org/card";
 import ImageUploaderWithEditor from "@/components/form/product/FileUploadCropper";
 import {Skeleton} from "@/components/ui/skeleton";
-
-type SubCategory = Tables<'sub_categories'>
-type CategoryWithSubCategories = Tables<'categories'> & {
-    sub_categories: SubCategory[]
-}
-
-interface IEditProductForm<T> {
-    product: Tables<'products'> | null;
-    categories: CategoryWithSubCategories[];
-    isLoading: boolean;
-    isProductLoading?: boolean;
-}
+import {useGetProduct} from "@/lib/hooks/query/useProduct";
+import {useGetCategories} from "@/lib/hooks/query/useCategory";
+import {Alert, AlertDescription} from "@/components/ui/alert";
 
 enum ProductStatus {
     draft = "DRAFT",
@@ -53,7 +43,9 @@ type VariantGroup = {
     variants: Variant[]
 }
 
-export default function ProductForm<T>({product, categories, isLoading, isProductLoading}: IEditProductForm<T>) {
+export default function ProductForm({id}: { id?: string }) {
+    const {data: product, error: productError, isLoading: isProductLoading} = useGetProduct({productId: id || ''});
+    const {data: categories, isLoading: isCategoriesLoading} = useGetCategories()
     const createFormData = useFormData<CreateProductDTO>();
     const [formKey, setFormKey] = useState(0);
     const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
@@ -136,7 +128,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
             (
                 <div className={'space-x-2 flex items-center'}>
                     <ProductFormVariants variantGroups={variantGroups} setVariantGroups={setVariantGroups}/>
-                    <Button variant={"flat"} type={"submit"} disabled={isLoading}>
+                    <Button variant={"flat"} type={"submit"} disabled={isCategoriesLoading}>
                         <SaveIcon className={'mr-1'}/>
                         Guardar Cambios
                     </Button>
@@ -181,7 +173,16 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
 
     }
 
-    if (isProductLoading) {
+    if (productError && isEdit) {
+        return (
+            <Alert variant="destructive" className={'w-full md:w-1/3'}>
+                <AlertDescription>
+                    El producto no existe o ha sido eliminado.
+                </AlertDescription>
+            </Alert>
+        );
+    }
+    if (isProductLoading && isCategoriesLoading) {
         return <LoadingSkeleton/>
     }
 
@@ -250,12 +251,12 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
                             )}
                         />
                         {
-                            isLoading ? (
+                            isCategoriesLoading && categories ? (
                                 <LoadingSkeleton/>
                             ) : (
                                 <>
                                     <ProductFormCategories
-                                        categories={categories}
+                                        categories={categories || []}
                                         watch={form.watch}
                                         control={form.control}
                                         setValue={form.setValue}
@@ -322,7 +323,7 @@ export default function ProductForm<T>({product, categories, isLoading, isProduc
                         {
                             [...Array(3)].map((_, index) => (
                                 <ImageUploaderWithEditor
-                                    className={{wrapper:"col-span-2 lg:col-span-1"}}
+                                    className={{wrapper: "col-span-2 lg:col-span-1"}}
                                     key={index}
                                     name={"images"}
                                     onChange={file => {

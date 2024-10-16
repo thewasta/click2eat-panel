@@ -39,6 +39,7 @@ export function useGetProduct({productId}: UseProductOptions) {
     const {data, error, status} = useQuery<Tables<'products'>>({
         queryKey: ["products", productId],
         queryFn: async () => productById(productId),
+        enabled: productId.length > 0
     });
 
     return {
