@@ -6,6 +6,7 @@ import {getUser} from "@/_lib/_hooks/useUser";
 import {Tables} from "@/types/database/database";
 import {getSignedImages} from "@/_lib/supabase/admin";
 import {SupabaseClient} from "@supabase/supabase-js";
+import {ResponseResult} from "@/lib/types/ResponseResult";
 
 type SortOrder = 'asc' | 'desc';
 
@@ -65,10 +66,14 @@ export async function productRetriever({
                 return existingUrl;
             }
 
-            return null;
+            return 'https://placehold.co/250x250';
         }));
 
-        return {...product, imageUrls: imageUrls.filter(Boolean)};
+        if (imageUrls.length === 0) {
+            imageUrls.push('https://placehold.co/250x250');
+        }
+
+        return {...product, images: imageUrls.filter(Boolean)};
     }));
 
     return {
@@ -87,7 +92,93 @@ type VariantGroup = {
     name: string;
     variants: Variant[]
 }
+type ProductCat = Tables<'products'>;
+type Category = Tables<'categories'>;
+type SubCategory = Tables<'sub_categories'>;
+type RawCategoryWithFilteredProducts = Category & {
+    products: ProductCat[];
+    sub_categories: {
+        sub_category: SubCategory & {
+            products: (ProductCat & {
+                categories: { id: string; name: string };
+            })[];
+        };
+    }[];
+};
+type CategoryWithFilteredProducts = Category & {
+    products: ProductCat[];
+    sub_categories: (SubCategory & {
+        products: ProductCat[];
+    })[];
+};
 
+export async function retrieveCategoriesWithProducts(): Promise<ResponseResult<CategoryWithFilteredProducts[]>> {
+    const {user, supabase} = await getUser();
+    const currentBusiness = user.user_metadata.current_session;
+
+    const {data, error} = await supabase
+        .from('categories')
+        .select(`
+            *,
+            products:products(
+                *
+            ),
+            sub_categories:category_subcategories(
+                sub_category:sub_categories(
+                    *,
+                    products:products(
+                        *,
+                        categories(id, name)
+                    )
+                )
+            )
+        `)
+        .eq('business_establishment_id', currentBusiness).returns<RawCategoryWithFilteredProducts[]>();
+
+    if (error) {
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+
+    return {
+        success: true,
+        data: await processCategoriesWithFilteredProducts(data as RawCategoryWithFilteredProducts[])
+    }
+}
+
+function processCategoriesWithFilteredProducts(
+    rawData: RawCategoryWithFilteredProducts[]
+): Promise<CategoryWithFilteredProducts[]> {
+    return Promise.all(rawData.map(async category => ({
+        ...category,
+        products: await processProductImages(category.products || []),
+        sub_categories: category.sub_categories.map(sc => ({
+            ...sc.sub_category,
+            products: sc.sub_category.products
+                .filter(product => product.categories?.id === category.id) || []
+        }))
+    })));
+}
+async function processProductImages(products: ProductCat[]): Promise<ProductCat[]> {
+    return Promise.all(
+        products.map(async product => {
+            const imageUrls = await Promise.all(
+                product.images!.map(async (imagePath: string) => {
+                    const existingUrl = await getSignedImages(imagePath);
+                    return existingUrl || 'https://placehold.co/250x250';
+                })
+            );
+
+            if (imageUrls.length === 0) {
+                imageUrls.push('https://placehold.co/250x250');
+            }
+
+            return { ...product, images: imageUrls.filter(Boolean) };
+        })
+    );
+}
 export async function createProduct(formData: TypedFormData<CreateProductDTO>): Promise<Tables<'products'>> {
     const {user, supabase} = await getUser();
     const formPublishDate = formData.get('publishDate') as string;
@@ -150,7 +241,7 @@ export async function createProduct(formData: TypedFormData<CreateProductDTO>): 
 
 export async function removeProduct(productId: string): Promise<void> {
     const {supabase} = await getUser();
-    const { data: oldProduct } = await supabase
+    const {data: oldProduct} = await supabase
         .from('products')
         .select('images')
         .eq('id', productId)
@@ -250,7 +341,7 @@ export async function editProduct(formData: TypedFormData<CreateProductDTO>): Pr
     const imagesUid = [];
     if (images && images.length > 0) {
         // Eliminar imágenes antiguas
-        const { data: oldProduct } = await supabase
+        const {data: oldProduct} = await supabase
             .from('products')
             .select('images')
             .eq('id', productId)
@@ -266,7 +357,7 @@ export async function editProduct(formData: TypedFormData<CreateProductDTO>): Pr
         for (const image of images) {
             const uid = crypto.randomUUID()
             const imagePath = `${user.user_metadata.current_session}/products/${uid}`;
-            const { data, error } = await supabase.storage.from('click2eat').upload(imagePath, image);
+            const {data, error} = await supabase.storage.from('click2eat').upload(imagePath, image);
             if (error) {
                 console.error(error);
                 continue;
@@ -275,9 +366,9 @@ export async function editProduct(formData: TypedFormData<CreateProductDTO>): Pr
         }
 
         // Actualizar las imágenes del producto
-        const { error: updateProductImageError } = await supabase
+        const {error: updateProductImageError} = await supabase
             .from('products')
-            .update({ images: imagesUid })
+            .update({images: imagesUid})
             .eq('id', productId);
 
         if (updateProductImageError) {

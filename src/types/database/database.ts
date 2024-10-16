@@ -327,6 +327,13 @@ export type Database = {
             referencedRelation: "business_establishments"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "establishment_tables_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "establishment_table_location"
+            referencedColumns: ["id"]
+          },
         ]
       }
       image_urls: {
@@ -352,6 +359,138 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      order_item_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          order_item_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          order_item_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          order_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_item_comments_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          attended_by: string | null
+          created_at: string
+          establishment_id: string | null
+          establishment_table_dinner_id: string
+          id: string
+          method: string
+          order_status: Database["public"]["Enums"]["order_status"]
+          payment_method: string
+          sub_total: number
+        }
+        Insert: {
+          attended_by?: string | null
+          created_at?: string
+          establishment_id?: string | null
+          establishment_table_dinner_id: string
+          id?: string
+          method?: string
+          order_status?: Database["public"]["Enums"]["order_status"]
+          payment_method: string
+          sub_total: number
+        }
+        Update: {
+          attended_by?: string | null
+          created_at?: string
+          establishment_id?: string | null
+          establishment_table_dinner_id?: string
+          id?: string
+          method?: string
+          order_status?: Database["public"]["Enums"]["order_status"]
+          payment_method?: string
+          sub_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "establishment_orders_attended_by_fkey"
+            columns: ["attended_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "establishment_orders_establishment_id_fkey"
+            columns: ["establishment_id"]
+            isOneToOne: false
+            referencedRelation: "business_establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "establishment_orders_establishment_table_dinner_id_fkey"
+            columns: ["establishment_table_dinner_id"]
+            isOneToOne: false
+            referencedRelation: "establishment_tables"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_variants: {
         Row: {
@@ -851,6 +990,13 @@ export type Database = {
     Enums: {
       category_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"
       location_status: "RESERVED" | "ACTIVE" | "INACTIVE"
+      order_status:
+          | "PENDING"
+          | "IN PROGRESS"
+          | "DELIVERED"
+          | "PAID"
+          | "CANCELED"
+          | "DISCREPANCY"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
       product_status: "DRAFT" | "PUBLISHED" | "DISCONTINUED"

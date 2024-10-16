@@ -34,19 +34,14 @@ export const getProductColumns = ({
         }
     },
     {
-        accessorKey: 'imageUrls',
+        accessorKey: 'images',
         header: 'Imagen',
-        cell: (cell) => {
-            const imageFilePath = cell.getValue();
-            //@ts-ignore
-            if (imageFilePath[0] === undefined) {
-                return <Image width={100} height={100} src={'https://placehold.co/250x250'} alt={'image product'}/>
-            }
+        cell: ({row}) => {
+            const images = row.original.images as string[];
+            const productName = row.original.name
             return (
-                imageFilePath &&
-                    //@ts-ignore
-                <Image width={100} height={100} className={"object-cover h-16 w-12"} src={imageFilePath[0]}
-                     alt={"image product"} unoptimized/>
+                <Image width={150} height={150} className={"object-cover h-16 w-12"} src={images[0]}
+                       alt={productName} unoptimized/>
             );
         }
     },
@@ -59,7 +54,7 @@ export const getProductColumns = ({
                 onClick={() => onSort('name')}
             >
                 <span>Nombre</span>
-                {sortBy === 'name' ? (sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />) : <FaSort />}
+                {sortBy === 'name' ? (sortOrder === 'asc' ? <FaSortUp/> : <FaSortDown/>) : <FaSort/>}
             </button>
         ),
     },
@@ -86,7 +81,7 @@ export const getProductColumns = ({
                 onClick={() => onSort('price')}
             >
                 <span>Precio</span>
-                {sortBy === 'price' ? (sortOrder === 'asc' ? <FaSortUp /> : <FaSortDown />) : <FaSort />}
+                {sortBy === 'price' ? (sortOrder === 'asc' ? <FaSortUp/> : <FaSortDown/>) : <FaSort/>}
             </button>
         ),
     },

@@ -39,7 +39,8 @@ export function useUpdateDinner() {
         },
         onSettled: () => {
             queryClient.invalidateQueries({
-                queryKey: ['tables']
+                queryKey: ['tables'],
+                type: "all"
             })
         }
     });
@@ -67,7 +68,8 @@ export function useCreateDinner() {
         },
         onSettled: () => {
             queryClient.invalidateQueries({
-                queryKey: ['tables']
+                queryKey: ['tables'],
+                type: "all"
             })
         }
     });
