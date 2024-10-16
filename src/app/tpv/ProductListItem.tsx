@@ -7,7 +7,9 @@ import React from "react";
 import {Button} from "@/components/ui/button";
 import {IconMinus, IconPlus} from "@tabler/icons-react";
 
-type Product = Tables<'products'>;
+type Product = Tables<'products'> & {
+    images: string[]
+};
 
 type ProductCart = Product & {
     quantity: number;

@@ -26,7 +26,9 @@ import {useCartStore} from "@/lib/context/store/cart";
 import {useCreateOrder} from "@/lib/hooks/mutations/useOrderMutation";
 import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
 
-type Product = Tables<'products'>;
+type Product = Tables<'products'> & {
+    images: string[]
+};
 
 type ProductCart = Product & {
     quantity: number;
