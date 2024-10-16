@@ -63,8 +63,8 @@ type EstablishmentTablesWithLocation = Tables<'establishment_tables'> & {
 }
 
 type TablesProps = {
-    page: number;
-    pageSize: number;
+    page?: number;
+    pageSize?: number;
     filterBy?: {
         location: string | null;
         term: string | null;
@@ -77,7 +77,6 @@ export async function retrieveTables({page, pageSize, filterBy}: TablesProps): P
     totalCount: number
 }>> {
     const {supabase} = await getUser();
-    const offset = (page - 1) * pageSize;
     const query = supabase.from("establishment_tables").select('*,establishment_table_location(id,name)', {count: 'exact'});
     if (filterBy) {
         if (filterBy.location) {
@@ -90,9 +89,16 @@ export async function retrieveTables({page, pageSize, filterBy}: TablesProps): P
             query.eq('status', filterBy.status.toUpperCase());
         }
     }
-    const {data, error, count} = await query.range(offset, offset + pageSize - 1)
-    if (error) {
-        Sentry.captureException(error, {
+    let result;
+    if(page && pageSize){
+        const offset = (page - 1) * pageSize;
+        result = await query.range(offset, offset + pageSize - 1);
+    } else {
+        result = await query;
+    }
+
+    if (result.error) {
+        Sentry.captureException(result.error, {
             level: "error"
         });
         return {
@@ -104,8 +110,8 @@ export async function retrieveTables({page, pageSize, filterBy}: TablesProps): P
     return {
         success: true,
         data: {
-            tables: data,
-            totalCount: count || 0
+            tables: result.data,
+            totalCount: result.count || 0
         }
     }
 }

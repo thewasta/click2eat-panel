@@ -10,8 +10,8 @@ interface UseGetTableDinner {
 }
 
 export function useGetTableDinner({
-                                      page = 1,
-                                      pageSize = 10,
+                                      page,
+                                      pageSize,
                                       filterStatus,
                                       filterLocation,
                                       searchTerm,
