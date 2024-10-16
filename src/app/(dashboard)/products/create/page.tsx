@@ -1,16 +1,23 @@
-'use client'
-
 import ProductForm from "@/components/form/product/productForm";
-import {useGetCategories} from "@/lib/hooks/query/useCategory";
+import {retrieveCategories} from "@/app/actions/dashboard/category.service";
+import type {Metadata} from "next";
+import {dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query";
 
-export default function CreateProductPage() {
-    const {data: categories, isLoading} = useGetCategories();
+export const metadata: Metadata = {
+    title: 'Crear producto',
+};
+
+export default async function CreateProductPage() {
+    const queryClient = new QueryClient();
+
+    queryClient.prefetchQuery({
+        queryKey: ["categories"],
+        queryFn: async () => retrieveCategories()
+    });
 
     return (
-        <ProductForm
-            product={null}
-            categories={categories || []}
-            isLoading={isLoading}
-        />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <ProductForm />
+        </HydrationBoundary>
     );
 }

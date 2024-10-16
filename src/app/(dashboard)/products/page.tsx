@@ -3,7 +3,7 @@ import {getProductColumns} from "@/components/ui/colums";
 import {ProductTable} from "@/components/products/product-table";
 import {useCallback, useEffect, useState} from "react";
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
+import {Button} from "@nextui-org/button";
 import {Tables} from "@/types/database/database";
 import useDebounce from "@/_lib/_hooks/useDebounce";
 import {useDeleteProduct} from "@/lib/hooks/mutations/useProductMutation";
@@ -60,7 +60,7 @@ export default function ProductsPage() {
                 isLoading={isLoading}
                 entityName={'Producto'}
                 searchBy={'name'}
-                buttonAction={(<Button asChild>
+                buttonAction={(<Button color={"primary"}>
                     <Link href={'/products/create'}>
                         Crear producto
                     </Link>

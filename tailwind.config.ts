@@ -1,12 +1,14 @@
-import type { Config } from "tailwindcss"
+import type {Config} from "tailwindcss"
+import {nextui} from "@nextui-org/theme";
 
 const config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
 	],
   prefix: "",
   theme: {
@@ -18,6 +20,9 @@ const config = {
       },
     },
     extend: {
+      gridTemplateColumns: {
+        'auto-fit-minmax': 'repeat(auto-fit, minmax(150px, 220px))',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -75,7 +80,8 @@ const config = {
     },
   },
   plugins: [
-      require('tailwindcss-animate')
+      // require('tailwindcss-animate'),
+      nextui()
   ],
 } satisfies Config
 

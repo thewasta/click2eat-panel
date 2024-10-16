@@ -19,7 +19,7 @@ export function ProductCalendar({form}: ProductCalendarProps) {
             control={form.control}
             name="publishDate"
             render={({field}) => (
-                <FormItem>
+                <FormItem className={"col-span-2"}>
                     <FormLabel className="pr-4">Programar publicación</FormLabel>
                     <Popover
                     >
