@@ -25,6 +25,7 @@
     "@amcharts/amcharts5": "^5.8.4",
     "@hcaptcha/react-hcaptcha": "1.11.0",
     "@hookform/resolvers": "^3.9.0",
+    "@internationalized/date": "^3.5.6",
     "@nextui-org/avatar": "^2.0.33",
     "@nextui-org/button": "^2.0.38",
     "@nextui-org/card": "^2.0.34",
