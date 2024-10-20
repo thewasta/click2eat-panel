@@ -50,7 +50,12 @@ export const createProductSchema = z.object({
     offerPrice: z.coerce.number({
         invalid_type_error: 'Price must be a number',
     }).transform(arg => arg === 0 ? undefined : arg).optional(),
-    publishDate: z.date().optional()
+    publishDate: z.date().refine(date => {
+        const now = new Date();
+        return date > now;
+    }, {
+        message: 'La fecha de publicación debe ser posterior a la fecha actual.'
+    }).optional()
 }).refine((data) => {
     if (data.offerPrice === undefined) return true;
     return data.offerPrice <= data.price
