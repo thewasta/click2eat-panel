@@ -20,20 +20,14 @@ type ProductFormCategoriesProps = {
 export function ProductFormCategories({
                                           categories,
                                           control,
-                                          setValue,
                                           watch,
                                           className
                                       }: ProductFormCategoriesProps) {
     const selectedCategory = watch('category');
-    const handleCategoryChange = (value: string) => {
-        setValue('category', value);
-        setValue('subCategory', undefined); // Reset subcategory when category changes
-    };
     const getSubcategories = () => {
         const category = categories.find(cat => cat.id === selectedCategory);
         return category ? category.sub_categories : [];
     };
-    const isValidCategory = selectedCategory && selectedCategory !== "0";
 
     return (
         <>
@@ -48,7 +42,7 @@ export function ProductFormCategories({
                             isRequired
                             label="Categoría"
                             variant="flat"
-                            defaultSelectedKeys={[field.value]}
+                            selectedKeys={field.value ? [field.value] : undefined}
                             errorMessage={control._formState.errors.category ? control._formState.errors.category.message : ''}
                             isInvalid={!!control._formState.errors.category}
                             onSelectionChange={(value) => field.onChange(value.currentKey as string)}
@@ -76,7 +70,7 @@ export function ProductFormCategories({
                             isDisabled={getSubcategories().length === 0}
                             label="Sub categoría"
                             variant="flat"
-                            defaultSelectedKeys={field.value ? [field.value] : undefined}
+                            selectedKeys={field.value ? [field.value] : undefined}
                             errorMessage={control._formState.errors.subCategory ? control._formState.errors.subCategory.message : ''}
                             isInvalid={!!control._formState.errors.subCategory}
                             onSelectionChange={(value) => field.onChange(value.currentKey as string)}

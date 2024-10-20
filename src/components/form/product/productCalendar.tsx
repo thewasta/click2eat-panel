@@ -1,13 +1,8 @@
-import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Button} from "@/components/ui/button";
-import {cn} from "@/lib/utils";
-import {CalendarIcon} from "lucide-react";
-import {Calendar} from "@/components/ui/calendar";
-import {es} from "date-fns/locale";
-import {Input} from "@/components/ui/input";
+import {FormField, FormItem} from "@/components/ui/form";
 import {UseFormReturn} from "react-hook-form";
 import {CreateProductDTO} from "@/_lib/dto/productFormDto";
+import {DatePicker} from "@nextui-org/date-picker";
+import {getLocalTimeZone, parseAbsoluteToLocal, today} from "@internationalized/date"
 
 type ProductCalendarProps = {
     form: UseFormReturn<CreateProductDTO>
@@ -18,58 +13,23 @@ export function ProductCalendar({form}: ProductCalendarProps) {
         <FormField
             control={form.control}
             name="publishDate"
-            render={({field}) => (
+            render={({field: {onChange, value}}) => (
                 <FormItem className={"col-span-2"}>
-                    <FormLabel className="pr-4">Programar publicación</FormLabel>
-                    <Popover
-                    >
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                                <Button
-                                    variant="outline"
-                                    className={cn(
-                                        'w-full pl-3 text-left font-normal',
-                                        !field.value && 'text-muted-foreground',
-                                    )}
-                                >
-                                    {field.value ? (
-                                        `${field.value.toLocaleString([])}`
-                                    ) : (
-                                        <span>01/01/2024, 0:00:00</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
-                                </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <Calendar
-                                locale={es}
-                                className="p-0 capitalize"
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date()}
-                            />
-                            <Input
-                                type="time"
-                                className="mt-2"
-                                // take hours and minutes and update our Date object then change date object to our new value
-                                onChange={(selectedTime) => {
-                                    const currentTime = field.value;
-                                    currentTime?.setHours(
-                                        parseInt(selectedTime.target.value.split(':')[0]),
-                                        parseInt(selectedTime.target.value.split(':')[1]),
-                                        0,
-                                    );
-                                    field.onChange(currentTime);
-                                }}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                    <FormMessage/>
-                    <FormDescription>
-                        Fecha y hora a partir de la que estará disponible el producto.
-                    </FormDescription>
+                    <DatePicker
+                        isDisabled
+                        hourCycle={24}
+                        granularity={"minute"}
+                        minValue={today(getLocalTimeZone())}
+                        description={"No funcionando actualmente"}
+                        label={"Progamar publicación"}
+                        isInvalid={!!form.formState.errors.publishDate}
+                        errorMessage={form.formState.errors.publishDate ? form.formState.errors.publishDate.message : null}
+                        value={value && parseAbsoluteToLocal(value.toISOString())}
+                        showMonthAndYearPickers
+                        //@ts-ignore
+                        onChange={date => onChange(new Date(date.year, date.month - 1, date.day, date.hour, date.minute))}
+                        hideTimeZone
+                    />
                 </FormItem>
             )}
         />

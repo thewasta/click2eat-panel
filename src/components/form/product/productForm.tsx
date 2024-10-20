@@ -6,7 +6,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {CreateProductDTO, createProductSchema} from "@/_lib/dto/productFormDto";
 import {Textarea} from "@/components/ui/textarea";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Switch} from "@nextui-org/switch";
 import {toast} from "sonner";
 import {ProductCalendar} from "@/components/form/product/productCalendar";
@@ -80,6 +80,26 @@ export default function ProductForm({id}: { id?: string }) {
             publishDate: product?.publish_date ? new Date(product?.publish_date) : undefined,
         } : defaultValues,
     });
+    useEffect(() => {
+        if (product) {
+            form.reset({
+                productName: product.name || '',
+                description: product.description || '',
+                // @ts-ignore
+                images: product.images || undefined,
+                // @ts-ignore
+                ingredients: product.ingredients || [],
+                price: product.price || undefined,
+                category: product.category_id || undefined,
+                subCategory: product.sub_category_id || undefined,
+                offerPrice: product.offer || undefined,
+                highlight: product.highlight || false,
+                status: product.status ? (product.status as ProductStatus) : ProductStatus.draft,
+                publishDate: product.publish_date ? new Date(product.publish_date) : undefined,
+            });
+        }
+    }, [form, product]); // Se ejecuta cuando el producto esté disponible
+
     const {mutate} = useEditCreateProduct(isEdit, form, defaultValues, setFormKey, setVariantGroups);
 
     const ingredients = form.watch('ingredients');
