@@ -7,7 +7,7 @@ import {getLocalTimeZone, parseAbsoluteToLocal, today} from "@internationalized/
 type ProductCalendarProps = {
     form: UseFormReturn<CreateProductDTO>
 }
-
+//@todo Configuración de huso horario. Según lo que tenga el establecimiento.
 export function ProductCalendar({form}: ProductCalendarProps) {
     return (
         <FormField
