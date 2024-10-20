@@ -16,7 +16,7 @@ import {ProductFormIngredients} from "@/components/form/product/productFormIngre
 import {ProductFormCategories} from "@/components/form/product/productFormCategories";
 import {LoadingSkeleton} from "@/app/(dashboard)/products/create/loadingSkeleton";
 import {useEditCreateProduct} from "@/lib/hooks/mutations/useProductMutation";
-import {Input as NextUiInput} from "@nextui-org/input";
+import {Input} from "@nextui-org/input";
 import {cn} from "@/lib/utils";
 import {Button, ButtonGroup} from "@nextui-org/button";
 import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/dropdown";
@@ -260,7 +260,7 @@ export default function ProductForm({id}: { id?: string }) {
                             name={"productName"}
                             control={form.control}
                             render={({field}) => (
-                                <NextUiInput
+                                <Input
                                     isRequired
                                     isInvalid={!!form.formState.errors.productName}
                                     errorMessage={form.formState.errors.productName?.message}
@@ -289,7 +289,7 @@ export default function ProductForm({id}: { id?: string }) {
                             control={form.control}
                             render={({field}) => (
                                 //@ts-ignore
-                                <NextUiInput
+                                <Input
                                     isRequired
                                     type={"number"}
                                     isInvalid={!!form.formState.errors.price}
@@ -305,7 +305,7 @@ export default function ProductForm({id}: { id?: string }) {
                             control={form.control}
                             render={({field}) => (
                                 //@ts-ignore
-                                <NextUiInput
+                                <Input
                                     isRequired
                                     type={"number"}
                                     isInvalid={!!form.formState.errors.offerPrice}
