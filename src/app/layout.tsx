@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import type {Metadata} from "next";
+import {Roboto} from "next/font/google";
 import "./globals.css";
 import FcmTokenComp from "@/components/firebase/firebaseForeground";
 import {Providers} from "@/app/providers";
@@ -17,7 +17,7 @@ const inter = Roboto({
 export const metadata: Metadata = {
     title: {
         default: 'Click2Eat - Gestiona tu restaurante de forma sencilla',
-        template: 'Click2Eat - %s'
+        template: '%s - Click2Eat'
     },
     description: "Gestiona tu restaurante de forma sencilla",
     manifest: '/manifest.json',
