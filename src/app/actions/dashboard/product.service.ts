@@ -92,7 +92,9 @@ type VariantGroup = {
     name: string;
     variants: Variant[]
 }
-type ProductCat = Tables<'products'>;
+type ProductCat = Tables<'products'> & {
+    images: string[]
+};
 type Category = Tables<'categories'>;
 type SubCategory = Tables<'sub_categories'>;
 type RawCategoryWithFilteredProducts = Category & {

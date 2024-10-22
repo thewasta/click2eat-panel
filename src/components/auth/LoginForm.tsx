@@ -1,7 +1,7 @@
 'use client'
 
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
+import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
+import {Input} from "@nextui-org/input";
 import React, {useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {z} from "zod";
@@ -9,9 +9,12 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "@tanstack/react-query";
 import {login} from "@/app/actions/auth/login_actions";
 import useFormData from "@/_lib/_hooks/useFormData";
-import {Button} from "@/components/ui/button";
+import {Button} from "@nextui-org/button";
 import * as Sentry from "@sentry/nextjs";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import {EyeFilledIcon, EyeSlashFilledIcon} from "@nextui-org/shared-icons";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const loginSchema = z.object({
     email: z.string({
@@ -19,14 +22,14 @@ const loginSchema = z.object({
     }).min(1, {
         message: 'Rellena los campos obligatorios'
     }),
-    captchaToken: z.string({
+    captchaToken: isProduction ? z.string({
         required_error: 'Por favor, asegurate de completar el captcha'
     }).min(2, {
         message: "Por favor, rellena el captcha"
-    }),
+    }) : z.string().optional(),
     password: z.string({
         required_error: 'Rellena los campos obligatorios'
-    }).min(1, {
+    }).min(8, {
         message: 'Rellena los campos obligatorios'
     })
 });
@@ -41,6 +44,7 @@ export default function LoginForm() {
             password: ''
         }
     });
+    const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
     const loginMutation = useMutation({
         mutationFn: login,
         onSuccess: (result) => {
@@ -76,63 +80,67 @@ export default function LoginForm() {
             setCaptchaToken(null);
         }
     }, []);
+    const toggleVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    }
     return (
         <>
             <Form {...form}>
-                <form className={"flex flex-col gap-5"}>
+                <form className={"flex flex-col items-center gap-5"}>
                     <FormField
                         name={"email"}
                         control={form.control}
                         render={({field}) => (
-                            <FormItem className={"flex flex-col justify-center items-center"}>
-                                <FormLabel>
-                                    Correo Electrónico
-                                </FormLabel>
-                                <FormControl>
-                                    <Input type={'email'} className={"w-1/2"}
-                                           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                               if (event.key === 'Enter') {
-                                                   form.handleSubmit(onSubmit)()
-                                               }
-                                           }}
-                                           placeholder={"info@click2eat.es"} {...field}/>
-                                </FormControl>
-                                <FormMessage className={"text-xs text-red-500 font-light"}/>
-                            </FormItem>
+                            <Input
+                                isRequired
+                                label={"Correo electrónico"}
+                                className={"w-full lg:w-1/2"}
+                                isInvalid={!!form.formState.errors.email}
+                                errorMessage={form.formState.errors.email?.message}
+                                {...field}
+                            />
                         )}/>
                     <FormField name={"password"} control={form.control} render={({field}) => (
-                        <FormItem className={"flex flex-col justify-center items-center"}>
-                            <FormLabel>
-                                Contraseña
-                            </FormLabel>
-                            <FormControl>
-                                <Input type={"password"} className={"w-1/2"}
-                                       onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-                                           if (event.key === 'Enter') {
-                                               form.handleSubmit(onSubmit)()
-                                           }
-                                       }}
-                                       placeholder={"************"} {...field}/>
-                            </FormControl>
-                            <FormMessage className={"text-xs text-red-500 font-light"}/>
-                        </FormItem>
+                        <Input
+                            isRequired
+                            label={"Contaseña"}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibility}
+                                        aria-label="toggle password visibility">
+                                    {passwordVisible ? (
+                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
+                                    ) : (
+                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
+                                    )}
+                                </button>
+                            }
+                            type={passwordVisible ? "text" : "password"}
+                            className={"w-full lg:w-1/2"}
+                            isInvalid={!!form.formState.errors.password}
+                            errorMessage={form.formState.errors.password?.message}
+                            {...field}
+                        />
                     )}/>
-                    <FormField
-                        name={"captchaToken"}
-                        render={({field}) => (
-                            <FormItem className={"flex flex-col justify-center items-center"}>
-                                <HCaptcha
-                                    languageOverride={"es"}
-                                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_TOKEN}
-                                    onVerify={(token) => {
-                                        setCaptchaToken(token);
-                                        field.onChange(token)
-                                    }}
-                                />
-                                <FormMessage className={"text-xs text-red-500 font-light"}/>
-                            </FormItem>
-                        )}
-                    />
+                    {
+                        process.env.NODE_ENV === "production" && (
+                            <FormField
+                                name={"captchaToken"}
+                                render={({field}) => (
+                                    <FormItem className={"flex flex-col justify-center items-center"}>
+                                        <HCaptcha
+                                            languageOverride={"es"}
+                                            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_TOKEN}
+                                            onVerify={(token) => {
+                                                setCaptchaToken(token);
+                                                field.onChange(token)
+                                            }}
+                                        />
+                                        <FormMessage className={"text-xs text-red-500 font-light"}/>
+                                    </FormItem>
+                                )}
+                            />
+                        )
+                    }
                 </form>
                 <p className={"text-center text-xs text-red-500 font-light"}>
                     {form.formState.errors && form.formState.errors.root?.server.message}
@@ -141,6 +149,7 @@ export default function LoginForm() {
             <div className="flex items-center justify-center">
                 <Button
                     type="button"
+                    color={"primary"}
                     disabled={isSubmitting}
                     onClick={form.handleSubmit(onSubmit)}>
                     Acceder

@@ -26,7 +26,9 @@ import {useCartStore} from "@/lib/context/store/cart";
 import {useCreateOrder} from "@/lib/hooks/mutations/useOrderMutation";
 import {useGetTableDinner} from "@/lib/hooks/query/useTableDinner";
 
-type Product = Tables<'products'>;
+type Product = Tables<'products'> & {
+    images: string[]
+};
 
 type ProductCart = Product & {
     quantity: number;
@@ -98,14 +100,14 @@ export default function TPVPage() {
                             ))
                         }
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-1 md:gap-3">
+                    <div className="grid grid-cols-auto-fit-minmax gap-2">
                         {filteredProducts.map(product => (
                             <ProductListItem product={product} key={product.id} addProduct={handleAddToCart}
                                              removeProduct={handleRemoveToCart} productsCart={cartStore.cart}/>
                         ))}
                     </div>
                 </div>
-                <Card className={'w-1/3 right-3'}>
+                <Card className={'w-1/3 right-3 hidden lg:block'}>
                     <CardHeader className={'flex-row items-center justify-between'}>
                         <Button variant={'secondary'} disabled>
                             <FaReceipt/>

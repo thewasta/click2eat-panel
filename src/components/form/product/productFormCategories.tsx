@@ -1,9 +1,9 @@
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Control, UseFormSetValue, UseFormWatch} from "react-hook-form";
 import {Tables} from "@/types/database/database";
 import {CreateProductDTO} from "@/_lib/dto/productFormDto";
 import {cn} from "@/lib/utils";
+import {Select, SelectItem} from "@nextui-org/select";
 
 type SubCategory = Tables<'sub_categories'>
 type CategoryWithSubCategories = Tables<'categories'> & {
@@ -20,20 +20,14 @@ type ProductFormCategoriesProps = {
 export function ProductFormCategories({
                                           categories,
                                           control,
-                                          setValue,
                                           watch,
                                           className
                                       }: ProductFormCategoriesProps) {
     const selectedCategory = watch('category');
-    const handleCategoryChange = (value: string) => {
-        setValue('category', value);
-        setValue('subCategory', undefined); // Reset subcategory when category changes
-    };
     const getSubcategories = () => {
         const category = categories.find(cat => cat.id === selectedCategory);
         return category ? category.sub_categories : [];
     };
-    const isValidCategory = selectedCategory && selectedCategory !== "0";
 
     return (
         <>
@@ -42,32 +36,26 @@ export function ProductFormCategories({
                 control={control}
                 render={({field}) => (
                     <FormItem
-                        className={cn('w-full md:w-2/6', className)}
+                        className={cn('col-span-1', className)}
                     >
-                        <FormLabel>
-                            Categoría
-                        </FormLabel>
-                        <Select onValueChange={handleCategoryChange}
-                                defaultValue={field.value}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder={"Seleccionar Categoría"}/>
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectGroup>
-                                    {
-                                        categories &&
-                                        categories.map((category) => (
-                                            <SelectItem key={category.id} value={category.id}>
-                                                {category.name}
-                                            </SelectItem>
-                                        ))
-                                    }
-                                </SelectGroup>
-                            </SelectContent>
+                        <Select
+                            isRequired
+                            label="Categoría"
+                            variant="flat"
+                            selectedKeys={field.value ? [field.value] : undefined}
+                            errorMessage={control._formState.errors.category ? control._formState.errors.category.message : ''}
+                            isInvalid={!!control._formState.errors.category}
+                            onSelectionChange={(value) => field.onChange(value.currentKey as string)}
+                            placeholder="Selecciona una categoría"
+                        >
+                            {
+                                categories && categories.map(category => (
+                                    <SelectItem key={category.id}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))
+                            }
                         </Select>
-                        <FormMessage/>
                     </FormItem>
                 )}
             />
@@ -76,30 +64,25 @@ export function ProductFormCategories({
                 control={control}
                 render={({field}) => (
                     <FormItem
-                        className={cn('w-full md:w-2/6', className)}
+                        className={cn('col-span-1', className)}
                     >
-                        <FormLabel>
-                            Sub Categoría
-                        </FormLabel>
-                        <Select onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                disabled={!isValidCategory}
+                        <Select
+                            isDisabled={getSubcategories().length === 0}
+                            label="Sub categoría"
+                            variant="flat"
+                            selectedKeys={field.value ? [field.value] : undefined}
+                            errorMessage={control._formState.errors.subCategory ? control._formState.errors.subCategory.message : ''}
+                            isInvalid={!!control._formState.errors.subCategory}
+                            onSelectionChange={(value) => field.onChange(value.currentKey as string)}
+                            placeholder={getSubcategories().length > 0 ? "Selecciona una categoría" : "No existen sub categorías"}
                         >
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder={"Seleccionar Sub Categoría"}/>
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value={"0"}>Seleccionar Sub Categoría</SelectItem>
-                                    {getSubcategories().map((subCategory) => (
-                                        <SelectItem key={subCategory.id} value={subCategory.id}>
-                                            {subCategory.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
+                            {
+                                getSubcategories().map(category => (
+                                    <SelectItem key={category.id}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))
+                            }
                         </Select>
                         <FormMessage/>
                     </FormItem>
