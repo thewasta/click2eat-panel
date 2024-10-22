@@ -1,7 +1,7 @@
 'use client'
 
 import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
-import {Input as NextInput} from "@nextui-org/input";
+import {Input} from "@nextui-org/input";
 import React, {useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {z} from "zod";
@@ -9,7 +9,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "@tanstack/react-query";
 import {login} from "@/app/actions/auth/login_actions";
 import useFormData from "@/_lib/_hooks/useFormData";
-import {Button} from "@/components/ui/button";
+import {Button} from "@nextui-org/button";
 import * as Sentry from "@sentry/nextjs";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import {EyeFilledIcon, EyeSlashFilledIcon} from "@nextui-org/shared-icons";
@@ -91,7 +91,7 @@ export default function LoginForm() {
                         name={"email"}
                         control={form.control}
                         render={({field}) => (
-                            <NextInput
+                            <Input
                                 isRequired
                                 label={"Correo electrónico"}
                                 className={"w-full lg:w-1/2"}
@@ -101,7 +101,7 @@ export default function LoginForm() {
                             />
                         )}/>
                     <FormField name={"password"} control={form.control} render={({field}) => (
-                        <NextInput
+                        <Input
                             isRequired
                             label={"Contaseña"}
                             endContent={
@@ -149,6 +149,7 @@ export default function LoginForm() {
             <div className="flex items-center justify-center">
                 <Button
                     type="button"
+                    color={"primary"}
                     disabled={isSubmitting}
                     onClick={form.handleSubmit(onSubmit)}>
                     Acceder
